@@ -31,7 +31,10 @@
     "format:check": "prettier --check .",
     "quality": "npm run lint && npm run format:check && npm run check:lines && npm run check:features && npm run test:coverage && npm run crap && npm run build",
     "prepare": "husky",
-    "gen:ladder-fixtures": "tsx scripts/genLadderFixtures.ts"
+    "gen:ladder-fixtures": "tsx scripts/genLadderFixtures.ts",
+    "gen:acrostic-fixtures": "tsx scripts/genAcrosticFixtures.ts",
+    "gen:quizzle-fixtures": "tsx scripts/genQuizzleFixtures.ts",
+    "gen:chess-fixtures": "tsx scripts/genChessAttackFixtures.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
