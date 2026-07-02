@@ -20,8 +20,11 @@ Given('the player opens the {string} picture-click quiz', async ({ page }, topic
 });
 
 When('the player starts the picture-click quiz', async ({ page }) => {
-  await page.getByTestId('play-start').click();
-  await expect(page.getByTestId('play-giveup')).toBeVisible();
+  // CLICK modes auto-start on first interaction — click Start only if present,
+  // then confirm the session is live (give-up is shown for a running session).
+  const start = page.getByTestId('play-start');
+  if (await start.count()) await start.click();
+  await expect(page.getByTestId('play-giveup')).toBeVisible({ timeout: 15_000 });
 });
 
 When('the player clicks the {string} hotspot', async ({ page }, label: string) => {
