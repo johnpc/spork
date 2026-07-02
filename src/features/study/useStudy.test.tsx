@@ -31,11 +31,25 @@ describe('useStudy', () => {
     api.gradeCard.mockResolvedValue(undefined);
   });
 
-  it('does not load when signed out', () => {
+  it('loads for a guest (whole deck, no reviews) and reports not-authenticated', async () => {
     auth.status = 'unauthenticated';
+    api.fetchStudyData.mockResolvedValue(twoNewCards);
     const { result } = renderHook(() => useStudy('d1'), { wrapper });
     expect(result.current.isAuthenticated).toBe(false);
-    expect(api.fetchStudyData).not.toHaveBeenCalled();
+    // Guest fetch skips the userPool review query (withReviews=false).
+    await waitFor(() => expect(api.fetchStudyData).toHaveBeenCalledWith('d1', false));
+  });
+
+  it('does not persist a grade for a guest answer', async () => {
+    auth.status = 'unauthenticated';
+    api.fetchStudyData.mockResolvedValue(twoNewCards);
+    const { result } = renderHook(() => useStudy('d1'), { wrapper });
+    await waitFor(() => expect(result.current.current?.card.id).toBe('c1'));
+    await act(async () => {
+      await result.current.answer(result.current.choices?.answer as string);
+    });
+    expect(result.current.score).toEqual({ correct: 1, total: 1 });
+    expect(api.gradeCard).not.toHaveBeenCalled();
   });
 
   it('exposes the first queued card, its choices, and position', async () => {

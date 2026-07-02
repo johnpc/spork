@@ -30,11 +30,7 @@ export function Study() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {!s.isAuthenticated ? (
-          <p className="sp-muted" data-testid="study-signed-out">
-            <Link to="/signin">Sign in</Link> to study this deck.
-          </p>
-        ) : s.isLoading ? (
+        {s.isLoading ? (
           <p className="sp-muted">Loading…</p>
         ) : s.current && s.choices ? (
           <>
