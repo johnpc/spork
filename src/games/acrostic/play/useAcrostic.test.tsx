@@ -18,6 +18,7 @@ const acrostic = {
   title: 'On Trying',
   quote: 'Do or do not',
   author: 'Yoda',
+  // answers' initials spell "CI" (the secret word for this tiny test puzzle).
   clues: JSON.stringify([
     { clue: 'A feline', answer: 'cat' },
     { clue: 'Frozen water', answer: 'ice' },
@@ -30,22 +31,23 @@ describe('useAcrostic', () => {
     api.fetchAcrostic.mockResolvedValue(acrostic);
   });
 
-  it('loads clues with the quote fully masked', async () => {
+  it('loads clues with the secret word fully masked', async () => {
     const { result } = renderHook(() => useAcrostic('a1'), { wrapper });
     await waitFor(() => expect(result.current.total).toBe(2));
     expect(result.current.solvedCount).toBe(0);
     expect(result.current.complete).toBe(false);
-    expect(result.current.revealed).toEqual(['__', '__', '__', '___']);
+    expect(result.current.secret).toBe('CI');
+    expect(result.current.slots.map((s) => s.revealed)).toEqual([false, false]);
   });
 
-  it('solves clues, reveals the quote, and completes', async () => {
+  it('solves clues, fills the secret word, and completes', async () => {
     const { result } = renderHook(() => useAcrostic('a1'), { wrapper });
     await waitFor(() => expect(result.current.total).toBe(2));
     act(() => void result.current.guess(0, 'CAT'));
-    expect(result.current.revealed).toEqual(['Do', 'or', '__', '___']);
+    expect(result.current.slots.map((s) => s.revealed)).toEqual([true, false]);
     act(() => void result.current.guess(1, ' ice '));
     expect(result.current.complete).toBe(true);
-    expect(result.current.revealed).toEqual(['Do', 'or', 'do', 'not']);
+    expect(result.current.slots.map((s) => s.revealed)).toEqual([true, true]);
     expect(result.current.author).toBe('Yoda');
   });
 

@@ -22,11 +22,8 @@ const client = new BedrockRuntimeClient({ region: 'us-west-2' });
 
 const DIFFICULTIES: AcrosticFixture['difficulty'][] = ['EASY', 'MEDIUM', 'HARD'];
 
-const JOBS: AcrosticRequest[] = [
-  { topic: 'perseverance' },
-  { topic: 'curiosity' },
-  { topic: 'kindness' },
-];
+// Each puzzle's answers' initials spell this secret word (revealed on solve).
+const JOBS: AcrosticRequest[] = [{ word: 'OCEAN' }, { word: 'WONDER' }, { word: 'COURAGE' }];
 
 async function invoke(body: string): Promise<unknown> {
   const res = await client.send(
@@ -49,14 +46,16 @@ async function genOne(
   for (let i = 0; i < attempts; i++) {
     try {
       const body = await invoke(buildAcrosticRequest(req));
-      const v = validateAcrostic(parseAcrosticGen(body as Parameters<typeof parseAcrosticGen>[0]));
+      const v = validateAcrostic(
+        parseAcrosticGen(body as Parameters<typeof parseAcrosticGen>[0], req.word),
+      );
       if (v.ok && v.acrostic) return { ...v.acrostic, difficulty };
-      console.log(`  retry (${req.topic}): ${v.reason}`);
+      console.log(`  retry (${req.word}): ${v.reason}`);
     } catch (e) {
-      console.log(`  retry (${req.topic}): ${e instanceof Error ? e.message : e}`);
+      console.log(`  retry (${req.word}): ${e instanceof Error ? e.message : e}`);
     }
   }
-  throw new Error(`could not generate a valid acrostic about ${req.topic}`);
+  throw new Error(`could not generate a valid acrostic for ${req.word}`);
 }
 
 async function main() {

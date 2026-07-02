@@ -29,9 +29,15 @@ export function ClueInput({
     [value, onGuess, index],
   );
 
+  const initial = (answer[0] ?? '').toUpperCase();
   return (
     <li className={solved ? 'clue clue--solved' : 'clue'} data-testid="clue">
-      <span className="clue__text">{clue}</span>
+      <span className="clue__row">
+        <span className="clue__initial" aria-label={`starts with ${initial}`}>
+          {initial}
+        </span>
+        <span className="clue__text">{clue}</span>
+      </span>
       {solved ? (
         <span className="clue__answer" data-testid="clue-answer">
           {answer.toUpperCase()}
@@ -46,7 +52,7 @@ export function ClueInput({
             autoCapitalize="off"
             autoCorrect="off"
             spellCheck={false}
-            placeholder="Answer…"
+            placeholder={`Starts with ${initial}…`}
             value={value}
             onChange={(e) => setValue(e.target.value)}
           />

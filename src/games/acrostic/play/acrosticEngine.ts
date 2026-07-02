@@ -1,11 +1,10 @@
 /**
  * Pure Acrostic engine. This word puzzle shares NOTHING with the Quizzes engine —
- * no found-set, no timer. A clue is solved when the normalized guess equals the
- * clue's normalized answer (case- and space-insensitive). The hidden quote is
- * revealed PROGRESSIVELY: while solving, words are masked; each solved clue lifts
- * the mask on its share of the quote's words, so reveal = f(solved/total). Fully
- * solved ⇒ the whole quote shows. All pure + deterministic → unit-tested without
- * React or AWS.
+ * no found-set, no timer. It is a TRUE acrostic: the FIRST LETTER of each clue's
+ * answer, read top to bottom, spells a hidden SECRET WORD. A clue is solved when
+ * the normalized guess equals its answer; solving it reveals that answer's first
+ * letter in the secret-word strip. Solve every clue ⇒ the whole word is spelled
+ * out and the quote about it is revealed. All pure + deterministic.
  */
 
 /** Case/space/punctuation-insensitive normalization for answer matching. */
@@ -29,15 +28,22 @@ export function isComplete(solved: ReadonlySet<number>, total: number): boolean 
   return total > 0 && solved.size >= total;
 }
 
-/**
- * Progressive quote reveal: split the quote into words and unmask the first
- * `ceil(words * solved/total)` of them; the rest render as underscore masks
- * (length-matched, no letter-index math). Fully solved ⇒ every word shows.
- */
-export function revealQuote(quote: string, solvedCount: number, total: number): string[] {
-  const words = quote.split(/\s+/).filter((w) => w.length > 0);
-  if (total <= 0) return words;
-  const shown =
-    solvedCount >= total ? words.length : Math.ceil((words.length * solvedCount) / total);
-  return words.map((w, i) => (i < shown ? w : w.replace(/[^\s]/g, '_')));
+/** The hidden word the answers' initials spell (uppercase), in clue order. */
+export function secretWord(clues: Clue[]): string {
+  return clues.map((c) => (c.answer[0] ?? '').toUpperCase()).join('');
+}
+
+/** One box in the secret-word strip: its letter, revealed once its clue is
+ * solved (else masked). Index-aligned with the clues. */
+export interface WordSlot {
+  letter: string;
+  revealed: boolean;
+}
+
+/** The secret-word slots given which clue indices are solved. */
+export function wordSlots(clues: Clue[], solved: ReadonlySet<number>): WordSlot[] {
+  return clues.map((c, i) => ({
+    letter: (c.answer[0] ?? '').toUpperCase(),
+    revealed: solved.has(i),
+  }));
 }

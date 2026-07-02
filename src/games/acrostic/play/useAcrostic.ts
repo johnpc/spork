@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchAcrostic } from './acrosticApi';
 import { parseClues } from './parseClues';
-import { isComplete, matchesAnswer, revealQuote } from './acrosticEngine';
+import { isComplete, matchesAnswer, secretWord, wordSlots } from './acrosticEngine';
 
 /**
  * Acrostic play engine: load the puzzle, hold the set of solved clue indices,
@@ -23,10 +23,8 @@ export function useAcrostic(id: string | undefined) {
   const [lastWrong, setLastWrong] = useState<number | null>(null);
 
   const complete = isComplete(solved, clues.length);
-  const revealed = useMemo(
-    () => revealQuote(quote, solved.size, clues.length),
-    [quote, solved, clues.length],
-  );
+  const slots = useMemo(() => wordSlots(clues, solved), [clues, solved]);
+  const secret = useMemo(() => secretWord(clues), [clues]);
 
   const guess = useCallback(
     (index: number, text: string): boolean => {
@@ -55,7 +53,8 @@ export function useAcrostic(id: string | undefined) {
     quote,
     author: acrostic?.author ?? null,
     solved,
-    revealed,
+    slots,
+    secret,
     solvedCount: solved.size,
     total: clues.length,
     complete,
