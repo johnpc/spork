@@ -1,0 +1,94 @@
+name: Android Deploy
+
+on:
+  workflow_run:
+    workflows: ['CI']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# Only one Android deploy at a time. A second trigger (e.g. manual dispatch
+# landing alongside the auto workflow_run) queues behind the first instead of
+# racing it and publishing a duplicate APK for the same commit.
+concurrency:
+  group: android-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Build & publish Android APK
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: main
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - run: npm ci
+
+      - name: Configure AWS "personal" profile
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: |
+          mkdir -p ~/.aws
+          cat > ~/.aws/credentials << EOF
+          [personal]
+          aws_access_key_id=${AWS_ACCESS_KEY_ID}
+          aws_secret_access_key=${AWS_SECRET_ACCESS_KEY}
+          EOF
+          cat > ~/.aws/config << EOF
+          [profile personal]
+          region=us-west-2
+          EOF
+
+      - name: Generate amplify_outputs.json from prod backend
+        run: npm run prod-config
+
+      - name: Build web and sync to Capacitor Android
+        run: |
+          npm run build
+          npx cap sync android
+
+      # Capacitor 8 compiles with sourceCompatibility VERSION_21
+      # (android/app/capacitor.build.gradle), so the build needs JDK 21 — JDK 17
+      # fails with "invalid source release: 21".
+      - name: Set up JDK 21
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # No release signing key is configured yet, so we publish a DEBUG APK.
+      # It is signed with the Android debug keystore and installs on any device
+      # with "install unknown apps" enabled. Wiring a release keystore +
+      # assembleRelease is tracked as follow-up.
+      - name: Build debug APK
+        working-directory: android
+        run: ./gradlew assembleDebug
+
+      - name: Stage APK as spork.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk spork.apk
+
+      - name: Compute release tag
+        id: tag
+        run: echo "tag=android-$(date +%Y%m%d%H%M%S)" >> "$GITHUB_OUTPUT"
+
+      - name: Publish APK to GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Spork Android ${{ steps.tag.outputs.tag }}
+          files: spork.apk
+          draft: false
+          prerelease: false
+          make_latest: true

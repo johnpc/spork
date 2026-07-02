@@ -1,0 +1,65 @@
+.streak {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.streak__main {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.streak__num {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--sp-accent);
+}
+
+.streak__label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sp-text);
+}
+
+.streak__hint {
+  margin: 6px 0 0;
+  font-size: 0.85rem;
+}
+
+/* --- Deck mastery bar --- */
+.mastery {
+  margin: 12px 0 4px;
+}
+
+.mastery__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.mastery__count {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--sp-text-muted);
+}
+
+.mastery__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--sp-border);
+  overflow: hidden;
+}
+
+.mastery__fill {
+  height: 100%;
+  background: var(--sp-accent-gradient);
+  border-radius: 999px;
+  transition: width 0.3s ease;
+}

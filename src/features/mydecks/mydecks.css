@@ -1,0 +1,40 @@
+.my-decks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.my-decks__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 16px;
+  text-decoration: none;
+  transition: transform 0.12s ease;
+}
+
+.my-decks__row:active {
+  transform: scale(0.985);
+}
+
+.my-decks__topic {
+  font-size: 1.02rem;
+}
+
+.my-decks__count {
+  flex: 0 0 auto;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--sp-accent-strong);
+  background: var(--sp-accent-soft);
+  padding: 4px 10px;
+  border-radius: 999px;
+}

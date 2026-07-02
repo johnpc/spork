@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Spork</string>
+    <string name="title_activity_main">Spork</string>
+    <string name="package_name">com.johncorser.spork</string>
+    <string name="custom_url_scheme">com.johncorser.spork</string>
+</resources>

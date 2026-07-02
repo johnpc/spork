@@ -1,0 +1,291 @@
+/* --- Section panels --- */
+.admin-panel {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 16px;
+  margin-bottom: 20px;
+}
+
+.admin-panel--accent {
+  background: var(--sp-accent-soft);
+  border-color: color-mix(in srgb, var(--sp-accent) 25%, transparent);
+}
+
+.admin-panel__title {
+  font-family: var(--sp-font-sans);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin: 0 0 4px;
+  color: var(--sp-text);
+}
+
+.admin-panel__hint {
+  margin: 0 0 14px;
+  font-size: 0.88rem;
+}
+
+.admin-decks__heading {
+  margin: 4px 0 12px;
+}
+
+/* --- Forms: each control on its own full-width row, consistent sizing --- */
+.new-deck,
+.add-card,
+.generate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.new-deck__input,
+.new-deck__select,
+.add-card input,
+.generate-form input,
+.generate-form select {
+  width: 100%;
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  padding: 12px 12px;
+  font-size: 0.95rem;
+  color: var(--sp-text);
+}
+
+.new-deck__btn,
+.add-card button,
+.generate-form > button {
+  background: var(--sp-accent-gradient);
+  color: var(--sp-accent-contrast);
+  border: none;
+  border-radius: 999px;
+  padding: 12px 18px;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.new-deck__btn:disabled,
+.add-card button:disabled,
+.generate-form > button:disabled {
+  opacity: 0.5;
+}
+
+/* --- Generation runs --- */
+.gen-runs {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.gen-runs__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  padding: 10px 12px;
+}
+
+.gen-runs__topic {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--sp-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gen-runs__status {
+  flex: 0 0 auto;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+}
+
+.gen-runs__status--running {
+  color: var(--sp-accent-strong);
+  background: var(--sp-accent-soft);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.gen-runs__spinner {
+  width: 11px;
+  height: 11px;
+  border: 2px solid color-mix(in srgb, var(--sp-accent) 35%, transparent);
+  border-top-color: var(--sp-accent-strong);
+  border-radius: 50%;
+  animation: gen-spin 0.7s linear infinite;
+}
+
+@keyframes gen-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.gen-runs__status--draft_ready {
+  color: var(--sp-correct);
+  background: color-mix(in srgb, var(--sp-correct) 14%, transparent);
+}
+
+.gen-runs__status--failed {
+  color: var(--sp-incorrect);
+  background: color-mix(in srgb, var(--sp-incorrect) 14%, transparent);
+}
+
+/* --- Deck list --- */
+.admin-decks,
+.card-edit-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.admin-decks__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 14px;
+}
+
+.admin-decks__main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.admin-decks__topic {
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--sp-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Status badge (deck list) */
+.admin-badge {
+  flex: 0 0 auto;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.admin-badge--published {
+  color: var(--sp-correct);
+  background: color-mix(in srgb, var(--sp-correct) 14%, transparent);
+}
+
+.admin-badge--draft {
+  color: var(--sp-text-muted);
+  background: color-mix(in srgb, var(--sp-text-muted) 14%, transparent);
+}
+
+.admin-badge--archived {
+  color: var(--sp-incorrect);
+  background: color-mix(in srgb, var(--sp-incorrect) 14%, transparent);
+}
+
+.admin-decks__actions,
+.card-edit__actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.admin-decks__actions button,
+.card-edit__actions button {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--sp-text);
+}
+
+.admin-decks__del,
+.card-edit__del {
+  color: var(--sp-incorrect) !important;
+  border-color: color-mix(in srgb, var(--sp-incorrect) 40%, transparent) !important;
+}
+
+/* --- Card editor rows --- */
+.card-edit {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-edit__fields {
+  display: flex;
+  gap: 8px;
+}
+
+.card-edit__input {
+  flex: 1;
+  min-width: 0;
+  background: var(--sp-bg);
+  border: 1px solid var(--sp-border);
+  border-radius: 8px;
+  padding: 10px;
+  color: var(--sp-text);
+}
+
+/* --- Card media (editor preview) --- */
+.card-media {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.card-media__img {
+  width: 64px;
+  height: 64px;
+  flex: 0 0 auto;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid var(--sp-border);
+}
+
+.card-media__img--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sp-bg);
+  color: var(--sp-text-muted);
+  font-size: 1.4rem;
+}
+
+.audio-btn {
+  flex: 1 1 auto;
+  height: 36px;
+  min-width: 0;
+}

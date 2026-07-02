@@ -1,0 +1,7 @@
+{
+  "name": "stoop",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
