@@ -1,6 +1,6 @@
 # Order Up — quiz type showcase
 
-**Mode:** `ORDER_UP`  ·  **Input:** `arrange`  ·  **Scoring:** `sequence`
+**Mode:** `ORDER_UP` · **Input:** `arrange` · **Scoring:** `sequence`
 
 Arrange items into the correct sequence. Only the next-expected item scores (sequence engine).
 
