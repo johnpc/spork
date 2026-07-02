@@ -9,7 +9,7 @@
     "build": "tsc && npm run typecheck:amplify && vite build",
     "preview": "vite preview",
     "prod-config": "node scripts/prod-config.mjs",
-    "e2e-config": "ampx generate outputs --stack amplify-spork-xss-sandbox-36f6fbd736 --profile personal",
+    "e2e-config": "ampx generate outputs --stack amplify-spork-xss-sandbox-08f8a387ed --profile personal",
     "gen:map-template": "tsx scripts/genMapTemplate.ts",
     "seed": "tsx amplify/seed/seed.ts",
     "seed:categories": "tsx amplify/seed/seedCategories.ts",
