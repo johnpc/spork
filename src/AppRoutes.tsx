@@ -1,11 +1,8 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonRouterOutlet } from '@ionic/react';
 import { Home } from './features/home/Home';
-import { QuizList } from './games/quizzes/list/QuizList';
-import { Play } from './games/quizzes/play/Play';
+import { GameRoutes } from './GameRoutes';
 import { QuizAdmin } from './games/quizzes/admin/QuizAdmin';
-import { LadderList } from './games/steps/list/LadderList';
-import { Steps } from './games/steps/play/Steps';
 import { Discover } from './features/discover/Discover';
 import { CategoryDecks } from './features/discover/CategoryDecks';
 import { DeckDetail } from './features/deck/DeckDetail';
@@ -18,26 +15,15 @@ import { EditorGate } from './features/admin/EditorGate';
 import { ManageDecks } from './features/admin/ManageDecks';
 import { DeckEditor } from './features/admin/DeckEditor';
 
-/** App routes. Home is the platform shell (game shelf); each game island adds
- * its own routes. Grows per slice. */
+/** App routes. Home is the platform shell (game shelf); per-game list/play
+ * routes live in GameRoutes so adding a game doesn't touch this file. */
 export function AppRoutes() {
   return (
     <IonRouterOutlet>
       <Route exact path="/home">
         <Home />
       </Route>
-      <Route exact path="/quizzes">
-        <QuizList />
-      </Route>
-      <Route exact path="/quizzes/:id/play">
-        <Play />
-      </Route>
-      <Route exact path="/steps">
-        <LadderList />
-      </Route>
-      <Route exact path="/steps/:id">
-        <Steps />
-      </Route>
+      <GameRoutes />
       <Route exact path="/discover">
         <Discover />
       </Route>

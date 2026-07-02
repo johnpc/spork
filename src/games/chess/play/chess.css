@@ -1,0 +1,78 @@
+/* Chess Attack play surface. --sp-* tokens only. */
+.chess {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+  align-items: center;
+}
+
+.chess__goal {
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--sp-text);
+}
+
+.chess-board {
+  display: grid;
+  width: min(92vw, 420px);
+  aspect-ratio: 1 / 1;
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  overflow: hidden;
+  box-shadow: var(--sp-shadow);
+}
+
+.chess-sq {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+  aspect-ratio: 1 / 1;
+  font-size: clamp(1.6rem, 11vw, 2.6rem);
+  line-height: 1;
+}
+
+.chess-sq--light {
+  background: var(--sp-accent-soft);
+}
+
+.chess-sq--dark {
+  background: var(--sp-accent);
+}
+
+.chess-sq--selected {
+  box-shadow: inset 0 0 0 4px var(--sp-correct);
+}
+
+.chess-piece {
+  color: var(--sp-text);
+  filter: drop-shadow(0 1px 1px var(--sp-glyph-shadow));
+}
+
+.chess__solved {
+  color: var(--sp-correct);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.chess__error {
+  color: var(--sp-incorrect);
+  font-weight: 600;
+}
+
+.chess__actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.chess__actions button {
+  padding: 0.4rem 1rem;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  background: transparent;
+  color: var(--sp-text-muted);
+}

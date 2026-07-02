@@ -1,0 +1,32 @@
+/* Chess Attack home list. --sp-* tokens only. */
+.chess-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.chess-list__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+  text-decoration: none;
+  color: var(--sp-text);
+}
+
+.chess-list__name {
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.chess-list__meta {
+  font-size: 0.8rem;
+  text-transform: capitalize;
+}

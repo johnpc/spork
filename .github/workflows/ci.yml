@@ -127,6 +127,12 @@ jobs:
             paths: .features-gen/e2e/features/play
           - name: steps
             paths: .features-gen/e2e/features/steps
+          - name: acrostic
+            paths: .features-gen/e2e/features/acrostic
+          - name: quizzle
+            paths: .features-gen/e2e/features/quizzle
+          - name: chess
+            paths: .features-gen/e2e/features/chess
     steps:
       - uses: actions/checkout@v7
 

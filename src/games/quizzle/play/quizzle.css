@@ -1,0 +1,90 @@
+/* Quizzle (wager pub-quiz) play surface. --sp-* tokens only. */
+.quizzle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+  align-items: center;
+  max-width: 32rem;
+  margin: 0 auto;
+}
+
+.quizzle__topic {
+  font-family: var(--sp-font-serif);
+  font-size: 1.4rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.quizzle__bank {
+  font-size: 1.2rem;
+  padding: 0.35rem 1rem;
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-accent-soft);
+  color: var(--sp-text);
+}
+
+.quizzle__progress {
+  font-size: 0.85rem;
+}
+
+.quizzle__round,
+.quizzle__wager,
+.quizzle__answer,
+.quizzle__result,
+.quizzle__done {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  align-items: center;
+  width: 100%;
+}
+
+.quizzle__question {
+  font-size: 1.15rem;
+  font-weight: 600;
+  text-align: center;
+  color: var(--sp-text);
+}
+
+.quizzle__input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  font-size: 1.1rem;
+  text-align: center;
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+  color: var(--sp-text);
+}
+
+.quizzle__btn {
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-accent);
+  color: var(--sp-accent-contrast);
+  box-shadow: var(--sp-shadow);
+}
+
+.quizzle__result--correct {
+  color: var(--sp-correct);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.quizzle__result--wrong {
+  color: var(--sp-incorrect);
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.quizzle__final {
+  font-size: 1.3rem;
+}
+
+.quizzle__verdict {
+  font-weight: 700;
+  color: var(--sp-accent-strong);
+}

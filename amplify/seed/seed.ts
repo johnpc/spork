@@ -14,6 +14,7 @@ import { clearAll, seedReferenceData } from './seedReference';
 import { seedDeckData } from './seedDecks';
 import { seedQuizData } from './seedQuizzes';
 import { seedLadderData } from './seedLadders';
+import { seedAcrosticData, seedQuizzleData, seedChessData } from './seedNewGames';
 
 async function main() {
   const username = process.env.TEST_USERNAME;
@@ -33,6 +34,9 @@ async function main() {
   await seedDeckData();
   await seedQuizData();
   await seedLadderData();
+  await seedAcrosticData();
+  await seedQuizzleData();
+  await seedChessData();
 
   await signOut().catch(() => {});
   console.log('Seed complete.');
