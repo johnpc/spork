@@ -1,6 +1,6 @@
 # Sortable — quiz type showcase
 
-**Mode:** `SORTABLE`  ·  **Input:** `arrange`  ·  **Scoring:** `bucketing`
+**Mode:** `SORTABLE` · **Input:** `arrange` · **Scoring:** `bucketing`
 
 Drop each item into its correct bucket. Only a correct bucket scores (bucketing engine).
 
