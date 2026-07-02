@@ -7,6 +7,7 @@ import { generateDeckStarter } from './deckgen/start/resource';
 import { deckgenWorker } from './deckgen/worker/resource';
 import { regenerateMedia } from './deckgen/regenerate/resource';
 import { generateQuizStarter } from './quizgen/start/resource';
+import { quizgenWorker } from './quizgen/worker/resource';
 
 /**
  * SPORK backend.
@@ -17,10 +18,10 @@ import { generateQuizStarter } from './quizgen/start/resource';
  * writing media to S3 and Card rows straight to DynamoDB.
  *
  * Quizzes generation FORKS on mode (see CLAUDE.md): the generateQuiz starter
- * handles template-backed modes (MAP) synchronously — it builds the answer set
- * from a shipped fixture and writes Quiz + Answers + GenerationRun with no
- * Bedrock/worker/S3 at all — so it needs only the quiz-table write grants below.
- * Generative quiz modes (deferred) will reuse the worker pattern.
+ * handles template-backed MAP synchronously (no Bedrock/worker — builds the
+ * answer set from a shipped fixture). GENERATIVE modes create a DRAFT quiz +
+ * RUNNING run and async-invoke the quizgen worker, which calls Claude (answers)
+ * + Bedrock Stability (PICTURE_BOX images) and writes Answer rows to DynamoDB.
  *
  * IAM grants mirror stoop's addToRolePolicy blocks.
  */
@@ -32,6 +33,7 @@ const backend = defineBackend({
   deckgenWorker,
   regenerateMedia,
   generateQuizStarter,
+  quizgenWorker,
 });
 
 const tables = backend.data.resources.tables;
@@ -89,8 +91,8 @@ bucket.grantWrite(regen, 'media/decks/*');
 tables['Card'].grantReadWriteData(regen);
 tables['Deck'].grantReadData(regen);
 
-// --- Quiz starter (MAP): writes Quiz + Answer + GenerationRun. No Bedrock/S3 —
-// the map answer set is a shipped template, so this path never calls an LLM. ---
+// --- Quiz starter: MAP writes Quiz+Answer+GenerationRun synchronously (no LLM);
+// generative modes create a DRAFT quiz + RUNNING run and invoke the worker. ---
 const quizStarter = backend.generateQuizStarter.resources.lambda;
 backend.generateQuizStarter.addEnvironment('QUIZ_TABLE', tables['Quiz'].tableName);
 backend.generateQuizStarter.addEnvironment('ANSWER_TABLE', tables['Answer'].tableName);
@@ -98,6 +100,24 @@ backend.generateQuizStarter.addEnvironment(
   'GENERATION_RUN_TABLE',
   tables['GenerationRun'].tableName,
 );
+backend.generateQuizStarter.addEnvironment(
+  'WORKER_FUNCTION_NAME',
+  backend.quizgenWorker.resources.lambda.functionName,
+);
 tables['Quiz'].grantWriteData(quizStarter);
 tables['Answer'].grantWriteData(quizStarter);
 tables['GenerationRun'].grantWriteData(quizStarter);
+backend.quizgenWorker.resources.lambda.grantInvoke(quizStarter);
+
+// --- Quiz worker (generative): Claude answers + Stability images (PICTURE_BOX)
+// -> S3 + Answer/Quiz/GenerationRun writes. Bedrock + S3 grants like deckgen. ---
+const quizWorker = backend.quizgenWorker.resources.lambda;
+backend.quizgenWorker.addEnvironment('QUIZ_TABLE', tables['Quiz'].tableName);
+backend.quizgenWorker.addEnvironment('ANSWER_TABLE', tables['Answer'].tableName);
+backend.quizgenWorker.addEnvironment('GENERATION_RUN_TABLE', tables['GenerationRun'].tableName);
+backend.quizgenWorker.addEnvironment('MEDIA_BUCKET', bucket.bucketName);
+quizWorker.addToRolePolicy(bedrockGrant());
+bucket.grantWrite(quizWorker, 'media/quizzes/*');
+tables['Quiz'].grantWriteData(quizWorker);
+tables['Answer'].grantWriteData(quizWorker);
+tables['GenerationRun'].grantWriteData(quizWorker);

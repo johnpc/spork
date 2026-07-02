@@ -291,6 +291,7 @@ const schema = a.schema({
       topicOrTemplate: a.string().required(),
       categorySlug: a.string().required(),
       timeLimitSeconds: a.integer().required(),
+      answerCount: a.integer(), // generative modes: how many answers to ask Claude for
     })
     .returns(a.customType({ runId: a.string().required(), quizId: a.string().required() }))
     .authorization((allow) => [allow.group('editors')])

@@ -29,11 +29,12 @@ rewrite** — and _within_ a game like Quizzes, adding a new format is just new 
 Sporcle isn't one game — it's a **destination for many bite-sized brain games**, each with its own
 mechanic, sharing an audience and a habit. Spork chases the same shape at two levels:
 
-**Level 1 — a shelf of distinct games.** Quizzes, Acrostic, Chess Attack, Quizzle, Steps, Live
-Trivia, Flashcards. These are _not_ variations of one engine; a chess variant and a word-ladder and a
-timed quiz have nothing mechanically in common. What they share is the **platform**: one guest-first
-home, streaks, a consistent look, and the build/quality rig. Each new game is an island you can add
-without touching the others — the payoff is a habit-forming _stack_, not a single hit.
+**Level 1 — a shelf of distinct games.** Two ship today — **Quizzes** and **Flashcards** — with
+**Acrostic, Steps, Chess Attack, Quizzle, and Live Trivia** on the roadmap. These are _not_ variations
+of one engine: a spaced-repetition card deck, a chess variant, a word ladder, and a timed quiz have
+nothing mechanically in common. What they share is the **platform**: one guest-first home, streaks, a
+consistent look, and the build/quality rig. Each game is an island you can add without touching the
+others — the payoff is a habit-forming _stack_, not a single hit.
 
 **Level 2 — within a game, breadth for free.** The first game, Quizzes, is itself broad (~1.5M
 Sporcle quizzes span dozens of formats). Here the bet is **one small engine, a handful of renderers,
@@ -45,8 +46,8 @@ and an ocean of data**:
 2. **A few renderers.** How you're _prompted_ (map region, image, text clue, grid cell, nothing) and
    how you _answer_ (type, click, pick, arrange) are small, swappable axes over the same engine.
 3. **An ocean of data.** Content comes from **curated templates** (maps — the topology _is_ the
-   answer set, so nothing is hallucinated), **AI generation** (Claude writes typed/MC/picture quizzes
-   on demand), and eventually **imported quizzes** (see [Importing quizzes](#importing-sporcle-quizzes)).
+   answer set, so nothing is hallucinated) and **AI generation** (Claude writes typed/MC/picture
+   quizzes on demand) — see [Where quizzes come from](#where-quizzes-come-from).
 
 The engineering discipline that makes both levels cheap is the same: get the **seams** right (a sharp
 platform/game boundary; a universal answer model) so breadth — more games, more formats — comes
@@ -112,24 +113,24 @@ engine; `sequence`/`bucketing`/`elimination` are deliberate engine variants, not
 
 ---
 
-## Importing Sporcle quizzes
+## Where quizzes come from
 
-A long-term goal is to **import a large corpus of existing quizzes** into Spork's format so the
-library is deep from day one. The plan:
+Two sources, both feeding the same `Quiz` + `Answer` load path:
 
-1. **Scrape** public quiz pages (respecting rate limits / robots) into a raw archive — title,
-   category, type, the answer list, and any per-type extras (map region ids, image URLs, clues,
-   groups).
-2. **Map** each source type onto a Spork `(promptKind, inputMode, scoringMode)` triple — the table
-   above _is_ the mapping. Because the target model is universal, this is a data transform, not a
-   per-type integration.
-3. **Normalize** answers into our `accepted[]` shape (lowercase/accent/punct-insensitive) and
-   reconcile any media/geometry to Spork assets.
-4. **Load** as `Quiz` + `Answer` rows via the same path the seed and generation pipeline use.
+1. **Curated templates** — map quizzes, where the topology _is_ the answer set (reconciled once at
+   build time from `world-atlas` + `i18n-iso-countries`, so nothing is hallucinated).
+2. **AI generation** — `generateQuiz(mode, topic)` has Claude author a quiz on demand (tool-forced
+   structured output); PICTURE_BOX quizzes also get one Bedrock-drawn image per answer. This is the
+   primary way the library grows: type a topic, get a playable quiz.
 
-> ⚖️ **Note:** quiz content and trademarks belong to their authors/Sporcle. Import is intended for
-> personal/experimental use and content we have the right to use; a public launch would require
-> original or appropriately-licensed content. This is a technical capability, not a license.
+The same generation runs at **build time** to produce the committed seed fixtures
+(`npm run gen:quiz-fixtures`), so the sandbox always has a consistent, known set of quizzes for
+demos and e2e — no live LLM call during `seed`.
+
+> **Scraping / import — paused.** An earlier plan was to scrape and import a large external quiz
+> corpus. With AI generation covering breadth, that's **deferred** — we may revisit a small importer
+> later, but it's not needed to grow the library. (Any imported content would remain the property of
+> its authors; import would be for content we have the right to use.)
 
 ---
 
@@ -257,8 +258,8 @@ ships **light, dark, and tinted** variants.
 | --- | -------------------------------------------------------------------------------------- | ------ |
 | 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified) | ✅     |
 | 2   | Universal 3-axis model + all 9 Sporcle quiz formats (renderer + seed + e2e each)       | ✅     |
-| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                 | 🔨     |
-| 4   | Quiz import pipeline (scrape → map → normalize → load)                                 | ⬜     |
+| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                 | ✅     |
+| 4   | Quiz import/scrape pipeline — **paused** (AI generation covers breadth)                | ⏸️     |
 | 5   | Discovery: browse/search/categories, popularity, per-device history                    | ⬜     |
 | 6   | **New games** (own islands): Acrostic, Steps, Chess Attack, Quizzle, Live Trivia       | ⬜     |
 

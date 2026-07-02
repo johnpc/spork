@@ -11,6 +11,7 @@
     "prod-config": "node scripts/prod-config.mjs",
     "e2e-config": "ampx generate outputs --stack amplify-spork-xss-sandbox-08f8a387ed --profile personal",
     "gen:map-template": "tsx scripts/genMapTemplate.ts",
+    "gen:quiz-fixtures": "tsx scripts/genQuizFixtures.ts",
     "gen:icons": "node scripts/gen-app-icons.mjs",
     "seed": "tsx amplify/seed/seed.ts",
     "seed:categories": "tsx amplify/seed/seedCategories.ts",
