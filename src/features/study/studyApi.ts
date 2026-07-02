@@ -18,13 +18,16 @@ export interface StudyData {
   reviews: UserCardReviewRecord[];
 }
 
-/** The deck's cards (public read) + this user's reviews for it (owner read). */
-export async function fetchStudyData(deckId: string): Promise<StudyData> {
+/** The deck's cards (public read) + this user's reviews for it (owner read).
+ * Guests have no reviews (SM-2 is signed-in only) — pass `withReviews: false` so
+ * a guest studies the whole deck once without a userPool call that would fail. */
+export async function fetchStudyData(deckId: string, withReviews = true): Promise<StudyData> {
   const authMode = await readAuthMode();
   const { data: cards } = await dataClient.models.Card.listCardByDeckIdAndOrd(
     { deckId },
     { limit: 500, authMode },
   );
+  if (!withReviews) return { cards, reviews: [] };
   const { data: reviews } =
     await dataClient.models.UserCardReview.listUserCardReviewByDeckIdAndDueAt(
       { deckId },

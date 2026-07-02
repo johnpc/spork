@@ -22,6 +22,11 @@ Given('the study test user signs in', async ({ page }) => {
   );
 });
 
+Given('a guest opens the app', async ({ page }) => {
+  // No sign-in — the deck + study flow must work for a signed-out visitor.
+  await page.goto('/home');
+});
+
 When('the user starts studying the {string} deck', async ({ page }, topic: string) => {
   await page.goto('/discover/languages');
   await page

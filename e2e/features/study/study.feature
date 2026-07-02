@@ -26,3 +26,13 @@ Feature: Study a deck (authenticated, multiple choice)
     Then a session score summary is shown
     When the user opens the You tab
     Then a study streak of at least 1 day is shown
+
+  # Guest-first (ADR-0004): a signed-OUT visitor can study a deck end to end — no
+  # account, no "add to my decks" — and see a score at the end. Reads the public
+  # cards only; no userPool review call. Honest e2e on the real rendered flow.
+  Scenario: A guest studies a whole deck and sees a score
+    Given a guest opens the app
+    When the user starts studying the "Top Spanish Phrases" deck
+    Then the study session shows progress "1 /"
+    When the user answers every card in the session
+    Then a session score summary is shown
