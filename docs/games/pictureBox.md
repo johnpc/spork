@@ -1,6 +1,6 @@
 # Picture Box — quiz type showcase
 
-**Mode:** `PICTURE_BOX`  ·  **Input:** `type`  ·  **Scoring:** `membership`
+**Mode:** `PICTURE_BOX` · **Input:** `type` · **Scoring:** `membership`
 
 Identify each image by typing its name; a correct guess reveals that picture's label.
 
