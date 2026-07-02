@@ -11,13 +11,15 @@ import { useParams } from 'react-router-dom';
 import { useAcrostic } from './useAcrostic';
 import { ClueInput } from './ClueInput';
 import { SecretWord } from './SecretWord';
+import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import './acrostic.css';
 
-/** Acrostic play screen: solve each clue to progressively reveal a hidden quote.
- * Uses its OWN engine (useAcrostic) — no shared quiz machinery. */
+/** Acrostic play screen: solve each clue; the answers' initials spell a hidden
+ * word (SecretWord). Its own engine (useAcrostic) — no shared quiz machinery. */
 export function Acrostic() {
   const { id } = useParams<{ id: string }>();
   const a = useAcrostic(id);
+  useRecordDailyOnDone('acrostic', a.complete, { score: a.solvedCount, total: a.total });
 
   return (
     <IonPage>

@@ -4,11 +4,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const hook = vi.hoisted(() => ({ value: {} as { data?: unknown; isLoading: boolean } }));
 vi.mock('./useDeckDetail', () => ({ useDeckDetail: () => hook.value }));
-// SaveDeckButton pulls in auth/router state — stub it to a marker.
-vi.mock('../stats/DeckMastery', () => ({ DeckMastery: () => null }));
-vi.mock('../mydecks/SaveDeckButton', () => ({
-  SaveDeckButton: () => <button data-testid="save-deck">Add to My Decks</button>,
-}));
 
 import { DeckDetail } from './DeckDetail';
 
@@ -32,7 +27,7 @@ describe('DeckDetail', () => {
     expect(screen.getByText(/loading deck/i)).toBeInTheDocument();
   });
 
-  it('renders the deck title, save button and card rows', () => {
+  it('renders the deck title, a Study CTA, and card rows', () => {
     hook.value = {
       data: {
         deck: { id: 'd1', topic: 'Spanish', description: 'Phrases', cardCount: 2 },
@@ -45,7 +40,9 @@ describe('DeckDetail', () => {
     };
     renderAt();
     expect(screen.getByTestId('deck-title')).toHaveTextContent('Spanish');
-    expect(screen.getByTestId('save-deck')).toBeInTheDocument();
+    const study = screen.getByTestId('study-link');
+    expect(study).toHaveTextContent('Study 2 cards');
+    expect(study).toHaveAttribute('href', '/decks/d1/study');
     expect(screen.getAllByTestId('card-row')).toHaveLength(2);
   });
 

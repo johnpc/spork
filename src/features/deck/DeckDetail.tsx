@@ -9,11 +9,10 @@ import {
 } from '@ionic/react';
 import { Link, useParams } from 'react-router-dom';
 import { useDeckDetail } from './useDeckDetail';
-import { SaveDeckButton } from '../mydecks/SaveDeckButton';
-import { DeckMastery } from '../stats/DeckMastery';
 import './deck.css';
 
-/** Deck detail: title, description, Add-to-My-Decks, and a card preview list. */
+/** Deck detail: title, description, a prominent Study CTA, and a card preview.
+ * Guest-playable — no save step; clicking Study begins the session immediately. */
 export function DeckDetail() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useDeckDetail(id);
@@ -38,20 +37,10 @@ export function DeckDetail() {
             </h1>
             {deck.description && <p className="sp-muted">{deck.description}</p>}
             <div className="deck__actions">
-              <SaveDeckButton
-                deck={{
-                  deckId: deck.id,
-                  topic: deck.topic,
-                  categorySlug: deck.categorySlug,
-                  cardCount: deck.cardCount,
-                  coverImagePath: deck.coverImagePath,
-                }}
-              />
               <Link to={`/decks/${deck.id}/study`} className="deck__study" data-testid="study-link">
-                Study
+                Study {deck.cardCount ?? 0} cards
               </Link>
             </div>
-            <DeckMastery deckId={deck.id} cardCount={deck.cardCount ?? 0} />
             <ul className="deck__cards" aria-label="Cards">
               {(data?.cards ?? []).map((card) => (
                 <li key={card.id} className="deck__card-row" data-testid="card-row">

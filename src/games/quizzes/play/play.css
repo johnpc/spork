@@ -113,3 +113,8 @@
 .sp-region--inert {
   fill: var(--sp-border);
 }
+
+/* Wrong click in CLICKABLE (find-it-on-the-map) — brief red flash. */
+.sp-region--wrong {
+  fill: var(--sp-incorrect);
+}

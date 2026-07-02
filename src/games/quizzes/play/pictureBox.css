@@ -4,7 +4,7 @@
 
 .picture-box {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
   gap: var(--sp-gap);
   width: 100%;
 }
@@ -14,10 +14,11 @@
   flex-direction: column;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.75rem;
+  padding: 0.5rem;
   background: var(--sp-surface);
   border: 2px solid var(--sp-border);
   border-radius: var(--sp-radius);
+  overflow: hidden;
 }
 
 .picture-box__tile--found {
@@ -25,15 +26,23 @@
   background: var(--sp-accent-soft);
 }
 
+/* Landmark/portrait art fills the tile as a tidy square thumbnail. */
 .picture-box__image {
-  font-size: 2.5rem;
-  line-height: 1;
   width: 100%;
-  height: 72px;
-  object-fit: contain;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-accent-soft);
+}
+
+/* Emoji placeholder fallback (no real image) — center a big glyph. */
+.picture-box__image--emoji {
+  font-size: 3rem;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
+  object-fit: contain;
 }
 
 .picture-box__label {

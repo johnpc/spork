@@ -39,10 +39,17 @@ describe('Study', () => {
     hook.value = base();
   });
 
-  it('prompts sign-in when signed out', () => {
-    hook.value = { ...base(), isAuthenticated: false };
+  it('lets a guest study (no sign-in gate)', () => {
+    hook.value = {
+      ...base(),
+      isAuthenticated: false,
+      current: { card: { id: 'c1', front: 'a', back: 'A' } },
+      choices: { answer: 'A', options: ['A', 'B'] },
+      position: { index: 0, total: 2 },
+    };
     renderAt();
-    expect(screen.getByTestId('study-signed-out')).toBeInTheDocument();
+    expect(screen.queryByTestId('study-signed-out')).not.toBeInTheDocument();
+    expect(screen.getByTestId('study-card')).toBeInTheDocument();
   });
 
   it('renders the current card with progress', () => {
