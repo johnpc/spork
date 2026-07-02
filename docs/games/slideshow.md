@@ -1,6 +1,6 @@
 # Slideshow — quiz type showcase
 
-**Mode:** `SLIDESHOW`  ·  **Input:** `type`  ·  **Scoring:** `membership`
+**Mode:** `SLIDESHOW` · **Input:** `type` · **Scoring:** `membership`
 
 One prompt per slide; a correct typed answer reveals it and advances the deck slide by slide.
 
