@@ -5,6 +5,7 @@
  *   assets/icon-dark.png  — full-bleed dark icon (glowing spork on charcoal)
  *
  * Produces, deterministically (no @capacitor/assets — it mangled paths/dark):
+ *   • Favicons    → public/favicon{,-16,-32}.png + apple-touch-icon.png (browser tab)
  *   • PWA         → public/icons/icon-{48..512}.png + maskable-{192,512}.png
  *   • iOS         → AppIcon.appiconset light + dark + tinted (1024) + Contents.json
  *   • Android     → mipmap-<dpi> launcher + round + foreground (light & dark)
@@ -41,6 +42,17 @@ async function maskable(src, size, bg) {
     .composite([{ input: art, gravity: 'center' }])
     .png()
     .toBuffer();
+}
+
+/** Browser-tab favicons + apple-touch-icon, from the same brand art as the PWA
+ * icons — so the tab icon matches the installed-app icon. */
+async function favicons() {
+  const dir = join(ROOT, 'public');
+  await resizeTo(LIGHT, 16).toFile(join(dir, 'favicon-16.png'));
+  await resizeTo(LIGHT, 32).toFile(join(dir, 'favicon-32.png'));
+  await resizeTo(LIGHT, 48).toFile(join(dir, 'favicon.png'));
+  await resizeTo(LIGHT, 180).toFile(join(dir, 'apple-touch-icon.png'));
+  console.log('Favicons: 16 + 32 + 48 + apple-touch (180)');
 }
 
 async function pwa() {
@@ -105,6 +117,7 @@ async function android() {
   console.log(`Android: ${ANDROID.length} densities (launcher + round + foreground)`);
 }
 
+await favicons();
 await pwa();
 await ios();
 await android();
