@@ -1,10 +1,28 @@
-import { useState, useCallback, type FormEvent } from 'react';
+import { useState, useCallback, type FormEvent, type ChangeEvent } from 'react';
+import { isCorrect, type QuizzleQuestion } from './quizzleEngine';
 
-/** Type an answer for the current question (wager already locked). Submits the
- * guess on Enter; the parent resolves it against the engine and reveals the
- * outcome. */
-export function AnswerInput({ onAnswer }: { onAnswer: (guess: string) => void }) {
+/** Type an answer for the current question (wager already locked). Matches LIVE:
+ * as soon as what you've typed is correct it auto-submits (locking the win) — no
+ * Enter needed. A wrong/uncertain answer is only committed when you hit Enter or
+ * the Submit button, so partial typing never loses your wager. */
+export function AnswerInput({
+  question,
+  onAnswer,
+}: {
+  question: QuizzleQuestion;
+  onAnswer: (guess: string) => void;
+}) {
   const [value, setValue] = useState('');
+
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const text = e.target.value;
+      setValue(text);
+      // Auto-submit the moment the typed answer is correct.
+      if (text.trim() && isCorrect(text, question)) onAnswer(text);
+    },
+    [question, onAnswer],
+  );
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
@@ -27,7 +45,7 @@ export function AnswerInput({ onAnswer }: { onAnswer: (guess: string) => void })
         spellCheck={false}
         placeholder="Your answer…"
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={handleChange}
       />
       <button className="quizzle__btn" data-testid="answer-submit" type="submit">
         Submit answer

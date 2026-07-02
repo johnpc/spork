@@ -27,11 +27,13 @@ export function useAcrostic(id: string | undefined) {
   const secret = useMemo(() => secretWord(clues), [clues]);
 
   const guess = useCallback(
-    (index: number, text: string): boolean => {
+    (index: number, text: string, flagWrong = true): boolean => {
       const answer = clues[index]?.answer;
       if (answer === undefined || solved.has(index)) return false;
       if (!matchesAnswer(text, answer)) {
-        setLastWrong(index);
+        // Live typing checks silently (flagWrong=false); only an explicit
+        // submit (Enter) marks the clue wrong, so partial input doesn't flash.
+        if (flagWrong) setLastWrong(index);
         return false;
       }
       setLastWrong(null);

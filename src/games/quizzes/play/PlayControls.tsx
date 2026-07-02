@@ -6,19 +6,19 @@ interface PlayControlsProps {
   typed: boolean;
   best: number | null;
   score: { found: number; total: number };
+  timeSeconds: number;
   submit: (guess: string) => boolean;
   start: () => void;
   giveUp: () => void;
-  onReplay: () => void;
 }
 
 /** The below-the-board controls for a quiz, by status: an explicit Start lobby
  * for typed modes when idle (click modes auto-start); the live input + Give Up
- * while running; the score summary when done. Extracted so Play stays a thin
- * page shell. */
+ * while running; the score summary (with time taken) when done. Extracted so
+ * Play stays a thin page shell. */
 export function PlayControls(p: PlayControlsProps) {
   if (p.status === 'done') {
-    return <PlayDone found={p.score.found} total={p.score.total} onReplay={p.onReplay} />;
+    return <PlayDone found={p.score.found} total={p.score.total} timeSeconds={p.timeSeconds} />;
   }
   return (
     <>

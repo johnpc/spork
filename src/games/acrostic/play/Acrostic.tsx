@@ -12,6 +12,7 @@ import { useAcrostic } from './useAcrostic';
 import { ClueInput } from './ClueInput';
 import { SecretWord } from './SecretWord';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
+import { useElapsed } from '../../shared/daily/useElapsed';
 import './acrostic.css';
 
 /** Acrostic play screen: solve each clue; the answers' initials spell a hidden
@@ -19,7 +20,12 @@ import './acrostic.css';
 export function Acrostic() {
   const { id } = useParams<{ id: string }>();
   const a = useAcrostic(id);
-  useRecordDailyOnDone('acrostic', a.complete, { score: a.solvedCount, total: a.total });
+  const elapsed = useElapsed(a.complete);
+  useRecordDailyOnDone('acrostic', a.complete, {
+    score: a.solvedCount,
+    total: a.total,
+    timeSeconds: elapsed,
+  });
 
   return (
     <IonPage>

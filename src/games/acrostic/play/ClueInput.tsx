@@ -1,8 +1,8 @@
-import { useState, useCallback, type FormEvent } from 'react';
+import { useState, useCallback, type FormEvent, type ChangeEvent } from 'react';
 
-/** One clue with its answer input: type an answer, submit on Enter. Clears + is
- * replaced by the solved answer when correct; keeps the text when wrong so the
- * player can fix it. Mirrors StepInput. */
+/** One clue with its answer input: matches LIVE as you type — a correct answer
+ * solves the clue the moment it's typed (no Enter needed); Enter still works.
+ * The text clears on a solve and is kept on a miss so you can fix a typo. */
 export function ClueInput({
   index,
   clue,
@@ -16,9 +16,23 @@ export function ClueInput({
   answer: string;
   solved: boolean;
   wrong: boolean;
-  onGuess: (index: number, text: string) => boolean;
+  onGuess: (index: number, text: string, flagWrong?: boolean) => boolean;
 }) {
   const [value, setValue] = useState('');
+
+  const handleChange = useCallback(
+    (e: ChangeEvent<HTMLInputElement>) => {
+      const text = e.target.value;
+      // Live: try each keystroke silently (no wrong-flash); keep the text unless
+      // it solved the clue.
+      if (text.trim() && onGuess(index, text, false)) {
+        setValue('');
+        return;
+      }
+      setValue(text);
+    },
+    [onGuess, index],
+  );
 
   const handleSubmit = useCallback(
     (e: FormEvent) => {
@@ -54,7 +68,7 @@ export function ClueInput({
             spellCheck={false}
             placeholder={`Starts with ${initial}…`}
             value={value}
-            onChange={(e) => setValue(e.target.value)}
+            onChange={handleChange}
           />
         </form>
       )}

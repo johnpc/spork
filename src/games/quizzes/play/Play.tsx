@@ -14,21 +14,24 @@ import { rendererFor, usesTypedInput } from './renderers';
 import { PlayHud } from './PlayHud';
 import { PlayControls } from './PlayControls';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
+import { dailyKeyForMode } from './dailyKey';
 import './play.css';
 
 /** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
  * (timer + found set + score), and shows the mode-shared HUD. Typed-input modes
  * get the shared PlayInput; click/pick/arrange modes answer inside the renderer
- * via `attempt`. */
+ * via `attempt`. Each quiz TYPE is its own daily puzzle, so the daily result is
+ * keyed + timed per mode. */
 export function Play() {
   const { id } = useParams<{ id: string }>();
   const p = usePlay(id);
-  const { best, refresh } = useBestScore(id);
+  const { best } = useBestScore(id);
   const Renderer = rendererFor(p.quiz?.mode);
   const typed = usesTypedInput(p.quiz?.mode);
-  useRecordDailyOnDone('quizzes', p.status === 'done', {
+  useRecordDailyOnDone(dailyKeyForMode(p.quiz?.mode), p.status === 'done', {
     score: p.score.found,
     total: p.score.total,
+    timeSeconds: p.timeSeconds,
   });
 
   return (
@@ -57,13 +60,10 @@ export function Play() {
               typed={typed}
               best={best}
               score={p.score}
+              timeSeconds={p.timeSeconds}
               submit={p.submit}
               start={p.start}
               giveUp={p.giveUp}
-              onReplay={() => {
-                void refresh();
-                p.start();
-              }}
             />
           </div>
         )}

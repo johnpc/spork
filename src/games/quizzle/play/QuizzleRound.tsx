@@ -28,7 +28,7 @@ export function QuizzleRound(p: RoundProps) {
           <p className="sp-muted" data-testid="quizzle-wager-amount">
             Wagering {p.wagerAmount}
           </p>
-          <AnswerInput onAnswer={p.onAnswer} />
+          <AnswerInput question={p.question} onAnswer={p.onAnswer} />
         </>
       )}
       {resolved && (

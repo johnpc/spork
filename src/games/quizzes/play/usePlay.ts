@@ -93,6 +93,7 @@ export function usePlay(quizId: string | undefined) {
     start,
     giveUp,
     remaining,
+    timeSeconds: Math.max(0, limit - remaining), // freezes at done = final time
     score: { found: found.size, total },
   };
 }

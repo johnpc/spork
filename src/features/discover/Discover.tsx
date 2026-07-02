@@ -1,4 +1,12 @@
-import { IonContent, IonHeader, IonPage, IonTitle, IonToolbar } from '@ionic/react';
+import {
+  IonBackButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react';
 import { useShelves } from './useShelves';
 import { CategorySection } from './CategorySection';
 import { TabBar } from '../shell/TabBar';
@@ -13,6 +21,9 @@ export function Discover() {
     <IonPage>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+            <IonBackButton defaultHref="/home" data-testid="discover-back" />
+          </IonButtons>
           <IonTitle>Discover</IonTitle>
         </IonToolbar>
       </IonHeader>
