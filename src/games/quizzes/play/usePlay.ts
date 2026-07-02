@@ -9,12 +9,9 @@ import { useRecordBestScore } from './useRecordBestScore';
 
 type Status = 'idle' | 'running' | 'done';
 
-/**
- * Mode-agnostic quiz play engine: load quiz + answers, run a countdown, and
- * track the found set — delegating the scoring RULE to applyAttempt (the third
- * axis). Renderers answer either by typed guess (`submit`) or by resolved answer
- * id (`attempt`, for click/pick/arrange). No per-type logic lives here.
- */
+/** Mode-agnostic quiz play engine: load quiz + answers, run a countdown, track
+ * the found set — delegating the scoring RULE to applyAttempt. Renderers answer
+ * by typed guess (`submit`) or resolved id (`attempt`); first attempt auto-starts. */
 export function usePlay(quizId: string | undefined) {
   const { data, isLoading } = useQuery({
     queryKey: ['quiz-play', quizId],
@@ -44,6 +41,12 @@ export function usePlay(quizId: string | undefined) {
     startedAt.current = Date.now();
   }, [limit]);
 
+  /** Begin the clock without wiping progress (used to auto-start on first play). */
+  const beginIfIdle = useCallback(() => {
+    if (startedAt.current == null) startedAt.current = Date.now();
+    setStatus((s) => (s === 'idle' ? 'running' : s));
+  }, []);
+
   /** End the session early (Sporcle "give up") — reveals the final score. */
   const giveUp = useCallback(() => setStatus('done'), []);
 
@@ -63,13 +66,14 @@ export function usePlay(quizId: string | undefined) {
    * whether it scored — drives renderer/input feedback. */
   const attempt = useCallback(
     (answerId: string | null, bucket?: string): boolean => {
-      if (status !== 'running') return false;
+      if (status === 'done') return false;
+      beginIfIdle(); // first interaction starts the clock — no dead "idle board"
       const r = applyAttempt(scoring, { found, status: 'running' }, { answerId, bucket }, answers);
       if (r.found.size !== found.size) setFound(r.found);
       if (r.status === 'done') setStatus('done');
       return r.hit;
     },
-    [status, scoring, found, answers],
+    [status, scoring, found, answers, beginIfIdle],
   );
 
   /** Typed-input convenience: resolve a guess to an id, then attempt it. */

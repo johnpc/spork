@@ -1,19 +1,19 @@
 import { useMemo } from 'react';
 import type { RendererProps } from './renderers';
-import { parseOptions, currentQuestion, isCorrectOption } from './mcQuestion';
+import { parseOptions, currentQuestion } from './mcQuestion';
+import { useMcPick } from './useMcPick';
 import './mcQuestion.css';
 
 /**
- * MULTIPLE_CHOICE renderer — a PICK/MEMBERSHIP mode. One question at a time: the
- * current question is the first answer not yet in the engine's found set; its
- * `options` are shown as buttons. Clicking the CORRECT option (the answer's
- * `display`) calls attempt(answer.id) to score and advance to the next question.
- * A wrong click is a no-op miss. Reads only { answers, found, attempt } — the
- * shared renderer contract — so the engine stays mode-agnostic.
+ * MULTIPLE_CHOICE renderer — PICK/MEMBERSHIP. One question at a time (the first
+ * answer not yet found); its `options` are buttons. Clicking flashes the choice
+ * green (correct) or red (wrong, try again); a correct pick scores via
+ * attempt(id) and advances. The first click auto-starts the game (usePlay).
  */
 export function MultipleChoice({ answers, found, attempt }: RendererProps) {
   const question = useMemo(() => currentQuestion(answers, found), [answers, found]);
   const options = useMemo(() => (question ? parseOptions(question.options) : []), [question]);
+  const { picked, choose, optionState } = useMcPick(question, attempt);
 
   if (!question) {
     return (
@@ -31,19 +31,21 @@ export function MultipleChoice({ answers, found, attempt }: RendererProps) {
         {question.promptValue ?? question.display}
       </p>
       <div className="mc__options">
-        {options.map((option) => (
-          <button
-            key={option}
-            type="button"
-            className="mc__option"
-            data-testid="mc-option"
-            onClick={() => {
-              if (isCorrectOption(question, option)) attempt(question.id);
-            }}
-          >
-            {option}
-          </button>
-        ))}
+        {options.map((option) => {
+          const state = optionState(option);
+          return (
+            <button
+              key={option}
+              type="button"
+              className={state ? `mc__option mc__option--${state}` : 'mc__option'}
+              data-testid="mc-option"
+              disabled={!!picked}
+              onClick={() => choose(option)}
+            >
+              {option}
+            </button>
+          );
+        })}
       </div>
       <p className="sp-muted mc__found" data-testid="mc-found">
         {found.size} answered

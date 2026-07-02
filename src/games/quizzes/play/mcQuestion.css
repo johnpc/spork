@@ -37,6 +37,22 @@
   border-color: var(--sp-accent);
 }
 
+.mc__option--correct {
+  border-color: var(--sp-correct);
+  background: var(--sp-correct);
+  color: var(--sp-accent-contrast);
+}
+
+.mc__option--wrong {
+  border-color: var(--sp-incorrect);
+  background: var(--sp-incorrect);
+  color: var(--sp-accent-contrast);
+}
+
+.mc__option:disabled {
+  cursor: default;
+}
+
 .mc__found {
   font-variant-numeric: tabular-nums;
 }

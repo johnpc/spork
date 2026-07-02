@@ -24,6 +24,9 @@ export interface RendererProps {
   found: ReadonlySet<string>;
   /** Register a resolved attempt by answer id (+ optional bucket). Returns hit. */
   attempt: (answerId: string | null, bucket?: string) => boolean;
+  /** 'idle' | 'running' | 'done' — renderers reveal all answers when 'done'.
+   * Optional so simple renderers + tests can omit it (defaults to 'running'). */
+  status?: 'idle' | 'running' | 'done';
 }
 
 export type QuizMode =

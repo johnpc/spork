@@ -47,8 +47,10 @@ export function Play() {
         ) : (
           <div className="play">
             <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
-            <Renderer answers={p.answers} found={p.found} attempt={p.attempt} />
-            {p.status === 'idle' && (
+            <Renderer answers={p.answers} found={p.found} attempt={p.attempt} status={p.status} />
+            {/* Typed modes need an explicit Start (the board has no click target);
+                click/pick/arrange modes auto-start on the first interaction. */}
+            {p.status === 'idle' && typed && (
               <div className="play__lobby">
                 {best != null && (
                   <p className="sp-muted" data-testid="play-best">
@@ -60,12 +62,14 @@ export function Play() {
                 </button>
               </div>
             )}
-            {p.status === 'running' && (
+            {p.status !== 'done' && (
               <>
-                {typed && <PlayInput onSubmit={p.submit} />}
-                <button className="play__giveup" data-testid="play-giveup" onClick={p.giveUp}>
-                  Give up
-                </button>
+                {typed && p.status === 'running' && <PlayInput onSubmit={p.submit} live />}
+                {(p.status === 'running' || !typed) && (
+                  <button className="play__giveup" data-testid="play-giveup" onClick={p.giveUp}>
+                    Give up
+                  </button>
+                )}
               </>
             )}
             {p.status === 'done' && (

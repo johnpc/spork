@@ -22,9 +22,12 @@ When('the player reopens the {string} map quiz', async ({ page }, topic: string)
 });
 
 When('the player starts the quiz', async ({ page }) => {
-  await page.getByTestId('play-start').click();
-  // Mode-agnostic "running" signal: every mode shows the give-up control while
-  // running (typed modes also show play-input; click/pick/arrange do not).
+  // Typed modes show an explicit Start button; click/pick/arrange modes auto-
+  // start on the first interaction (no Start button). Click Start only if present.
+  const start = page.getByTestId('play-start');
+  if (await start.count()) await start.click();
+  // The give-up control confirms the play surface is active (typed modes show it
+  // once started; click modes show it immediately).
   await expect(page.getByTestId('play-giveup')).toBeVisible();
 });
 

@@ -38,11 +38,14 @@ describe('MultipleChoice', () => {
     expect(attempt).toHaveBeenCalledWith('a1');
   });
 
-  it('does not call attempt when a wrong option is clicked', () => {
+  it('flashes the wrong choice red and does not score it', () => {
     const attempt = vi.fn(() => false);
     render(<MultipleChoice answers={answers} found={new Set()} attempt={attempt} />);
     fireEvent.click(screen.getByText('Berlin'));
     expect(attempt).not.toHaveBeenCalled();
+    expect(screen.getByText('Berlin').className).toContain('mc__option--wrong');
+    // the correct option is revealed green alongside the wrong pick
+    expect(screen.getByText('Paris').className).toContain('mc__option--correct');
   });
 
   it('renders a completion message when all are found', () => {
