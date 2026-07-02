@@ -104,6 +104,12 @@
   fill: var(--sp-correct);
 }
 
+/* Missed regions revealed on give-up/time-up — distinct from earned green. */
+.sp-region--revealed {
+  fill: var(--sp-incorrect);
+  opacity: 0.55;
+}
+
 .sp-region--inert {
   fill: var(--sp-border);
 }

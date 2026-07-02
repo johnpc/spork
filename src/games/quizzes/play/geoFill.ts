@@ -17,14 +17,17 @@ export function regionAnswerMap(answers: AnswerRecord[]): Map<string, string> {
 }
 
 /** Role class for a topology region given the found set (answer ids) + the
- * region→answer map. A region with no mapped answer is inert (not in this quiz). */
+ * region→answer map. A region with no mapped answer is inert (not in this quiz).
+ * With `reveal` (game over), an unfound answer-region shows as missed, not blank. */
 export function regionClass(
   regionId: string | number | undefined,
   found: ReadonlySet<string>,
   regionToAnswer: ReadonlyMap<string, string>,
+  reveal = false,
 ): string {
   const id = regionId == null ? '' : String(regionId);
   const answerId = regionToAnswer.get(id);
   if (!answerId) return 'sp-region sp-region--inert';
-  return found.has(answerId) ? 'sp-region sp-region--found' : 'sp-region sp-region--blank';
+  if (found.has(answerId)) return 'sp-region sp-region--found';
+  return reveal ? 'sp-region sp-region--revealed' : 'sp-region sp-region--blank';
 }

@@ -30,6 +30,13 @@
   color: var(--sp-accent-contrast);
 }
 
+/* Revealed on give-up/time-up — the answers you missed, shown muted (not green). */
+.classic-slot--revealed {
+  background: var(--sp-border);
+  color: var(--sp-text-muted);
+  font-style: italic;
+}
+
 .classic-slot__num {
   font-variant-numeric: tabular-nums;
   font-weight: 700;

@@ -29,4 +29,12 @@ describe('ClassicList', () => {
     expect(items[0]).toHaveTextContent('1');
     expect(items[1]).toHaveTextContent('2');
   });
+
+  it('reveals every unfound answer when the game is done', () => {
+    render(<ClassicList answers={answers} found={new Set()} attempt={() => false} status="done" />);
+    const revealed = screen.getAllByTestId('classic-revealed');
+    expect(revealed).toHaveLength(2);
+    expect(revealed[0]).toHaveTextContent(/Washington|Adams/);
+    expect(screen.queryByTestId('classic-blank')).not.toBeInTheDocument();
+  });
 });

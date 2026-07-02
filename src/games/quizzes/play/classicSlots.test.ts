@@ -34,3 +34,12 @@ describe('classicSlots', () => {
     expect(slots.map((s) => s.id)).toEqual(['x', 'a']);
   });
 });
+
+describe('classicSlots reveal', () => {
+  it('flags unfound slots as revealed when reveal=true', () => {
+    const slots = classicSlots([mk('a', 'Lincoln'), mk('b', 'Adams')], new Set(['a']), true);
+    const byId = Object.fromEntries(slots.map((s) => [s.id, s]));
+    expect(byId['a']).toMatchObject({ found: true, revealed: false });
+    expect(byId['b']).toMatchObject({ found: false, revealed: true });
+  });
+});

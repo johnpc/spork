@@ -38,4 +38,9 @@ describe('regionClass', () => {
   it('treats undefined region id as inert', () => {
     expect(regionClass(undefined, new Set(), map)).toBe('sp-region sp-region--inert');
   });
+  it('reveals an unfound answer-region as missed when reveal=true', () => {
+    expect(regionClass('076', new Set(), map, true)).toBe('sp-region sp-region--revealed');
+    // a found region stays green even under reveal
+    expect(regionClass('076', new Set(['br']), map, true)).toBe('sp-region sp-region--found');
+  });
 });

@@ -12,10 +12,12 @@ import type { RendererProps } from './renderers';
  * honors — so the engine stays mode-agnostic. The topology feature id is the
  * numeric ISO code, matching a REGION answer's promptValue.
  */
-export function WorldMap({ answers, found }: RendererProps) {
+export function WorldMap({ answers, found, status }: RendererProps) {
   // MAP is a typed-input mode: the player types into the shared PlayInput, so
   // this renderer ignores `attempt` and just projects the found set onto the map.
+  // On give-up/time-up (done) the regions you missed light up as "revealed".
   const regionToAnswer = useMemo(() => regionAnswerMap(answers), [answers]);
+  const reveal = status === 'done';
   return (
     <div className="world-map" data-testid="world-map">
       <ComposableMap projection="geoEqualEarth" projectionConfig={{ scale: 155 }}>
@@ -25,7 +27,7 @@ export function WorldMap({ answers, found }: RendererProps) {
               <Geography
                 key={geo.rsmKey}
                 geography={geo}
-                className={regionClass(geo.id, found, regionToAnswer)}
+                className={regionClass(geo.id, found, regionToAnswer, reveal)}
                 data-region={String(geo.id)}
               />
             ))

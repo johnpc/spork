@@ -12,8 +12,7 @@ import { usePlay } from './usePlay';
 import { useBestScore } from './useBestScore';
 import { rendererFor, usesTypedInput } from './renderers';
 import { PlayHud } from './PlayHud';
-import { PlayInput } from './PlayInput';
-import { PlayDone } from './PlayDone';
+import { PlayControls } from './PlayControls';
 import './play.css';
 
 /** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
@@ -48,40 +47,19 @@ export function Play() {
           <div className="play">
             <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
             <Renderer answers={p.answers} found={p.found} attempt={p.attempt} status={p.status} />
-            {/* Typed modes need an explicit Start (the board has no click target);
-                click/pick/arrange modes auto-start on the first interaction. */}
-            {p.status === 'idle' && typed && (
-              <div className="play__lobby">
-                {best != null && (
-                  <p className="sp-muted" data-testid="play-best">
-                    Your best: {best} / {p.score.total}
-                  </p>
-                )}
-                <button className="play__start" data-testid="play-start" onClick={p.start}>
-                  Start
-                </button>
-              </div>
-            )}
-            {p.status !== 'done' && (
-              <>
-                {typed && p.status === 'running' && <PlayInput onSubmit={p.submit} live />}
-                {(p.status === 'running' || !typed) && (
-                  <button className="play__giveup" data-testid="play-giveup" onClick={p.giveUp}>
-                    Give up
-                  </button>
-                )}
-              </>
-            )}
-            {p.status === 'done' && (
-              <PlayDone
-                found={p.score.found}
-                total={p.score.total}
-                onReplay={() => {
-                  void refresh();
-                  p.start();
-                }}
-              />
-            )}
+            <PlayControls
+              status={p.status}
+              typed={typed}
+              best={best}
+              score={p.score}
+              submit={p.submit}
+              start={p.start}
+              giveUp={p.giveUp}
+              onReplay={() => {
+                void refresh();
+                p.start();
+              }}
+            />
           </div>
         )}
       </IonContent>

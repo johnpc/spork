@@ -31,4 +31,16 @@ describe('PlayInput', () => {
     fireEvent.submit(box.closest('form') as HTMLFormElement);
     expect(onSubmit).not.toHaveBeenCalled();
   });
+
+  it('live mode: matches on each keystroke and clears on a hit (no Enter)', () => {
+    // Correct only when the full word is typed.
+    const onSubmit = vi.fn((g: string) => g === 'brazil');
+    render(<PlayInput onSubmit={onSubmit} live />);
+    const box = screen.getByTestId('play-input') as HTMLInputElement;
+    fireEvent.change(box, { target: { value: 'bra' } });
+    expect(box.value).toBe('bra'); // no match yet, text kept
+    fireEvent.change(box, { target: { value: 'brazil' } });
+    expect(onSubmit).toHaveBeenLastCalledWith('brazil');
+    expect(box.value).toBe(''); // cleared on the live hit — no Enter needed
+  });
 });

@@ -10,20 +10,31 @@ import './classic.css';
  * of slots. Each slot starts blank and pops to its display label once its answer
  * id lands in `found`. Reads only { answers, found } — the mode-agnostic seam.
  */
-export function ClassicList({ answers, found }: RendererProps) {
-  const slots = useMemo(() => classicSlots(answers, found), [answers, found]);
+export function ClassicList({ answers, found, status }: RendererProps) {
+  const reveal = status === 'done';
+  const slots = useMemo(() => classicSlots(answers, found, reveal), [answers, found, reveal]);
   return (
     <ol className="classic-list" data-testid="classic-list">
       {slots.map((slot, i) => (
         <li
           key={slot.id}
-          className={slot.found ? 'classic-slot classic-slot--found' : 'classic-slot'}
-          data-testid={slot.found ? 'classic-found' : 'classic-blank'}
+          className={slotClass(slot.found, slot.revealed)}
+          data-testid={
+            slot.found ? 'classic-found' : slot.revealed ? 'classic-revealed' : 'classic-blank'
+          }
         >
           <span className="classic-slot__num">{i + 1}</span>
-          <span className="classic-slot__label">{slot.found ? slot.display : ''}</span>
+          <span className="classic-slot__label">
+            {slot.found || slot.revealed ? slot.display : ''}
+          </span>
         </li>
       ))}
     </ol>
   );
+}
+
+function slotClass(found: boolean, revealed: boolean): string {
+  if (found) return 'classic-slot classic-slot--found';
+  if (revealed) return 'classic-slot classic-slot--revealed';
+  return 'classic-slot';
 }
