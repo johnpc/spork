@@ -179,10 +179,11 @@ const schema = a.schema({
       renderConfig: a.string(), // JSON; mode-specific view config
       coverImagePath: a.string(),
       publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily puzzle
       answers: a.hasMany('Answer', 'quizId'),
     })
-    // Discover read path: all quizzes in a category (mirrors Deck).
-    .secondaryIndexes((index) => [index('categorySlug')])
+    // Discover read path + the daily read path (one quiz per YYYY-MM-DD).
+    .secondaryIndexes((index) => [index('categorySlug'), index('puzzleDate')])
     .authorization((allow) => [
       allow.guest().to(['read']),
       allow.authenticated('identityPool').to(['read']),
@@ -251,7 +252,9 @@ const schema = a.schema({
       difficulty: a.enum(['EASY', 'MEDIUM', 'HARD']),
       status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
       publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily ladder
     })
+    .secondaryIndexes((index) => [index('puzzleDate')])
     .authorization((allow) => [
       allow.guest().to(['read']),
       allow.authenticated('identityPool').to(['read']),
@@ -273,7 +276,9 @@ const schema = a.schema({
       difficulty: a.enum(['EASY', 'MEDIUM', 'HARD']),
       status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
       publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily acrostic
     })
+    .secondaryIndexes((index) => [index('puzzleDate')])
     .authorization((allow) => [
       allow.guest().to(['read']),
       allow.authenticated('identityPool').to(['read']),
@@ -292,7 +297,9 @@ const schema = a.schema({
       startingBank: a.integer().default(1000),
       status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
       publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily quizzle
     })
+    .secondaryIndexes((index) => [index('puzzleDate')])
     .authorization((allow) => [
       allow.guest().to(['read']),
       allow.authenticated('identityPool').to(['read']),
@@ -313,7 +320,9 @@ const schema = a.schema({
       difficulty: a.enum(['EASY', 'MEDIUM', 'HARD']),
       status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
       publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily chess puzzle
     })
+    .secondaryIndexes((index) => [index('puzzleDate')])
     .authorization((allow) => [
       allow.guest().to(['read']),
       allow.authenticated('identityPool').to(['read']),
