@@ -73,7 +73,7 @@ inline keys.
 
 > **`https://files.jpc.io/d/<name>` is a PERMANENT URL.** `files.jpc.io` is a Next.js server that
 > re-generates a fresh presigned S3 link on every render, so a `curl -I` on it returns a **307 redirect
-> to a short-lived presigned S3 URL** — that expiry is on the *redirect target*, not the `/d/` link. Do
+> to a short-lived presigned S3 URL** — that expiry is on the _redirect target_, not the `/d/` link. Do
 > NOT mistake the 307 for a broken/expiring link and fall back to committing media into the repo; the
 > `/d/` URL keeps working indefinitely. (For MP4, GitHub renders it inline as a `<video>` player.)
 
