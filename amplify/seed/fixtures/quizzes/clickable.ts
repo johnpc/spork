@@ -1,33 +1,34 @@
-/** CLICKABLE fixture — "Click the African countries". DATA (gate-exempt). The
- * answers are the CORRECT tiles (African countries, MEMBERSHIP-scored); the same
- * decoy pool (non-African countries) rides on each answer's `options` so the
- * renderer can mix in wrong tiles that never score. */
+/** CLICKABLE fixture — "Find the African countries on the map". DATA (gate-exempt).
+ * Each answer is a REGION keyed by its numeric-ISO promptValue (matching the
+ * world-atlas topology). The renderer prompts one country at a time ("Find
+ * Nigeria") and the player clicks it on a map auto-zoomed to Africa. MEMBERSHIP
+ * scoring; only the asked-for country scores. */
 import type { QuizFixture, AnswerFixture } from './types';
 
-const DECOYS = ['Brazil', 'Canada', 'Japan', 'Spain', 'Peru'];
-
-const country = (display: string, accepted: string[]): AnswerFixture => ({
+const region = (display: string, iso: string, accepted: string[]): AnswerFixture => ({
   display,
   accepted,
-  promptKind: 'NONE',
-  options: DECOYS,
+  promptKind: 'REGION',
+  promptValue: iso,
 });
 
 export const clickableQuiz: QuizFixture = {
-  topic: 'Click the African Countries',
+  topic: 'Find the African Countries',
   categorySlug: 'geography',
-  description: 'Pick out every African country from the grid of tiles.',
+  description: 'Find each country on the map of Africa before time runs out.',
   mode: 'CLICKABLE',
   inputMode: 'CLICK',
   scoringMode: 'MEMBERSHIP',
   timeLimitSeconds: 120,
-  renderConfig: { prompt: 'Click the African countries' },
+  renderConfig: { region: 'africa' },
   answers: [
-    country('Egypt', ['egypt']),
-    country('Kenya', ['kenya']),
-    country('Nigeria', ['nigeria']),
-    country('Morocco', ['morocco']),
-    country('Ethiopia', ['ethiopia']),
-    country('Ghana', ['ghana']),
+    region('Egypt', '818', ['egypt', 'eg', 'egy']),
+    region('Nigeria', '566', ['nigeria', 'ng', 'nga']),
+    region('Kenya', '404', ['kenya', 'ke', 'ken']),
+    region('Morocco', '504', ['morocco', 'ma', 'mar']),
+    region('Ethiopia', '231', ['ethiopia', 'et', 'eth']),
+    region('South Africa', '710', ['south africa', 'za', 'zaf']),
+    region('Algeria', '012', ['algeria', 'dz', 'dza']),
+    region('Ghana', '288', ['ghana', 'gh', 'gha']),
   ],
 };
