@@ -33,3 +33,6 @@ export type UserStatRecord = Schema['UserStat']['type'];
 export type QuizRecord = Schema['Quiz']['type'];
 export type AnswerRecord = Schema['Answer']['type'];
 export type WordLadderRecord = Schema['WordLadder']['type'];
+export type AcrosticRecord = Schema['Acrostic']['type'];
+export type QuizzleRecord = Schema['Quizzle']['type'];
+export type ChessAttackRecord = Schema['ChessAttack']['type'];

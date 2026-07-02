@@ -259,6 +259,68 @@ const schema = a.schema({
       allow.group('editors').to(['create', 'update', 'delete']),
     ]),
 
+  // ─── Acrostic game ───────────────────────────────────────────────────────
+  // Solve short clues; each answer's letters drop into a shared quote grid,
+  // revealing the hidden `quote` a little at a time. `clues` is JSON: an array
+  // of { clue, answer } (answers concatenated spell the quote's letters in
+  // order). `author` optional attribution. Its own engine — no quiz machinery.
+  Acrostic: a
+    .model({
+      title: a.string().required(),
+      quote: a.string().required(), // the full quote revealed on completion
+      author: a.string(),
+      clues: a.string().required(), // JSON [{clue, answer}] — answers spell the quote letters
+      difficulty: a.enum(['EASY', 'MEDIUM', 'HARD']),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
+  // ─── Quizzle game ────────────────────────────────────────────────────────
+  // A pub-quiz where you WAGER confidence on each answer before revealing it —
+  // right answers earn the wager, wrong ones lose it. `questions` is JSON: an
+  // array of { question, answer, accepted[] }. Its own wager-scoring engine.
+  Quizzle: a
+    .model({
+      topic: a.string().required(),
+      questions: a.string().required(), // JSON [{question, answer, accepted[]}]
+      startingBank: a.integer().default(1000),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
+  // ─── Chess Attack game ───────────────────────────────────────────────────
+  // A mate-in-N puzzle on a small board. `fen`-like `position` (JSON: pieces +
+  // side to move) and `solution` (JSON string[] of moves in coordinate
+  // notation). Its own board engine validates legal moves + checks the solution.
+  ChessAttack: a
+    .model({
+      name: a.string().required(),
+      position: a.string().required(), // JSON board state {board, toMove}
+      solution: a.string().required(), // JSON string[] of moves, e.g. ["c1c3","a1a3"]
+      movesToWin: a.integer().default(1),
+      difficulty: a.enum(['EASY', 'MEDIUM', 'HARD']),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
   // One generation run — the admin dashboard reads these (stoop's SyncRun
   // analogue). Serves every game: `game` says which island, `mode` distinguishes
   // template-backed (e.g. MAP quizzes — synchronous, no LLM) from generative
