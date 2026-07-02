@@ -12,7 +12,7 @@ import { WorldMap } from './WorldMap';
 import { ClassicList } from './ClassicList';
 import { PictureBox } from './PictureBox';
 import { MultipleChoice } from './MultipleChoice';
-import { ClickableGrid } from './ClickableGrid';
+import { ClickableMap } from './ClickableMap';
 import { PictureClick } from './PictureClick';
 import { Slideshow } from './Slideshow';
 import { Sortable } from './Sortable';
@@ -55,7 +55,7 @@ export const RENDERERS: Partial<Record<QuizMode, ComponentType<RendererProps>>> 
   CLASSIC: ClassicList,
   PICTURE_BOX: PictureBox,
   MULTIPLE_CHOICE: MultipleChoice,
-  CLICKABLE: ClickableGrid,
+  CLICKABLE: ClickableMap,
   PICTURE_CLICK: PictureClick,
   SLIDESHOW: Slideshow,
   SORTABLE: Sortable,

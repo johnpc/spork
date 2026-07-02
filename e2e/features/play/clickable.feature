@@ -1,34 +1,28 @@
-Feature: Play a clickable quiz (click the correct tiles)
+Feature: Play a clickable quiz (find the country on the map)
   As a player
-  I want to click the correct tiles out of a grid against the clock
-  So that I can prove I know which items belong to the set
+  I want to be prompted for a country and click it on the map against the clock
+  So that I can prove I know where each country is
 
-  # Honest e2e: this journey opens the seeded "Click the African Countries"
-  # CLICKABLE quiz, starts the timer, clicks a real seeded correct tile and a
-  # decoy tile, and asserts on the RENDERED grid — a clicked correct tile gains
-  # the "found" role and the score increments, while a decoy never scores — not
-  # just navigation. The Quizzes game is GUEST-ONLY (no account to play).
+  # Honest e2e: this journey opens the seeded "Find the African Countries"
+  # CLICKABLE quiz (now a find-it-on-the-map game). It clicks the real seeded map
+  # region for the prompted country and asserts on the RENDERED map — the clicked
+  # region gains the "found" role and the score increments, while clicking the
+  # wrong country never scores — not just navigation. Click modes auto-start on
+  # the first interaction (no Start button). The Quizzes game is GUEST-ONLY.
 
-  Scenario: A guest clicks correct tiles and scores them
-    Given the player opens the "Click the African Countries" clickable quiz
-    When the player starts the clickable quiz
-    And the player clicks the tile "Egypt"
+  Scenario: A guest clicks the prompted country and scores it
+    Given the player opens the "Find the African Countries" clickable quiz
+    When the player clicks the region "818"
     Then the score shows "1"
-    And the tile "Egypt" is marked found
-    When the player clicks the tile "Kenya"
-    Then the score shows "2"
+    And the region "818" is marked found
 
-  Scenario: Clicking a decoy tile does not score
-    Given the player opens the "Click the African Countries" clickable quiz
-    When the player starts the clickable quiz
-    And the player clicks the tile "Egypt"
-    Then the score shows "1"
-    When the player clicks the tile "Brazil"
-    Then the score shows "1"
+  Scenario: Clicking the wrong country does not score
+    Given the player opens the "Find the African Countries" clickable quiz
+    When the player clicks the region "566"
+    Then the score shows "0"
 
   Scenario: Finishing shows a score summary
-    Given the player opens the "Click the African Countries" clickable quiz
-    When the player starts the clickable quiz
-    And the player clicks the tile "Egypt"
+    Given the player opens the "Find the African Countries" clickable quiz
+    When the player clicks the region "818"
     And the player gives up on the clickable quiz
     Then a clickable score summary is shown
