@@ -9,6 +9,14 @@
 import type { ComponentType } from 'react';
 import type { AnswerRecord } from '../../../lib/dataClient';
 import { WorldMap } from './WorldMap';
+import { ClassicList } from './ClassicList';
+import { PictureBox } from './PictureBox';
+import { MultipleChoice } from './MultipleChoice';
+import { ClickableGrid } from './ClickableGrid';
+import { PictureClick } from './PictureClick';
+import { Slideshow } from './Slideshow';
+import { Sortable } from './Sortable';
+import { OrderUp } from './OrderUp';
 
 /** The one prop contract every renderer honors. */
 export interface RendererProps {
@@ -41,6 +49,14 @@ export const TYPED_MODES: ReadonlySet<QuizMode> = new Set([
 /** mode → renderer. Missing modes are unbuilt (Play shows a fallback message). */
 export const RENDERERS: Partial<Record<QuizMode, ComponentType<RendererProps>>> = {
   MAP: WorldMap,
+  CLASSIC: ClassicList,
+  PICTURE_BOX: PictureBox,
+  MULTIPLE_CHOICE: MultipleChoice,
+  CLICKABLE: ClickableGrid,
+  PICTURE_CLICK: PictureClick,
+  SLIDESHOW: Slideshow,
+  SORTABLE: Sortable,
+  ORDER_UP: OrderUp,
 };
 
 /** Resolve the renderer for a quiz mode, or null if that mode isn't built yet. */

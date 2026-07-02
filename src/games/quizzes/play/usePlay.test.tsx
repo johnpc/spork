@@ -17,8 +17,18 @@ function wrapper({ children }: { children: ReactNode }) {
 const quizData = {
   quiz: { id: 'q1', mode: 'MAP', scoringMode: 'MEMBERSHIP', timeLimitSeconds: 300 },
   answers: [
-    { id: 'a1', promptKind: 'REGION', promptValue: '076', accepted: JSON.stringify(['Brazil', 'BR']) },
-    { id: 'a2', promptKind: 'REGION', promptValue: '840', accepted: JSON.stringify(['United States', 'USA']) },
+    {
+      id: 'a1',
+      promptKind: 'REGION',
+      promptValue: '076',
+      accepted: JSON.stringify(['Brazil', 'BR']),
+    },
+    {
+      id: 'a2',
+      promptKind: 'REGION',
+      promptValue: '840',
+      accepted: JSON.stringify(['United States', 'USA']),
+    },
   ],
 };
 

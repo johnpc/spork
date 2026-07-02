@@ -1,0 +1,42 @@
+/* MULTIPLE_CHOICE renderer. Consumes --sp-* design tokens only (never literals).
+   One question card + a column of option buttons; the engine's found set drives
+   which question shows, so there's no per-option state here. */
+
+.mc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+  align-items: center;
+}
+
+.mc__question {
+  text-align: center;
+  font-size: 1.25rem;
+}
+
+.mc__options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.mc__option {
+  padding: 0.75rem 1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--sp-text);
+  background: var(--sp-surface);
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  transition: border-color 0.2s ease;
+}
+
+.mc__option:hover {
+  border-color: var(--sp-accent);
+}
+
+.mc__found {
+  font-variant-numeric: tabular-nums;
+}

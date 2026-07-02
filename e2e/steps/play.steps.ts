@@ -23,7 +23,9 @@ When('the player reopens the {string} map quiz', async ({ page }, topic: string)
 
 When('the player starts the quiz', async ({ page }) => {
   await page.getByTestId('play-start').click();
-  await expect(page.getByTestId('play-input')).toBeVisible();
+  // Mode-agnostic "running" signal: every mode shows the give-up control while
+  // running (typed modes also show play-input; click/pick/arrange do not).
+  await expect(page.getByTestId('play-giveup')).toBeVisible();
 });
 
 When('the player types the answer {string}', async ({ page }, answer: string) => {

@@ -1,0 +1,56 @@
+/* PICTURE_CLICK renderer. Consumes --sp-* design tokens (never hardcoded values).
+   The "image" is a 2x2 grid of quadrant hotspots; role classes bind the found
+   set to fills the same way the map's region classes do. */
+
+.pc {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.pc__prompt {
+  font-size: 1.15rem;
+  font-weight: 600;
+}
+
+.pc__image {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-gap);
+  aspect-ratio: 1 / 1;
+  max-width: 420px;
+  padding: var(--sp-gap);
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+}
+
+.pc-hotspot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-accent-soft);
+  color: var(--sp-text);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.pc-hotspot--target {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent);
+  color: var(--sp-accent-contrast);
+}
+
+.pc-hotspot--found {
+  border-color: var(--sp-correct);
+  background: var(--sp-correct);
+  color: var(--sp-accent-contrast);
+  cursor: default;
+}
+
+.pc-hotspot__label {
+  font-size: 0.95rem;
+}

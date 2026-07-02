@@ -1,0 +1,51 @@
+/* SORTABLE renderer. Consumes --sp-* design tokens only (never literals). The
+   player selects an unsorted chip, then clicks a bucket column to place it. */
+
+.sortable {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.sortable__items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sortable__chip {
+  padding: 0.5rem 0.9rem;
+  font-size: 1rem;
+  color: var(--sp-text);
+  background: var(--sp-surface);
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  cursor: pointer;
+}
+
+.sortable__chip--selected {
+  border-color: var(--sp-accent);
+  background: var(--sp-accent-soft);
+}
+
+.sortable__buckets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.sortable__bucket {
+  flex: 1 1 8rem;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sp-text);
+  background: var(--sp-surface);
+  border: 2px dashed var(--sp-border);
+  border-radius: var(--sp-radius);
+  cursor: pointer;
+}
+
+.sortable__empty {
+  color: var(--sp-text-muted);
+}

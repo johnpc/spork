@@ -14,4 +14,7 @@ export const seedCategories: SeedCategory[] = [
   { name: 'History', slug: 'history', label: 'History', sortOrder: 5 },
   { name: 'Geography', slug: 'geography', label: 'Geography', sortOrder: 6 },
   { name: 'Miscellaneous', slug: 'miscellaneous', label: 'Just for Fun', sortOrder: 7 },
+  { name: 'Sports', slug: 'sports', label: 'Sports', sortOrder: 8 },
+  { name: 'Music', slug: 'music', label: 'Music', sortOrder: 9 },
+  { name: 'Food & Drink', slug: 'food', label: 'Food & Drink', sortOrder: 10 },
 ];

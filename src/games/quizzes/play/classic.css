@@ -1,0 +1,41 @@
+/* CLASSIC renderer — a fixed grid of slots that reveal as the player types.
+   Tokens only (--sp-*); mirrors the map's found/blank binding but for a list. */
+
+.classic-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 0.5rem;
+}
+
+.classic-slot {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+  min-height: 2.5rem;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-accent-soft);
+  color: var(--sp-text-muted);
+  transition:
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.classic-slot--found {
+  background: var(--sp-correct);
+  color: var(--sp-accent-contrast);
+}
+
+.classic-slot__num {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.classic-slot__label {
+  font-weight: 600;
+}

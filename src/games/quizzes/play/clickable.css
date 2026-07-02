@@ -1,0 +1,33 @@
+/* CLICKABLE renderer — a grid of tiles the player clicks. Consumes --sp-* design
+   tokens only (never hardcoded values), matching the platform surface. */
+
+.clickable-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(7rem, 1fr));
+  gap: 0.5rem;
+}
+
+.clickable-tile {
+  padding: 0.75rem 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sp-text);
+  background: var(--sp-surface);
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.clickable-tile--found {
+  color: var(--sp-accent-contrast);
+  background: var(--sp-correct);
+  border-color: var(--sp-correct);
+  cursor: default;
+}
+
+.clickable-tile--missed {
+  border-color: var(--sp-incorrect);
+}
