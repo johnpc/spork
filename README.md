@@ -234,5 +234,7 @@ ships **light, dark, and tinted** variants.
 
 ## License
 
-Private / proprietary. All rights reserved. Imported/third-party quiz content remains the property of
-its respective authors.
+The **code** in this repository is provided as a personal/experimental project — see the repo for
+terms. **Quiz content is not covered:** any imported or third-party quiz data and trademarks (Sporcle
+and others) remain the property of their respective owners, and the import capability described above
+is intended only for content one has the right to use.

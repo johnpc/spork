@@ -56,6 +56,9 @@ export default defineConfig({
     // SLOWMO=<ms> launches a visible browser that pauses between actions so a
     // human can watch the Gherkin run, e.g. `SLOWMO=600 npm run test:e2e`.
     launchOptions: { slowMo: Number(process.env.SLOWMO) || 0 },
+    // VIDEO=1 records a .webm per test under test-results/ — used to attach a
+    // demo artifact to a PR (see CLAUDE.md). Off by default so CI stays lean.
+    video: process.env.VIDEO ? 'on' : 'off',
   },
   projects: [
     {
