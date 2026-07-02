@@ -18,9 +18,9 @@ export function StreakCard() {
         <span className="streak__label">🔥 day{current === 1 ? '' : 's'} streak</span>
       </div>
       {current === 0 ? (
-        <p className="streak__hint fs-muted">Study today to start a streak.</p>
+        <p className="streak__hint sp-muted">Study today to start a streak.</p>
       ) : (
-        <p className="streak__hint fs-muted">
+        <p className="streak__hint sp-muted">
           Best: {longest} · {total} cards reviewed
         </p>
       )}

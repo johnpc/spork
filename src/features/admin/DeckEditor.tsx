@@ -30,7 +30,7 @@ export function DeckEditor() {
       </IonHeader>
       <IonContent className="ion-padding">
         {isLoading ? (
-          <p className="fs-muted">Loading…</p>
+          <p className="sp-muted">Loading…</p>
         ) : (
           <>
             <AddCardForm onAdd={add} />
@@ -47,7 +47,7 @@ export function DeckEditor() {
               ))}
             </ul>
             {cards.length === 0 && (
-              <p className="fs-muted" data-testid="no-cards">
+              <p className="sp-muted" data-testid="no-cards">
                 No cards yet — add one above.
               </p>
             )}

@@ -61,14 +61,14 @@ body {
 }
 
 /* Role classes */
-.fs-heading {
+.sp-heading {
   font-family: var(--sp-font-sans);
   font-weight: 700;
   letter-spacing: -0.01em;
   color: var(--sp-text);
 }
 
-.fs-kicker {
+.sp-kicker {
   font-family: var(--sp-font-sans);
   font-weight: 600;
   font-size: 0.72rem;
@@ -77,11 +77,11 @@ body {
   color: var(--sp-accent);
 }
 
-.fs-muted {
+.sp-muted {
   color: var(--sp-text-muted);
 }
 
-.fs-card-face {
+.sp-card-face {
   font-family: var(--sp-font-serif);
   font-weight: 600;
 }

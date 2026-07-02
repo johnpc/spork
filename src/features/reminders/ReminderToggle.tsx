@@ -12,7 +12,7 @@ export function ReminderToggle() {
     <div className="reminder" data-testid="reminder-toggle">
       <div className="reminder__text">
         <span className="reminder__title">Daily review reminder</span>
-        <span className="fs-muted reminder__sub">
+        <span className="sp-muted reminder__sub">
           {denied
             ? 'Notifications are blocked — enable them in Settings.'
             : 'A nudge each evening to keep your streak.'}

@@ -32,7 +32,7 @@ export function ManageDecks() {
       <IonContent className="ion-padding">
         <section className="admin-panel admin-panel--accent">
           <h2 className="admin-panel__title">✨ Generate with AI</h2>
-          <p className="fs-muted admin-panel__hint">
+          <p className="sp-muted admin-panel__hint">
             Describe a topic and Claude writes the cards, with images and audio.
           </p>
           <GenerateDeckForm onGenerate={gen.generate} />
@@ -46,15 +46,15 @@ export function ManageDecks() {
 
         <h2 className="admin-panel__title admin-decks__heading">All decks</h2>
         {isLoading ? (
-          <p className="fs-muted">Loading…</p>
+          <p className="sp-muted">Loading…</p>
         ) : decks.length === 0 ? (
-          <p className="fs-muted">No decks yet — generate or create one above.</p>
+          <p className="sp-muted">No decks yet — generate or create one above.</p>
         ) : (
           <ul className="admin-decks" aria-label="All decks">
             {decks.map((d) => (
               <li key={d.id} className="admin-decks__row" data-testid="admin-deck">
                 <div className="admin-decks__main">
-                  <Link to={`/admin/decks/${d.id}`} className="admin-decks__topic fs-heading">
+                  <Link to={`/admin/decks/${d.id}`} className="admin-decks__topic sp-heading">
                     {d.topic}
                   </Link>
                   <span

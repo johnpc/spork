@@ -20,9 +20,12 @@ describe('seedReferenceData', () => {
 
   it('creates one Category per fixture row with editor auth', async () => {
     const count = await seedReferenceData();
-    expect(count).toBe(5);
-    expect(m.create).toHaveBeenCalledTimes(5);
+    expect(count).toBe(6);
+    expect(m.create).toHaveBeenCalledTimes(6);
     expect(m.create).toHaveBeenCalledWith(expect.objectContaining({ slug: 'languages' }), {
+      authMode: 'userPool',
+    });
+    expect(m.create).toHaveBeenCalledWith(expect.objectContaining({ slug: 'geography' }), {
       authMode: 'userPool',
     });
   });
@@ -44,19 +47,21 @@ describe('ensureCategories (non-destructive)', () => {
   });
 
   it('creates only the missing categories and never clears', async () => {
-    // Prod already has languages + mythology; the other 3 are missing.
+    // Prod already has languages + mythology; the other 4 are missing.
     m.list.mockResolvedValue({ data: [{ slug: 'languages' }, { slug: 'mythology' }] });
     const created = await ensureCategories();
-    expect(created).toBe(3);
-    expect(m.create).toHaveBeenCalledTimes(3);
+    expect(created).toBe(4);
+    expect(m.create).toHaveBeenCalledTimes(4);
     expect(m.del).not.toHaveBeenCalled();
     const slugs = m.create.mock.calls.map((c) => c[0].slug);
-    expect(slugs).toEqual(['scripture', 'science', 'history']);
+    expect(slugs).toEqual(['scripture', 'science', 'history', 'geography']);
   });
 
   it('creates nothing when all categories already exist', async () => {
     m.list.mockResolvedValue({
-      data: ['languages', 'mythology', 'scripture', 'science', 'history'].map((slug) => ({ slug })),
+      data: ['languages', 'mythology', 'scripture', 'science', 'history', 'geography'].map(
+        (slug) => ({ slug }),
+      ),
     });
     expect(await ensureCategories()).toBe(0);
     expect(m.create).not.toHaveBeenCalled();

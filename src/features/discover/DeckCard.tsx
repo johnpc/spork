@@ -18,8 +18,8 @@ export function DeckCard({ deck }: { deck: DeckCardData }) {
           </div>
         )}
       </div>
-      <h3 className="deck-card__topic fs-heading">{deck.topic}</h3>
-      <p className="deck-card__count fs-muted">{deck.cardCount} cards</p>
+      <h3 className="deck-card__topic sp-heading">{deck.topic}</h3>
+      <p className="deck-card__count sp-muted">{deck.cardCount} cards</p>
     </Link>
   );
 }

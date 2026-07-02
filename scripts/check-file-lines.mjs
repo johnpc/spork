@@ -19,7 +19,9 @@ const SKIP_DIRS = new Set(['node_modules', '.amplify', 'dist', 'build']);
 // functions, resolvers) is NOT exempt and must obey the limit.
 //   - any subtree listed in EXCLUDE_DIRS
 //   - Amplify config files: amplify/backend.ts and any amplify/**/resource.ts
-const EXCLUDE_DIRS = ['amplify/seed/fixtures'];
+// Fixture DATA trees: seed fixtures + generated game templates (e.g. the
+// reconciled world-countries map answer set) are records, not logic.
+const EXCLUDE_DIRS = ['amplify/seed/fixtures', 'amplify/quizgen/fixtures'];
 const isExcluded = (rel) =>
   EXCLUDE_DIRS.some((p) => rel === p || rel.startsWith(`${p}/`)) ||
   rel === 'amplify/backend.ts' ||

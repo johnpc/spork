@@ -60,7 +60,7 @@ export function Profile() {
       >
         Sign out
       </button>
-      <p className="fs-muted profile__version">SPORK v0.0.1</p>
+      <p className="sp-muted profile__version">SPORK v0.0.1</p>
     </ProfileShell>
   );
 }

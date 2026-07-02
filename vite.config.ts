@@ -39,6 +39,9 @@ export default defineConfig({
         'amplify/**/resource.ts',
         'amplify/backend.ts',
         'amplify/seed/fixtures/**',
+        // Fixture DATA (records, not logic): seed fixtures + generated game
+        // templates like the reconciled world-countries map answer set.
+        'amplify/quizgen/fixtures/**',
         // Seed/maintenance runner entrypoints: side-effecting main() scripts
         // (sign in, mutate, exit) with no unit-testable surface — their logic
         // lives in tested helpers (seedReference, resizeImage). Run manually.

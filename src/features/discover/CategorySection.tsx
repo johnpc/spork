@@ -35,7 +35,7 @@ export function CategorySection({
       {open && (
         <div className="cat-section__body">
           {isLoading ? (
-            <p className="fs-muted cat-section__hint">Loading decks…</p>
+            <p className="sp-muted cat-section__hint">Loading decks…</p>
           ) : decks && decks.length > 0 ? (
             <>
               <div className="cat-section__rail">
@@ -52,7 +52,7 @@ export function CategorySection({
               )}
             </>
           ) : (
-            <p className="fs-muted cat-section__hint" data-testid="cat-section-empty">
+            <p className="sp-muted cat-section__hint" data-testid="cat-section-empty">
               No decks here yet.
             </p>
           )}

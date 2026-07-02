@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "prod-config": "node scripts/prod-config.mjs",
     "e2e-config": "ampx generate outputs --stack amplify-spork-xss-sandbox-36f6fbd736 --profile personal",
+    "gen:map-template": "tsx scripts/genMapTemplate.ts",
     "seed": "tsx amplify/seed/seed.ts",
     "seed:categories": "tsx amplify/seed/seedCategories.ts",
     "backfill:media": "tsx amplify/seed/backfillMedia.ts",
@@ -59,14 +60,28 @@
     "@types/react-router": "^5.1.20",
     "@types/react-router-dom": "^5.3.3",
     "aws-amplify": "^6.18.0",
+    "d3-geo": "^3.1.1",
     "ionicons": "^7.4.0",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-router": "^5.3.4",
     "react-router-dom": "^5.3.4",
-    "sharp": "^0.33.5"
+    "react-simple-maps": "^3.0.0",
+    "sharp": "^0.33.5",
+    "world-atlas": "^2.0.2"
+  },
+  "overrides": {
+    "react-simple-maps": {
+      "react": "$react",
+      "react-dom": "$react-dom"
+    }
   },
   "devDependencies": {
+    "@types/d3-geo": "^3.1.0",
+    "@types/react-simple-maps": "^3.0.6",
+    "@types/topojson-client": "^3.1.5",
+    "i18n-iso-countries": "^7.11.0",
+    "topojson-client": "^3.1.0",
     "@aws-amplify/backend": "^1.23.0",
     "@aws-amplify/backend-cli": "^1.8.3",
     "@capacitor/android": "^8.4.1",

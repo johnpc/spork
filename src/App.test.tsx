@@ -1,8 +1,8 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 
-// App mounts the Discover route which fetches shelves; stub the data hook so
-// the shell test stays focused on rendering without touching the SDK.
+// App now lands on the Spork Home game shelf ('/'→'/home'); stub the discover
+// data hook + probing children so the shell test stays inert (no SDK).
 vi.mock('./features/discover/useShelves', () => ({
   useShelves: () => ({ data: [], isLoading: false }),
 }));
@@ -29,7 +29,7 @@ describe('App', () => {
     expect(baseElement).toBeDefined();
     // Let the async auth probe + initial render settle inside the test (so no
     // state update fires after teardown), then unmount to stop pending work.
-    await waitFor(() => expect(screen.getByText('Find a deck')).toBeInTheDocument());
+    await waitFor(() => expect(screen.getByTestId('home-games')).toBeInTheDocument());
     unmount();
   });
 });

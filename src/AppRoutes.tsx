@@ -1,5 +1,8 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonRouterOutlet } from '@ionic/react';
+import { Home } from './features/home/Home';
+import { QuizList } from './games/quizzes/list/QuizList';
+import { Play } from './games/quizzes/play/Play';
 import { Discover } from './features/discover/Discover';
 import { CategoryDecks } from './features/discover/CategoryDecks';
 import { DeckDetail } from './features/deck/DeckDetail';
@@ -12,10 +15,20 @@ import { EditorGate } from './features/admin/EditorGate';
 import { ManageDecks } from './features/admin/ManageDecks';
 import { DeckEditor } from './features/admin/DeckEditor';
 
-/** App routes. Tabs + screens grow per slice; Discover is the launch surface. */
+/** App routes. Home is the platform shell (game shelf); each game island adds
+ * its own routes. Grows per slice. */
 export function AppRoutes() {
   return (
     <IonRouterOutlet>
+      <Route exact path="/home">
+        <Home />
+      </Route>
+      <Route exact path="/quizzes">
+        <QuizList />
+      </Route>
+      <Route exact path="/quizzes/:id/play">
+        <Play />
+      </Route>
       <Route exact path="/discover">
         <Discover />
       </Route>
@@ -51,7 +64,7 @@ export function AppRoutes() {
         </EditorGate>
       </Route>
       <Route exact path="/">
-        <Redirect to="/discover" />
+        <Redirect to="/home" />
       </Route>
     </IonRouterOutlet>
   );

@@ -123,6 +123,8 @@ jobs:
             paths: .features-gen/e2e/features/admin
           - name: journey
             paths: .features-gen/e2e/features/journey
+          - name: play
+            paths: .features-gen/e2e/features/play
     steps:
       - uses: actions/checkout@v7
 

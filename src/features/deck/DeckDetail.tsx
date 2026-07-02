@@ -30,13 +30,13 @@ export function DeckDetail() {
       </IonHeader>
       <IonContent className="ion-padding">
         {isLoading || !deck ? (
-          <p className="fs-muted">{isLoading ? 'Loading deck…' : 'Deck not found.'}</p>
+          <p className="sp-muted">{isLoading ? 'Loading deck…' : 'Deck not found.'}</p>
         ) : (
           <>
-            <h1 className="fs-heading deck__title" data-testid="deck-title">
+            <h1 className="sp-heading deck__title" data-testid="deck-title">
               {deck.topic}
             </h1>
-            {deck.description && <p className="fs-muted">{deck.description}</p>}
+            {deck.description && <p className="sp-muted">{deck.description}</p>}
             <div className="deck__actions">
               <SaveDeckButton
                 deck={{
@@ -55,8 +55,8 @@ export function DeckDetail() {
             <ul className="deck__cards" aria-label="Cards">
               {(data?.cards ?? []).map((card) => (
                 <li key={card.id} className="deck__card-row" data-testid="card-row">
-                  <span className="fs-card-face">{card.front}</span>
-                  <span className="fs-muted">{card.back}</span>
+                  <span className="sp-card-face">{card.front}</span>
+                  <span className="sp-muted">{card.back}</span>
                 </li>
               ))}
             </ul>

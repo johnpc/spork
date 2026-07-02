@@ -29,8 +29,8 @@ export function SignUp() {
         <div className="auth__body">
           {f.phase === 'collect' ? (
             <>
-              <h1 className="auth__title fs-heading">Create your account</h1>
-              <p className="auth__subtext fs-muted">Save decks and track your progress.</p>
+              <h1 className="auth__title sp-heading">Create your account</h1>
+              <p className="auth__subtext sp-muted">Save decks and track your progress.</p>
               <AuthField
                 label="Email"
                 type="email"
@@ -64,8 +64,8 @@ export function SignUp() {
             </>
           ) : (
             <>
-              <h1 className="auth__title fs-heading">Check your email</h1>
-              <p className="auth__subtext fs-muted">Enter the code we sent to {f.email}.</p>
+              <h1 className="auth__title sp-heading">Check your email</h1>
+              <p className="auth__subtext sp-muted">Enter the code we sent to {f.email}.</p>
               <AuthField
                 label="Confirmation code"
                 type="text"

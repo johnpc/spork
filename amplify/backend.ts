@@ -6,15 +6,23 @@ import { storage } from './storage/resource';
 import { generateDeckStarter } from './deckgen/start/resource';
 import { deckgenWorker } from './deckgen/worker/resource';
 import { regenerateMedia } from './deckgen/regenerate/resource';
+import { generateQuizStarter } from './quizgen/start/resource';
 
 /**
- * SPORK backend. The AI deck-generation pipeline is an async worker (not
- * Step Functions): the generateDeck mutation's starter Lambda creates a DRAFT
- * Deck + GenerationRun and async-invokes the worker, which calls Bedrock
- * (Claude cards + Stability images) and Polly (audio), writing card media to S3
- * and Card rows straight to DynamoDB. A linear job, so a worker beats stoop's
- * map-reduce Step Functions with far less infra. IAM grants mirror stoop's
- * addToRolePolicy blocks.
+ * SPORK backend.
+ *
+ * Flashcards generation is an async worker (not Step Functions): the generateDeck
+ * starter creates a DRAFT Deck + GenerationRun and async-invokes the worker,
+ * which calls Bedrock (Claude cards + Stability images) and Polly (audio),
+ * writing media to S3 and Card rows straight to DynamoDB.
+ *
+ * Quizzes generation FORKS on mode (see CLAUDE.md): the generateQuiz starter
+ * handles template-backed modes (MAP) synchronously — it builds the answer set
+ * from a shipped fixture and writes Quiz + Answers + GenerationRun with no
+ * Bedrock/worker/S3 at all — so it needs only the quiz-table write grants below.
+ * Generative quiz modes (deferred) will reuse the worker pattern.
+ *
+ * IAM grants mirror stoop's addToRolePolicy blocks.
  */
 const backend = defineBackend({
   auth,
@@ -23,6 +31,7 @@ const backend = defineBackend({
   generateDeckStarter,
   deckgenWorker,
   regenerateMedia,
+  generateQuizStarter,
 });
 
 const tables = backend.data.resources.tables;
@@ -79,3 +88,16 @@ regen.addToRolePolicy(pollyGrant());
 bucket.grantWrite(regen, 'media/decks/*');
 tables['Card'].grantReadWriteData(regen);
 tables['Deck'].grantReadData(regen);
+
+// --- Quiz starter (MAP): writes Quiz + Answer + GenerationRun. No Bedrock/S3 —
+// the map answer set is a shipped template, so this path never calls an LLM. ---
+const quizStarter = backend.generateQuizStarter.resources.lambda;
+backend.generateQuizStarter.addEnvironment('QUIZ_TABLE', tables['Quiz'].tableName);
+backend.generateQuizStarter.addEnvironment('ANSWER_TABLE', tables['Answer'].tableName);
+backend.generateQuizStarter.addEnvironment(
+  'GENERATION_RUN_TABLE',
+  tables['GenerationRun'].tableName,
+);
+tables['Quiz'].grantWriteData(quizStarter);
+tables['Answer'].grantWriteData(quizStarter);
+tables['GenerationRun'].grantWriteData(quizStarter);

@@ -21,8 +21,8 @@ export function EmptyState({
       <div className="empty-state__icon" aria-hidden="true">
         <IonIcon icon={icon} />
       </div>
-      <p className="fs-heading empty-state__title">{title}</p>
-      {message && <p className="fs-muted empty-state__message">{message}</p>}
+      <p className="sp-heading empty-state__title">{title}</p>
+      {message && <p className="sp-muted empty-state__message">{message}</p>}
       {children}
     </div>
   );

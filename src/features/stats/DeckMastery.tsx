@@ -26,7 +26,7 @@ export function DeckMastery({ deckId, cardCount }: { deckId: string; cardCount: 
   return (
     <div className="mastery" data-testid="deck-mastery">
       <div className="mastery__row">
-        <span className="fs-kicker">Mastery</span>
+        <span className="sp-kicker">Mastery</span>
         <span className="mastery__count">
           {data.mastered}/{data.total} · {data.percent}%
         </span>

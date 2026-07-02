@@ -27,8 +27,8 @@ export function SignIn() {
       </IonHeader>
       <IonContent fullscreen className="auth">
         <div className="auth__body">
-          <h1 className="auth__title fs-heading">Welcome back</h1>
-          <p className="auth__subtext fs-muted">Sign in to study your decks.</p>
+          <h1 className="auth__title sp-heading">Welcome back</h1>
+          <p className="auth__subtext sp-muted">Sign in to study your decks.</p>
           <AuthField
             label="Email"
             type="email"

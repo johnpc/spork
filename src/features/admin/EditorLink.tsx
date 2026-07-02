@@ -6,7 +6,7 @@ export function EditorLink() {
   const { isEditor } = useIsEditor();
   if (!isEditor) return null;
   return (
-    <Link to="/admin/decks" className="fs-kicker" data-testid="manage-link">
+    <Link to="/admin/decks" className="sp-kicker" data-testid="manage-link">
       Manage decks →
     </Link>
   );

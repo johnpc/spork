@@ -1,0 +1,109 @@
+/* Quiz play surface. Consumes --sp-* design tokens (never hardcoded values).
+   The map region classes are the whole visual bind: the engine's found set
+   drives --found vs --blank; non-answer regions are --inert. */
+
+.play {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.play-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-gap);
+  font-variant-numeric: tabular-nums;
+}
+
+.play-hud__clock {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sp-text);
+}
+
+.play-hud__score {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--sp-accent-strong);
+}
+
+.play-input__box {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1.1rem;
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+  color: var(--sp-text);
+}
+
+.play-input__box--hit {
+  border-color: var(--sp-correct);
+}
+
+.play-input__box--miss {
+  border-color: var(--sp-incorrect);
+}
+
+.play__start {
+  padding: 0.75rem 1.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--sp-accent-contrast);
+  background: var(--sp-accent);
+  border: none;
+  border-radius: var(--sp-radius);
+}
+
+.play__lobby {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.play__giveup {
+  align-self: center;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  color: var(--sp-text-muted);
+  background: transparent;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+}
+
+.play-done {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+/* --- Map renderer --- */
+.world-map {
+  width: 100%;
+  background: var(--sp-surface);
+  border-radius: var(--sp-radius);
+  overflow: hidden;
+}
+
+.sp-region {
+  outline: none;
+  stroke: var(--sp-border);
+  stroke-width: 0.3;
+  transition: fill 0.25s ease;
+}
+
+.sp-region--blank {
+  fill: var(--sp-accent-soft);
+}
+
+.sp-region--found {
+  fill: var(--sp-correct);
+}
+
+.sp-region--inert {
+  fill: var(--sp-border);
+}

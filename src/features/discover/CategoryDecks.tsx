@@ -28,7 +28,7 @@ export function CategoryDecks() {
       </IonHeader>
       <IonContent className="ion-padding">
         {isLoading ? (
-          <p className="fs-muted">Loading decks…</p>
+          <p className="sp-muted">Loading decks…</p>
         ) : decks && decks.length > 0 ? (
           <div className="deck-grid">
             {decks.map((deck) => (
@@ -36,7 +36,7 @@ export function CategoryDecks() {
             ))}
           </div>
         ) : (
-          <p className="fs-muted" data-testid="empty-decks">
+          <p className="sp-muted" data-testid="empty-decks">
             No decks here yet — check back soon.
           </p>
         )}

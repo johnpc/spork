@@ -32,7 +32,7 @@ export function StudyCard({ card, choices, direction, picked, onAnswer, onNext }
   return (
     <div className="study-card" data-testid="study-card">
       {imageUrl && <img className="study-card__img" src={imageUrl} alt="" />}
-      <p className="fs-card-face study-card__front">{prompt}</p>
+      <p className="sp-card-face study-card__front">{prompt}</p>
 
       <div className="study-card__options" data-testid="study-options">
         {choices.options.map((option) => (
@@ -51,7 +51,7 @@ export function StudyCard({ card, choices, direction, picked, onAnswer, onNext }
 
       {answered && (
         <div className="study-card__after" data-testid="study-after">
-          {card.hint && <p className="fs-muted study-card__hint">{card.hint}</p>}
+          {card.hint && <p className="sp-muted study-card__hint">{card.hint}</p>}
           {card.example && <p className="study-card__example">{card.example}</p>}
           <AudioButton audioPath={card.audioPath} />
           <button

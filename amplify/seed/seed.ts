@@ -12,6 +12,7 @@ import { signIn, signOut } from 'aws-amplify/auth';
 import './seedClient'; // configures Amplify + loads .env.local
 import { clearAll, seedReferenceData } from './seedReference';
 import { seedDeckData } from './seedDecks';
+import { seedQuizData } from './seedQuizzes';
 
 async function main() {
   const username = process.env.TEST_USERNAME;
@@ -29,6 +30,7 @@ async function main() {
 
   await seedReferenceData();
   await seedDeckData();
+  await seedQuizData();
 
   await signOut().catch(() => {});
   console.log('Seed complete.');

@@ -30,7 +30,7 @@ export function MyDecks() {
             </Link>
           </EmptyState>
         ) : isLoading ? (
-          <p className="fs-muted">Loading your decks…</p>
+          <p className="sp-muted">Loading your decks…</p>
         ) : decks.length === 0 ? (
           <EmptyState
             icon={compassOutline}
@@ -49,7 +49,7 @@ export function MyDecks() {
               {decks.map((deck) => (
                 <li key={deck.id} data-testid="my-deck">
                   <Link to={`/decks/${deck.deckId}`} className="my-decks__row">
-                    <span className="fs-heading my-decks__topic">{deck.topic}</span>
+                    <span className="sp-heading my-decks__topic">{deck.topic}</span>
                     <span className="my-decks__count">{deck.cardCount ?? 0} cards</span>
                   </Link>
                 </li>

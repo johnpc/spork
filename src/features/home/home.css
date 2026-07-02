@@ -1,0 +1,24 @@
+/* Spork Home game shelf. --sp-* tokens only. */
+.home-games {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.home-games__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1.25rem;
+  border-radius: var(--sp-radius);
+  background: var(--sp-accent-soft);
+  text-decoration: none;
+  color: var(--sp-text);
+}
+
+.home-games__name {
+  font-size: 1.35rem;
+}

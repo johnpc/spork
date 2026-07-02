@@ -12,4 +12,5 @@ export const seedCategories: SeedCategory[] = [
   { name: 'Scripture', slug: 'scripture', label: 'Scripture & Verses', sortOrder: 3 },
   { name: 'Science', slug: 'science', label: 'Science & Nature', sortOrder: 4 },
   { name: 'History', slug: 'history', label: 'History', sortOrder: 5 },
+  { name: 'Geography', slug: 'geography', label: 'Geography', sortOrder: 6 },
 ];

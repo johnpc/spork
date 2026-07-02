@@ -31,15 +31,15 @@ export function Study() {
       </IonHeader>
       <IonContent className="ion-padding">
         {!s.isAuthenticated ? (
-          <p className="fs-muted" data-testid="study-signed-out">
+          <p className="sp-muted" data-testid="study-signed-out">
             <Link to="/signin">Sign in</Link> to study this deck.
           </p>
         ) : s.isLoading ? (
-          <p className="fs-muted">Loading…</p>
+          <p className="sp-muted">Loading…</p>
         ) : s.current && s.choices ? (
           <>
             <div className="study__bar">
-              <span className="fs-muted study__progress" data-testid="study-progress">
+              <span className="sp-muted study__progress" data-testid="study-progress">
                 {s.position.index + 1} / {s.position.total}
               </span>
               <button

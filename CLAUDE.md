@@ -37,6 +37,50 @@ enough for the scenario, nothing speculative.
 5. **Deploy + seed** the backend if it changed (`npx ampx sandbox`, `npm run seed`).
 6. **Conventional commit, push, CI green.** Open a PR; CI blocks the merge.
 
+### PR titles (what shipped, not the backstory)
+
+The **title** names the feature added, bug fixed, or behavior changed — plainly, from the reader's
+point of view. It's a conventional-commit line: `type(scope): what changed`. All context — the phase
+you're on, what you proved vs. guessed, issues closed, rationale — belongs in the **description**,
+never the title.
+
+- **No development narrative in the title.** Strip "Phase 1 / 2b", "proven not guessed", internal
+  framing. The reader doesn't know or care which phase of your plan this was.
+- **No issue-number soup** (`(#86, #85)`) — reference issues in the body (`Closes #86`).
+- Write for someone scanning the merged history who's never seen your plan.
+
+Good: `feat(quizzes): fill in the world map as you name each country` ·
+`fix(play): accept accented country spellings ("Côte d'Ivoire")`
+Junky (avoid): `feat(quizzes): map mode Phase 2a (#12, #13)`
+
+### PR demo artifacts (screenshot or video of the new feature)
+
+When a PR changes anything a user can **see or interact with** (a screen, component, flow, visual or
+state change), the PR description MUST include a screenshot or short video of it working. Skip it
+only for changes with no visible surface — pure backend/pipeline logic, refactors, config, docs,
+tests-only.
+
+Generate the artifact from the slice's own acceptance test — don't stage a throwaway:
+
+- **Video (preferred for a flow):** the slice already has a Gherkin `.feature`. Playwright records a
+  video per test with `use: { video: 'on' }` (or `'retain-on-failure'`); the `.webm` lands under
+  `test-results/`. Run the one scenario (`npx playwright test <path> -g "<scenario>"`) and grab it.
+- **Screenshot (enough for a static change):** `await page.screenshot({ path: '...' })` in the step.
+
+Upload to `files.jpc.io` and paste the direct URL into the PR description — a `.webm`/`.png`/`.gif`
+URL renders inline in the GitHub PR body. All `aws` calls use **`AWS_PROFILE=personal`**; never inline
+keys.
+
+```bash
+FILE_PATH="test-results/<…>/video.webm"   # or your screenshot .png
+FILENAME=$(basename "$FILE_PATH")
+HASH=$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 5)
+AWS_PROFILE=personal aws s3 cp "$FILE_PATH" \
+  "s3://amplify-d1wnjkkkrwiiql-mai-imagehostbucketaac3bfe7-aark0f5h8nw8/public/public/${HASH}-${FILENAME}" \
+  --region us-west-2
+echo "Paste into the PR description: https://files.jpc.io/d/${HASH}-${FILENAME}"
+```
+
 ## Stack
 
 - **Client:** Ionic 8 + React 19 + TypeScript (strict), Vite, Capacitor (iOS via SPM).
@@ -76,7 +120,7 @@ The Quizzes game is itself data-driven the same way the platform is game-driven:
 - **Modes differ only by RENDERER** — a swappable view bound to the same found-set, chosen by
   `Quiz.mode` from a `RENDERERS` registry: `MAP` (color an SVG region), `TYPING`/`GRID` (fill slots),
   `MULTIPLE_CHOICE`, `ORDERED`. The input box, timer HUD, and score are mode-shared.
-- **Map mode is TEMPLATE-BACKED, not LLM-generated.** The map topology *is* the answer set, so
+- **Map mode is TEMPLATE-BACKED, not LLM-generated.** The map topology _is_ the answer set, so
   Claude would only hallucinate geometry/ISO codes. Map quizzes derive their answers from a shipped
   topojson (`world-atlas`) + a canonical ISO table (`i18n-iso-countries`) + a small curated alias
   fixture — reconciled **once at generation**, so the play client needs zero country-reference deps.
@@ -103,10 +147,22 @@ The Quizzes game is itself data-driven the same way the platform is game-driven:
   synchronous starter, no LLM. Lambdas write straight to DynamoDB via their IAM roles (bypassing
   AppSync), mirroring stoop's ingestion.
 
+### Guest-first (the Quizzes game needs no account)
+
+**The Quizzes game is guest-only** — no sign-in to browse, play, or save a score. A quiz is a timed
+session, so the player's best score lives on the **device in localStorage**
+(`src/games/quizzes/play/bestScoreStore.ts`), not in a per-user model. Don't add auth gates or
+owner-scoped models to Quizzes; if synced accounts arrive later, add a best-score model then (don't
+model ahead of a UI). The inherited Flashcards game still has its own auth/owner models — that's
+existing surface, not a pattern to copy into new games.
+
 ### Amplify auth contract (client mode ↔ schema rule MUST match)
 
 A request is authorized only when the **client `authMode`** and the model's **`allow.*` rule** name
-the **same provider**. Mismatches return `Unauthorized` / empty results, not a loud error.
+the **same provider**. Mismatches return `Unauthorized` / empty results, not a loud error. Guest
+reads work only when the model grants `allow.guest()` AND the client sends `identityPool` — which is
+the default in `src/lib/dataClient.ts`, so guest play "just works" as long as new read models keep
+the guest grant.
 
 - The data client (`src/lib/dataClient.ts`) defaults to **`identityPool`**; `readAuthMode()` upgrades
   signed-in users to **`userPool`** (group claims ride in the JWT).
@@ -127,6 +183,16 @@ Tests are colocated. Same file conventions everywhere:
 - **`x.ts`** helpers — pure functions for non-trivial logic (unit-testable, keeps files short).
 - **`X.css`** — consume `--sp-*` design tokens / role classes from `src/theme/variables.css`.
 
+## Design
+
+- **Style only via design tokens.** Consume the `--sp-*` CSS variables and role classes
+  (`.sp-heading`, `.sp-kicker`, `.sp-muted`, `.sp-card-face`) from `src/theme/variables.css` —
+  **never hardcoded hex/px** in feature CSS. This is what keeps a new game visually consistent with
+  the platform for free.
+- **Don't invent parallel visual patterns** — extend the tokens/role classes. A new game's surface
+  should read as part of Spork, not a bolt-on. Game-specific colors (e.g. map region fills) still
+  come from tokens (`--sp-correct`, `--sp-accent-soft`, …), not literals.
+
 ## Quality gates (non-negotiable — CI + husky pre-commit enforce them)
 
 Run `npm run quality` for the full set. **Enforce them yourself; when one fails, fix the code, never
@@ -146,8 +212,22 @@ the gate.** Scope covers both `src/` and `amplify/` LOGIC; only declarative file
 ### Honest e2e
 
 Every data-reading flow must be exercised at least once asserting on **rendered real (seeded) data**
-— never just a URL or element visibility. After signing in, wait for the Cognito session before
-reading data.
+— never just a URL or element visibility. For the guest-only Quizzes game that means asserting on the
+actual rendered map/answers (e.g. a region gains the `sp-region--found` class after a correct guess),
+not just that a counter changed. For any flow that still signs in (Flashcards), wait for the Cognito
+session before reading data — navigating immediately races the session and reads as a guest, which
+silently passes.
+
+## Definition of done
+
+A slice is done only when **all** of these hold:
+
+1. `npm run quality` green locally (pre-commit enforces it on commit).
+2. Gherkin acceptance scenarios + colocated unit tests added and passing.
+3. Backend deployed + seeded if any Amplify model changed.
+4. Conventional commit, branch pushed, PR open, **CI green**.
+5. PR description includes a **demo artifact** (screenshot/video) for any user-visible change — see
+   [PR demo artifacts](#pr-demo-artifacts-screenshot-or-video-of-the-new-feature).
 
 ## Commands
 
@@ -157,6 +237,7 @@ npm run quality        # full local gate: lint + format + check:lines + check:fe
 npm run format         # Prettier write (run before committing)
 npm run test:e2e       # Gherkin acceptance tests (bddgen + Playwright)
 npm run seed           # seed Discover categories + starter games (idempotent; needs editor creds)
+npm run gen:map-template  # rebuild the world-countries map fixture (topology ↔ ISO ↔ aliases)
 npm run e2e-config     # pull amplify_outputs.json from the sandbox stack
 npx ampx sandbox       # personal cloud backend sandbox
 ```
@@ -177,3 +258,21 @@ npx ampx sandbox       # personal cloud backend sandbox
 - Keep logic out of view components. Throwaway scripts go in `/tmp`, not the repo.
 - **Keep the platform/game seam sharp** — no game-specific logic in platform code; no platform
   forking inside a game.
+
+## Decisions
+
+Significant, hard-to-reverse choices are recorded here (add a line when you make one; expand into
+`docs/decisions/` if a choice needs its full rationale). Read these before re-opening a settled
+question.
+
+- **Guest-only Quizzes.** No account to play or save a score; best scores are per-device
+  (localStorage). Removes auth from the whole game surface. Revisit only if synced/social scores are
+  wanted.
+- **Map quizzes are template-backed, not LLM-generated.** The topology is the answer set; answers are
+  reconciled once at build time (`npm run gen:map-template`) from world-atlas + i18n-iso-countries
+  into a committed fixture, so neither the Lambda nor the client bundles country-reference packages.
+- **Generation forks at the starter, not the worker.** Template modes (MAP) complete synchronously
+  with no Bedrock; generative modes async-invoke a worker. Keeps the cheap/deterministic path off the
+  LLM entirely.
+- **One engine, N renderers.** The play engine (found-set + timer + score) is mode-agnostic; a mode
+  is a renderer + a `renderConfig` payload, never a schema change.

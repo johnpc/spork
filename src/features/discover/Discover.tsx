@@ -17,8 +17,8 @@ export function Discover() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        <h1 className="fs-heading discover__title">Find a deck</h1>
-        <p className="fs-muted discover__subtitle">Browse decks by category and start learning.</p>
+        <h1 className="sp-heading discover__title">Find a deck</h1>
+        <p className="sp-muted discover__subtitle">Browse decks by category and start learning.</p>
         <EditorLink />
         {isLoading ? (
           <div aria-hidden="true">
