@@ -1,87 +1,164 @@
+<p align="center">
+  <img src="assets/banner.png" alt="Spork — a stack of little brain games" width="100%" />
+</p>
+
 # Spork
 
-**A stack of little brain games.** Spork is one app that hosts many small games — **Quizzes**
-(Sporcle-style: name all the countries on a map, the US presidents, the periodic table, against a
-timer), **Flashcards** (discover AI-generated decks and study them with spaced repetition), and more
-to come (Acrostic, Quizzle, Chess Attack).
+**A stack of little brain games.** Spork is one app that hosts many small, timed brain games —
+Sporcle-style **Quizzes** (name every country on a map, the US presidents, the periodic table, before
+the clock runs out), **Flashcards** (AI-generated decks studied with spaced repetition), and more to
+come. Play instantly as a **guest** — no account required.
 
-Spork is built as a **shell + game islands**: the platform (auth, home, profile, streaks, the AI
-generation pipeline, the admin dashboard, the quality/CI rig) is shared, and each game is a
-self-contained island that plugs into it. Adding a game is a new island, not a rewrite.
+Spork is built as a **shell + game islands**: the platform (home, streaks, the AI generation
+pipeline, admin dashboard, quality/CI rig) is shared, and each game is a self-contained island that
+plugs into it. **Adding a game — or a new quiz type — is new data or a new renderer, never a
+rewrite.**
 
-Many games are **AI-generated**: an admin kicks off a generation and Claude writes the content
-(tool-forced structured output). Some content is **template-backed** instead — e.g. map quizzes
-derive their answers from real map topology + a canonical country table rather than an LLM, so the
-geometry is never hallucinated.
-
-> Architecture, quality bar, and toolchain descend from the **stoop** app via **flashstack** (the
-> Flashcards game's original home) — same Ionic + Amplify Gen2 stack, the same strict CI gates, and
-> the same Gherkin-first → full-e2e workflow.
+> Architecture, quality bar, and toolchain descend from the **stoop** app via **flashstack** — the
+> same Ionic + Amplify Gen2 stack, strict CI gates, and Gherkin-first → full-e2e workflow.
 
 ---
 
-## Status
+## The vision
 
-🚧 **Early MVP / active development.** The mobile client is scaffolded (Ionic + React) and the
-Amplify Gen2 backend is initialized. Slices land per the [roadmap](#roadmap).
+Sporcle proved that "name them all against a clock" is endlessly replayable, and that the real moat
+isn't any single quiz — it's **breadth**: ~1.5M quizzes across dozens of formats. Spork's bet is that
+this breadth is not dozens of different apps. It's **one small engine, a handful of renderers, and an
+ocean of data**:
+
+1. **One content model.** Every quiz — a world map, a flag grid, a "name the Beatles" foursome, the
+   periodic table — is stored as a `Quiz` plus a list of universal `Answer` rows. Not a table per
+   type; **one shape, discriminated by a `promptKind` + grouping** (this mirrors how Sporcle's own
+   `game` + `entry` tables work under the hood).
+2. **A few renderers.** How you're _prompted_ (a map region, an image, a text clue, a grid cell,
+   nothing) and how you _answer_ (type, click, pick, arrange) are small, swappable axes on top of the
+   same engine.
+3. **An ocean of data.** Most of Spork's value is content. It comes from three places: **curated
+   templates** (maps — the topology _is_ the answer set, so nothing is hallucinated), **AI
+   generation** (Claude writes typed/multiple-choice/picture quizzes on demand), and eventually
+   **imported community quizzes** (see [Importing Sporcle quizzes](#importing-sporcle-quizzes)).
+
+The engine is the easy 10%. Getting the **data model** right so the breadth comes almost for free is
+the whole game — and it's what this repo is organized around.
+
+---
+
+## Game types
+
+Spork's Quizzes game targets every Sporcle-style interaction format. Each one reuses the **same
+`Answer` row and play engine**, differing only along three axes — **prompt** (what you see), **input**
+(how you answer), and **scoring** (what "correct" means):
+
+| Type                | You…                                                  | Prompt   | Input   | Scoring    |
+| ------------------- | ----------------------------------------------------- | -------- | ------- | ---------- |
+| **Classic**         | type answers to reveal a hidden list                  | none     | type    | membership |
+| **Map**             | type a place → its region fills in on an SVG map      | region   | type    | membership |
+| **Picture Box**     | identify people/things from images by typing          | image    | type    | membership |
+| **Multiple Choice** | pick the correct option, one question at a time       | text     | pick    | membership |
+| **Clickable**       | click the correct tiles out of a displayed set        | text/img | click   | membership |
+| **Picture Click**   | click the right spot on a single image (map/diagram)  | region   | click   | membership |
+| **Slideshow**       | answer one prompt per slide, advancing through a deck | text/img | type    | membership |
+| **Sortable**        | drop each item into its correct bucket/category       | text     | arrange | bucketing  |
+| **Order Up**        | arrange items into the correct sequence / ranking     | text     | arrange | sequence   |
+
+On top of these sit **scoring variants** that reuse a type's renderer with one engine flag —
+**Minefield** (one wrong answer ends the run), **Blitz** (race a short clock), **Alphabet** (one
+answer per letter). And beyond Quizzes, Spork will grow sibling games: **Flashcards** (shipping),
+then **Acrostic**, **Quizzle**, and **Chess Attack**.
+
+### The three axes, concretely
+
+- **Prompt** (`Answer.promptKind`): `NONE` · `TEXT` (a clue) · `IMAGE` (a media key) · `REGION` (an
+  SVG/id) · `CELL` (a grid coordinate). Plus `Answer.groupKey` to tie several rows to one prompt (a
+  four-member "foursome").
+- **Input** (`Quiz.inputMode`): `type` · `pick` · `click` · `arrange`.
+- **Scoring** (`Quiz.scoringMode`): `membership` (find them all — the found-set engine) · `sequence`
+  (Order Up) · `bucketing` (Sortable) · `elimination` (Minefield).
+
+Most types are just a combination of these plus a renderer component. `membership` types share one
+engine; `sequence`/`bucketing`/`elimination` are deliberate engine variants, not forced fits.
+
+---
+
+## Importing Sporcle quizzes
+
+A long-term goal is to **import a large corpus of existing quizzes** into Spork's format so the
+library is deep from day one. The plan:
+
+1. **Scrape** public quiz pages (respecting rate limits / robots) into a raw archive — title,
+   category, type, the answer list, and any per-type extras (map region ids, image URLs, clues,
+   groups).
+2. **Map** each source type onto a Spork `(promptKind, inputMode, scoringMode)` triple — the table
+   above _is_ the mapping. Because the target model is universal, this is a data transform, not a
+   per-type integration.
+3. **Normalize** answers into our `accepted[]` shape (lowercase/accent/punct-insensitive) and
+   reconcile any media/geometry to Spork assets.
+4. **Load** as `Quiz` + `Answer` rows via the same path the seed and generation pipeline use.
+
+> ⚖️ **Note:** quiz content and trademarks belong to their authors/Sporcle. Import is intended for
+> personal/experimental use and content we have the right to use; a public launch would require
+> original or appropriately-licensed content. This is a technical capability, not a license.
 
 ---
 
 ## Tech Stack
 
-| Layer                   | Choice                                                                              |
-| ----------------------- | ----------------------------------------------------------------------------------- |
-| **Mobile / Web client** | [Ionic](https://ionicframework.com/) 8 + React 19 + TypeScript (strict)             |
-| **Native shell**        | [Capacitor](https://capacitorjs.com/) (iOS / Android)                               |
-| **Bundler**             | Vite                                                                                |
-| **Backend**             | AWS Amplify Gen2 — Cognito auth + AppSync (GraphQL) + DynamoDB                      |
-| **Testing**             | Vitest + Istanbul coverage (unit) · Playwright + playwright-bdd Gherkin (e2e)       |
-| **AI**                  | Bedrock Claude (card text) · Bedrock Stability (card images) · Amazon Polly (audio) |
+| Layer                   | Choice                                                                           |
+| ----------------------- | -------------------------------------------------------------------------------- |
+| **Mobile / Web client** | [Ionic](https://ionicframework.com/) 8 + React 19 + TypeScript (strict)          |
+| **Native shell**        | [Capacitor](https://capacitorjs.com/) (iOS / Android) + installable **PWA**      |
+| **Bundler**             | Vite                                                                             |
+| **Backend**             | AWS Amplify Gen2 — Cognito (guest identity) + AppSync (GraphQL) + DynamoDB       |
+| **Maps**                | `react-simple-maps` + `world-atlas` topology + `i18n-iso-countries` (build-time) |
+| **Testing**             | Vitest + Istanbul coverage (unit) · Playwright + playwright-bdd Gherkin (e2e)    |
+| **AI**                  | Bedrock Claude (tool-forced structured output) for generated quiz content        |
 
 ---
 
 ## Architecture
 
-Flashstack is built around a small set of published resources and per-user study state.
-
 ```
-   admin initiates                ┌──────────────┐
-   generateDeck mutation  ──────► │  Deck-gen    │  Claude writes cards →
-   (editors group)                │  pipeline    │  per-card [image + audio] →
-                                  │ (Step Funcs) │  write Deck + Cards (DRAFT)
-                                  └──────┬───────┘
-                                         │  admin edits / regenerates / publishes
-                                         ▼
-   Discover (category shelves) ◄── Deck (PUBLISHED) ──► Card (front/back/hint/example/image/audio)
-                                         │
-                user adds to "My Decks"  ▼
-            UserDeck ──► play & self-grade ──► UserCardReview (SM-2 ease/interval/dueAt)
+                       ┌─────────────────────── Spork (platform shell) ───────────────────────┐
+                       │  Home game shelf · guest identity · streaks · admin · quality/CI      │
+                       └───────────────┬───────────────────────────────┬──────────────────────┘
+                                       │                               │
+                        ┌──────────────▼─────────────┐   ┌─────────────▼──────────────┐
+                        │   Quizzes  (this repo)      │   │       Flashcards           │
+                        │                             │   │  Deck → Card, SM-2 study   │
+                        │  generateQuiz ─┬─ template  │   └────────────────────────────┘
+                        │   (mode fork)  │  (MAP: no LLM, from topology fixture)
+                        │                └─ generative (Bedrock: typed/MC/picture …)
+                        │                         │
+                        │   Quiz (PUBLISHED) ──► Answer[]  {promptKind, promptValue,
+                        │        │                          groupKey, display, accepted[]}
+                        │        ▼
+                        │   play engine: normalize → match → found-set + timer + score
+                        │   renderer registry: RENDERERS[quiz.mode]  (Map shipped; others land here)
+                        │        │
+                        │        ▼  best score per-device (localStorage — guest-only)
+                        └─────────────────────────────────────────────────────────────┘
 ```
 
 ### Core models
 
-| Model            | Purpose                                                                           |
-| ---------------- | --------------------------------------------------------------------------------- |
-| `Category`       | Discover shelves (the browsable category rows + their order/labels).              |
-| `Deck`           | A published (or draft) deck: topic, category, voice language, status, card count. |
-| `Card`           | One card: front, back, hint, example, image (S3), audio (S3).                     |
-| `GenerationRun`  | One AI generation run — powers the admin dashboard.                               |
-| `UserDeck`       | A user's saved deck ("My Decks"). Owner-scoped.                                   |
-| `UserCardReview` | Per-(user, card) SM-2 state: easeFactor, interval, repetitions, dueAt.            |
+| Model           | Purpose                                                                                     |
+| --------------- | ------------------------------------------------------------------------------------------- |
+| `Quiz`          | Published unit: topic, `mode`, `inputMode`, `scoringMode`, time limit, `renderConfig` JSON. |
+| `Answer`        | Universal row: `promptKind`, `promptValue`, `groupKey`, `display`, `accepted[]`, `options`. |
+| `Category`      | Discover shelves (browsable rows + order/labels), shared across games.                      |
+| `GenerationRun` | One template/AI generation run — powers the admin dashboard (`game` + `mode`).              |
+| `Deck` / `Card` | The Flashcards game (inherited): spaced-repetition study.                                   |
 
-### Spaced repetition
-
-Study uses canonical **SM-2** (the SuperMemo / Anki algorithm). After each self-grade (0–5) a pure,
-fully-tested function updates the card's ease factor, interval, and next due date; the play session
-front-loads new and overdue cards.
+Best scores for the guest-only Quizzes game live on the **device** (`localStorage`), not in a
+per-user model — no account needed to play or to keep a personal best.
 
 ---
 
 ## Getting Started
 
 ```bash
-git clone https://github.com/johnpc/flashstack
-cd flashstack
+git clone https://github.com/johnpc/spork
+cd spork
 npm install
 npm run dev            # Vite dev server (or: ionic serve)
 ```
@@ -93,15 +170,23 @@ to your AWS account and writes `amplify_outputs.json`):
 
 ```bash
 npx ampx sandbox
-npm run seed           # seed Discover categories (needs an editor TEST_USERNAME/TEST_PASSWORD)
+npm run gen:map-template   # (re)build the world-countries map fixture
+npm run seed               # seed categories, a demo deck, and the World Countries quiz
+```
+
+### Brand assets
+
+```bash
+npm run gen:icons          # regenerate PWA + iOS (light/dark/tinted) + Android icons
+                           # from assets/icon.png (light) & assets/icon-dark.png (dark)
 ```
 
 ---
 
 ## Quality Gates
 
-Flashstack enforces strict quality requirements. Every gate runs in CI on PRs to `main`, and the
-blocking gates also run locally on every commit via a Husky pre-commit hook.
+Every gate runs in CI on PRs to `main`, and the blocking gates also run locally on every commit via a
+Husky pre-commit hook.
 
 | Command                  | What it checks                                                                    |
 | ------------------------ | --------------------------------------------------------------------------------- |
@@ -115,36 +200,39 @@ blocking gates also run locally on every commit via a Husky pre-commit hook.
 | `npm run test:e2e`       | **Gherkin** acceptance tests via Playwright + playwright-bdd                      |
 | `npm run quality`        | Runs the full local gate in sequence                                              |
 
-All acceptance tests are written as Gherkin `.feature` files — never raw spec code. The fix for low
-coverage is always a new test, never an exclusion.
+All acceptance tests are written as Gherkin `.feature` files — never raw spec code. Every data-reading
+flow asserts on **rendered real (seeded) data** (e.g. a map region actually filling in), not just
+navigation. The fix for low coverage is always a new test, never an exclusion.
 
 ---
 
-## iOS / Android Deployment (CI)
+## iOS / Android / PWA
 
-`.github/workflows/ios-deploy.yml` archives the app and uploads to TestFlight; `android-deploy.yml`
-builds a debug APK and publishes it to a GitHub Release. Both run after CI succeeds on `main`.
+The web build is an installable **PWA** (`public/manifest.json`, maskable icons). Capacitor wraps it
+for the stores: `.github/workflows/ios-deploy.yml` archives + uploads to TestFlight;
+`android-deploy.yml` builds and publishes an APK — both after CI succeeds on `main`. The iOS app icon
+ships **light, dark, and tinted** variants.
 
-Required repository secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TEST_USERNAME`,
-`TEST_PASSWORD`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`, `TEAM_ID`.
-
-- **iOS bundle id:** `com.johncorser.flashstack`
+- **Bundle id:** `com.johncorser.spork`
+- Required repo secrets: `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TEST_USERNAME`,
+  `TEST_PASSWORD`, `ASC_KEY_ID`, `ASC_ISSUER_ID`, `ASC_KEY_CONTENT`, `TEAM_ID`.
 
 ---
 
 ## Roadmap
 
-| #   | Milestone                                                                        |
-| --- | -------------------------------------------------------------------------------- |
-| 1   | Scaffold + public repo + CI gates + Discover shelves (read path)                 |
-| 2   | Discover decks — category shelves list published decks                           |
-| 3   | My Decks — add/remove a deck (owner-scoped)                                      |
-| 4   | Study — play a deck, self-grade, SM-2 spaced repetition                          |
-| 5   | Admin deck generation — Bedrock + Polly Step Functions pipeline + manage/publish |
-| 6   | iOS + Android auto-publish verification                                          |
+| #   | Milestone                                                                              | Status |
+| --- | -------------------------------------------------------------------------------------- | ------ |
+| 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified) | ✅     |
+| 2   | Universal 3-axis model + all Sporcle interaction types (renderer + seed + e2e each)    | 🔨     |
+| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                 | ⬜     |
+| 4   | Quiz import pipeline (scrape → map → normalize → load)                                 | ⬜     |
+| 5   | Discovery: browse/search/categories, popularity, per-device history                    | ⬜     |
+| 6   | Sibling games — Acrostic, Quizzle, Chess Attack                                        | ⬜     |
 
 ---
 
 ## License
 
-Private / proprietary. All rights reserved.
+Private / proprietary. All rights reserved. Imported/third-party quiz content remains the property of
+its respective authors.
