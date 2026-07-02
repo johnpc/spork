@@ -235,6 +235,30 @@ const schema = a.schema({
   // in a per-user model — there is no UserQuizScore. If accounts arrive later, a
   // synced best-score model can be added then (don't model ahead of a UI).
 
+  // ─── Steps game (word ladder) ────────────────────────────────────────────
+  // A DISTINCT game, not a quiz mode: transform `start` into `target` one letter
+  // at a time, every intermediate a real word. This model owns none of the quiz
+  // machinery — its own engine validates single-letter steps against `dictionary`
+  // (the JSON set of allowed words for THIS puzzle). `parPath` is a known
+  // solution (JSON string[]) used for par length + a hint. Guest-only, same read/
+  // editor authz as the other published content.
+  WordLadder: a
+    .model({
+      start: a.string().required(),
+      target: a.string().required(),
+      dictionary: a.string().required(), // JSON string[] of allowed words (normalized lowercase)
+      parPath: a.string().required(), // JSON string[] — a known start→target solution
+      difficulty: a.enum(['EASY', 'MEDIUM', 'HARD']),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+    })
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
   // One generation run — the admin dashboard reads these (stoop's SyncRun
   // analogue). Serves every game: `game` says which island, `mode` distinguishes
   // template-backed (e.g. MAP quizzes — synchronous, no LLM) from generative

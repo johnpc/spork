@@ -125,6 +125,8 @@ jobs:
             paths: .features-gen/e2e/features/journey
           - name: play
             paths: .features-gen/e2e/features/play
+          - name: steps
+            paths: .features-gen/e2e/features/steps
     steps:
       - uses: actions/checkout@v7
 

@@ -4,6 +4,8 @@ import { Home } from './features/home/Home';
 import { QuizList } from './games/quizzes/list/QuizList';
 import { Play } from './games/quizzes/play/Play';
 import { QuizAdmin } from './games/quizzes/admin/QuizAdmin';
+import { LadderList } from './games/steps/list/LadderList';
+import { Steps } from './games/steps/play/Steps';
 import { Discover } from './features/discover/Discover';
 import { CategoryDecks } from './features/discover/CategoryDecks';
 import { DeckDetail } from './features/deck/DeckDetail';
@@ -29,6 +31,12 @@ export function AppRoutes() {
       </Route>
       <Route exact path="/quizzes/:id/play">
         <Play />
+      </Route>
+      <Route exact path="/steps">
+        <LadderList />
+      </Route>
+      <Route exact path="/steps/:id">
+        <Steps />
       </Route>
       <Route exact path="/discover">
         <Discover />

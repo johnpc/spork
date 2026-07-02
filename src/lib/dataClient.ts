@@ -32,3 +32,4 @@ export type GenerationRunRecord = Schema['GenerationRun']['type'];
 export type UserStatRecord = Schema['UserStat']['type'];
 export type QuizRecord = Schema['Quiz']['type'];
 export type AnswerRecord = Schema['Answer']['type'];
+export type WordLadderRecord = Schema['WordLadder']['type'];

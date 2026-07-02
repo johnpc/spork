@@ -12,6 +12,7 @@ describe('Home', () => {
     );
     expect(screen.getByTestId('home-games')).toBeInTheDocument();
     expect(screen.getByTestId('game-quizzes')).toHaveAttribute('href', '/quizzes');
+    expect(screen.getByTestId('game-steps')).toHaveAttribute('href', '/steps');
     expect(screen.getByTestId('game-flashcards')).toHaveAttribute('href', '/discover');
   });
 });

@@ -11,7 +11,7 @@ by a shared shell and a common feel. Play instantly as a **guest** — no accoun
 
 Shipping today: **Quizzes** (Sporcle-style — name every country on a map, the US presidents, the
 periodic table, against a clock) and **Flashcards** (AI-generated decks, spaced-repetition study). On
-the roadmap: **Acrostic**, **Chess Attack**, **Quizzle**, **Steps**, and **Live Trivia** — each a
+the roadmap: **Acrostic**, **Chess Attack**, **Quizzle**, and **Live Trivia** — each a
 real, independent game (see [The games](#the-games)).
 
 Spork is built as a **shell + game islands**: the platform (home, guest identity, streaks, the AI
@@ -29,8 +29,8 @@ rewrite** — and _within_ a game like Quizzes, adding a new format is just new 
 Sporcle isn't one game — it's a **destination for many bite-sized brain games**, each with its own
 mechanic, sharing an audience and a habit. Spork chases the same shape at two levels:
 
-**Level 1 — a shelf of distinct games.** Two ship today — **Quizzes** and **Flashcards** — with
-**Acrostic, Steps, Chess Attack, Quizzle, and Live Trivia** on the roadmap. These are _not_ variations
+**Level 1 — a shelf of distinct games.** Three ship today — **Quizzes**, **Steps**, and
+**Flashcards** — with **Acrostic, Chess Attack, Quizzle, and Live Trivia** on the roadmap. These are _not_ variations
 of one engine: a spaced-repetition card deck, a chess variant, a word ladder, and a timed quiz have
 nothing mechanically in common. What they share is the **platform**: one guest-first home, streaks, a
 consistent look, and the build/quality rig. Each game is an island you can add without touching the
@@ -65,7 +65,7 @@ planned as its own island under `src/games/<game>/` reusing the shared shell.
 | **Quizzes**      | ✅ shipping | Sporcle-style "name them all against a clock," across 9 interaction formats (see [Quiz types](#game-types)). |
 | **Flashcards**   | ✅ shipping | AI-generated decks studied with spaced repetition (SM-2). The flashstack app, folded in as a game.           |
 | **Acrostic**     | ⬜ planned  | A word puzzle: solve clues whose letters fill a grid, revealing a hidden quote a little at a time.           |
-| **Steps**        | ⬜ planned  | Word ladder — transform a start word into a target one change at a time.                                     |
+| **Steps**        | ✅ shipping | Word ladder — transform a start word into a target one letter at a time, each step a real word.              |
 | **Chess Attack** | ⬜ planned  | A fast chess variant on a small board — few powerful pieces, quick chaotic games.                            |
 | **Quizzle**      | ⬜ planned  | A pub-quiz "road trip" where you **wager** on your confidence per answer — points ride on the bet.           |
 | **Live Trivia**  | ⬜ planned  | Real-time multiplayer rounds — everyone answers the same question on a shared clock, live leaderboard.       |
@@ -254,14 +254,14 @@ ships **light, dark, and tinted** variants.
 
 ## Roadmap
 
-| #   | Milestone                                                                              | Status |
-| --- | -------------------------------------------------------------------------------------- | ------ |
-| 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified) | ✅     |
-| 2   | Universal 3-axis model + all 9 Sporcle quiz formats (renderer + seed + e2e each)       | ✅     |
-| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                 | ✅     |
-| 4   | Quiz import/scrape pipeline — **paused** (AI generation covers breadth)                | ⏸️     |
-| 5   | Discovery: browse/search/categories, popularity, per-device history                    | ⬜     |
-| 6   | **New games** (own islands): Acrostic, Steps, Chess Attack, Quizzle, Live Trivia       | ⬜     |
+| #   | Milestone                                                                                | Status |
+| --- | ---------------------------------------------------------------------------------------- | ------ |
+| 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified)   | ✅     |
+| 2   | Universal 3-axis model + all 9 Sporcle quiz formats (renderer + seed + e2e each)         | ✅     |
+| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                   | ✅     |
+| 4   | Quiz import/scrape pipeline — **paused** (AI generation covers breadth)                  | ⏸️     |
+| 5   | Discovery: browse/search/categories, popularity, per-device history                      | ⬜     |
+| 6   | **New games** (own islands): Steps ✅, then Acrostic, Chess Attack, Quizzle, Live Trivia | 🔨     |
 
 ---
 

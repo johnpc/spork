@@ -12,6 +12,12 @@ const GAMES: { name: string; tagline: string; to: string; testId: string }[] = [
     testId: 'game-quizzes',
   },
   {
+    name: 'Steps',
+    tagline: 'Turn one word into another, one letter at a time.',
+    to: '/steps',
+    testId: 'game-steps',
+  },
+  {
     name: 'Flashcards',
     tagline: 'Learn anything with spaced repetition.',
     to: '/discover',
