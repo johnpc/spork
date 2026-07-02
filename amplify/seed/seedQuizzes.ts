@@ -16,6 +16,8 @@ export async function seedQuizData(): Promise<number> {
       categorySlug: 'geography',
       description: 'Name every country in the world before time runs out.',
       mode: 'MAP',
+      inputMode: 'TYPE',
+      scoringMode: 'MEMBERSHIP',
       status: 'PUBLISHED',
       answerCount: WORLD_COUNTRIES.length,
       timeLimitSeconds: 900,

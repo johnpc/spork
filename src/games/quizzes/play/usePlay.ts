@@ -3,17 +3,17 @@ import { useQuery } from '@tanstack/react-query';
 import { fetchQuizData } from './playApi';
 import { buildAliasIndex } from './buildAliasIndex';
 import { matchAnswer } from './matchAnswer';
-import { applyFound, isComplete } from './scoreState';
 import { nextRemaining } from './tickTimer';
+import { applyAttempt, type ScoringMode } from './scoringModes';
 import { useRecordBestScore } from './useRecordBestScore';
 
 type Status = 'idle' | 'running' | 'done';
 
 /**
- * Mode-agnostic quiz play engine: load quiz + answers, run a countdown, match
- * typed guesses against the alias index, and track the found set. Renderers
- * (map/list/…) read `found` + `answers`; the input box + HUD are shared. No mode
- * logic lives here — that's the whole point of the engine/renderer split.
+ * Mode-agnostic quiz play engine: load quiz + answers, run a countdown, and
+ * track the found set — delegating the scoring RULE to applyAttempt (the third
+ * axis). Renderers answer either by typed guess (`submit`) or by resolved answer
+ * id (`attempt`, for click/pick/arrange). No per-type logic lives here.
  */
 export function usePlay(quizId: string | undefined) {
   const { data, isLoading } = useQuery({
@@ -26,6 +26,7 @@ export function usePlay(quizId: string | undefined) {
   const answers = useMemo(() => data?.answers ?? [], [data]);
   const total = answers.length;
   const limit = quiz?.timeLimitSeconds ?? 300;
+  const scoring = (quiz?.scoringMode ?? 'MEMBERSHIP') as ScoringMode;
   const index = useMemo(() => buildAliasIndex(answers), [answers]);
 
   const [found, setFound] = useState<Set<string>>(new Set());
@@ -58,18 +59,23 @@ export function usePlay(quizId: string | undefined) {
     return () => clearInterval(id);
   }, [status, limit]);
 
-  /** Submit a guess; returns true on a fresh match (for input feedback). */
-  const submit = useCallback(
-    (guess: string): boolean => {
+  /** Register a resolved attempt (by answer id, + optional bucket). Returns
+   * whether it scored — drives renderer/input feedback. */
+  const attempt = useCallback(
+    (answerId: string | null, bucket?: string): boolean => {
       if (status !== 'running') return false;
-      const id = matchAnswer(guess, index);
-      if (!id || found.has(id)) return false;
-      const next = applyFound(found, id);
-      setFound(next);
-      if (isComplete(next.size, total)) setStatus('done');
-      return true;
+      const r = applyAttempt(scoring, { found, status: 'running' }, { answerId, bucket }, answers);
+      if (r.found.size !== found.size) setFound(r.found);
+      if (r.status === 'done') setStatus('done');
+      return r.hit;
     },
-    [status, index, found, total],
+    [status, scoring, found, answers],
+  );
+
+  /** Typed-input convenience: resolve a guess to an id, then attempt it. */
+  const submit = useCallback(
+    (guess: string): boolean => attempt(matchAnswer(guess, index)),
+    [attempt, index],
   );
 
   return {
@@ -79,6 +85,7 @@ export function usePlay(quizId: string | undefined) {
     status,
     found,
     submit,
+    attempt,
     start,
     giveUp,
     remaining,

@@ -13,6 +13,8 @@ import type { RendererProps } from './renderers';
  * numeric ISO code, matching a REGION answer's promptValue.
  */
 export function WorldMap({ answers, found }: RendererProps) {
+  // MAP is a typed-input mode: the player types into the shared PlayInput, so
+  // this renderer ignores `attempt` and just projects the found set onto the map.
   const regionToAnswer = useMemo(() => regionAnswerMap(answers), [answers]);
   return (
     <div className="world-map" data-testid="world-map">

@@ -52,6 +52,8 @@ export async function startMapQuiz(
     topic: titleFor(input.template),
     categorySlug: input.categorySlug,
     mode: 'MAP',
+    inputMode: 'TYPE',
+    scoringMode: 'MEMBERSHIP',
     status: 'PUBLISHED',
     answerCount: answers.length,
     timeLimitSeconds: input.timeLimitSeconds,

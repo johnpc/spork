@@ -145,18 +145,34 @@ const schema = a.schema({
     .authorization((allow) => [allow.owner()]),
 
   // ─── Quizzes game ──────────────────────────────────────────────────────────
-  // A quiz is the published unit (Deck analogue). `mode` selects the play
-  // renderer; the engine (accepted-answer set + timer + score) is identical
-  // across modes. `renderConfig` is a small JSON blob for mode-specific view
-  // config (MAP: {topology, projection}; GRID: {columns}; null otherwise) — so
-  // adding a mode is a renderer + payload, never a reschema. `timeLimitSeconds`
-  // is engine config. Same read/editor authz as Deck.
+  // A quiz is the published unit (Deck analogue). Every Sporcle-style type is
+  // this one model described by THREE ORTHOGONAL AXES (see CLAUDE.md):
+  //   • mode        → which RENDERER draws the board (RENDERERS[mode]).
+  //   • inputMode   → HOW the player answers: type / pick / click / arrange.
+  //   • scoringMode → what "correct" means: membership (find them all) /
+  //                   sequence (Order Up) / bucketing (Sortable) /
+  //                   elimination (Minefield — one miss ends the run).
+  // `renderConfig` is a small JSON blob for mode-specific view config (MAP:
+  // {topology,projection}; GRID: {columns}; SLIDESHOW: {}, …). `timeLimitSeconds`
+  // is engine config. Adding a type = a renderer + these fields, never a reschema.
   Quiz: a
     .model({
       topic: a.string().required(), // display title, e.g. "Countries of the World"
       categorySlug: a.string().required(),
       description: a.string(),
-      mode: a.enum(['MAP', 'TYPING', 'GRID', 'MULTIPLE_CHOICE', 'ORDERED']),
+      mode: a.enum([
+        'CLASSIC',
+        'MAP',
+        'PICTURE_BOX',
+        'MULTIPLE_CHOICE',
+        'CLICKABLE',
+        'PICTURE_CLICK',
+        'SLIDESHOW',
+        'SORTABLE',
+        'ORDER_UP',
+      ]),
+      inputMode: a.enum(['TYPE', 'PICK', 'CLICK', 'ARRANGE']),
+      scoringMode: a.enum(['MEMBERSHIP', 'SEQUENCE', 'BUCKETING', 'ELIMINATION']),
       status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
       answerCount: a.integer().default(0),
       timeLimitSeconds: a.integer().default(300),
@@ -199,6 +215,10 @@ const schema = a.schema({
       display: a.string().required(),
       accepted: a.string().required(), // JSON string[] of accepted spellings
       hint: a.string(),
+      // Type-specific extras (all nullable — the universal row absorbs them):
+      options: a.string(), // MULTIPLE_CHOICE/CLICKABLE: JSON string[] of choices shown
+      orderIndex: a.integer(), // ORDER_UP: this answer's correct position in the sequence
+      bucket: a.string(), // SORTABLE: the correct bucket/category label for this item
     })
     // Read all answers for a quiz, ordered — the play read path.
     .secondaryIndexes((index) => [index('quizId').sortKeys(['ord'])])

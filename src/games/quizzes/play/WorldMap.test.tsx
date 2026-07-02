@@ -33,7 +33,9 @@ const answers = [
 describe('WorldMap', () => {
   it('fills found regions, leaves others blank, and marks non-answers inert', () => {
     // found set holds ANSWER IDS — a1 (Brazil/076) is found.
-    const { container } = render(<WorldMap answers={answers} found={new Set(['a1'])} />);
+    const { container } = render(
+      <WorldMap answers={answers} found={new Set(['a1'])} attempt={() => false} />,
+    );
     expect(screen.getByTestId('world-map')).toBeInTheDocument();
     const paths = container.querySelectorAll('path');
     const byRegion = (r: string) =>

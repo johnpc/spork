@@ -10,19 +10,22 @@ import {
 import { useParams } from 'react-router-dom';
 import { usePlay } from './usePlay';
 import { useBestScore } from './useBestScore';
-import { rendererFor } from './renderers';
+import { rendererFor, usesTypedInput } from './renderers';
 import { PlayHud } from './PlayHud';
 import { PlayInput } from './PlayInput';
 import { PlayDone } from './PlayDone';
 import './play.css';
 
 /** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
- * (timer + found set + score), and shows the mode-shared HUD + input. */
+ * (timer + found set + score), and shows the mode-shared HUD. Typed-input modes
+ * get the shared PlayInput; click/pick/arrange modes answer inside the renderer
+ * via `attempt`. */
 export function Play() {
   const { id } = useParams<{ id: string }>();
   const p = usePlay(id);
   const { best, refresh } = useBestScore(id);
   const Renderer = rendererFor(p.quiz?.mode);
+  const typed = usesTypedInput(p.quiz?.mode);
 
   return (
     <IonPage>
@@ -44,7 +47,7 @@ export function Play() {
         ) : (
           <div className="play">
             <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
-            <Renderer answers={p.answers} found={p.found} />
+            <Renderer answers={p.answers} found={p.found} attempt={p.attempt} />
             {p.status === 'idle' && (
               <div className="play__lobby">
                 {best != null && (
@@ -59,7 +62,7 @@ export function Play() {
             )}
             {p.status === 'running' && (
               <>
-                <PlayInput onSubmit={p.submit} />
+                {typed && <PlayInput onSubmit={p.submit} />}
                 <button className="play__giveup" data-testid="play-giveup" onClick={p.giveUp}>
                   Give up
                 </button>
