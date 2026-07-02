@@ -1,24 +1,81 @@
-/* Spork Home game shelf. --sp-* tokens only. */
+/* Spork Home game shelf. --sp-* tokens + per-game accent gradients (inline). */
+.home-hero {
+  padding: 0.5rem 0 1.25rem;
+  text-align: center;
+}
+
+.home-hero__title {
+  font-family: var(--sp-font-serif, serif);
+  font-size: 2.4rem;
+  font-weight: 800;
+  margin: 0;
+  color: var(--sp-text);
+  letter-spacing: -0.02em;
+}
+
+.home-hero__sub {
+  margin: 0.25rem 0 0;
+  color: var(--sp-text-muted);
+  font-size: 1rem;
+}
+
 .home-games {
   list-style: none;
-  margin: 1rem 0 0;
+  margin: 0 auto;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--sp-gap);
+  max-width: 900px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
-.home-games__card {
+@media (min-width: 640px) {
+  .home-games {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.home-card {
   display: flex;
-  flex-direction: column;
-  gap: 0.35rem;
-  padding: 1.25rem;
-  border-radius: var(--sp-radius);
-  background: var(--sp-accent-soft);
+  align-items: center;
+  gap: 1rem;
+  min-height: 108px;
+  padding: 1.25rem 1.4rem;
+  border-radius: 20px;
   text-decoration: none;
-  color: var(--sp-text);
+  color: #fff;
+  box-shadow: var(--sp-shadow);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
 }
 
-.home-games__name {
-  font-size: 1.35rem;
+.home-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--sp-shadow-hover);
+}
+
+.home-card__emoji {
+  font-size: 2.6rem;
+  line-height: 1;
+  flex-shrink: 0;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.home-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.home-card__name {
+  font-size: 1.4rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+}
+
+.home-card__tagline {
+  font-size: 0.92rem;
+  opacity: 0.92;
+  line-height: 1.3;
 }
