@@ -10,28 +10,65 @@
   letter-spacing: 0.05em;
 }
 
-.quote {
+.acrostic__how {
+  font-size: 0.95rem;
+}
+
+/* The hidden-word strip: one boxed letter per clue, filled as clues solve. */
+.secret {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--sp-gap);
+}
+
+.secret__strip {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.4rem;
+}
+
+.secret__box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.6rem;
+  height: 2.9rem;
+  font-family: var(--sp-font-serif);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--sp-text-muted);
+  background: var(--sp-surface);
+  border: 2px solid var(--sp-border);
+  border-bottom-width: 4px;
+  border-radius: var(--sp-radius-sm);
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.secret__box--filled {
+  color: var(--sp-accent-contrast);
+  background: var(--sp-accent);
+  border-color: var(--sp-accent);
+}
+
+.secret__quote {
   margin: 0;
   padding: 1rem 1.1rem;
   border-left: 4px solid var(--sp-accent);
   border-radius: var(--sp-radius-sm);
   background: var(--sp-accent-soft);
-}
-
-.quote__text {
-  margin: 0;
   font-family: var(--sp-font-serif);
-  font-size: 1.2rem;
+  font-size: 1.15rem;
   line-height: 1.6;
   color: var(--sp-text);
+  text-align: center;
 }
 
-.quote__word {
-  letter-spacing: 0.04em;
-  word-spacing: 0.1em;
-}
-
-.quote__author {
+.secret__quote footer {
   margin-top: 0.6rem;
   font-family: var(--sp-font-sans);
   font-style: italic;
@@ -60,6 +97,27 @@
 
 .clue--solved {
   border-color: var(--sp-correct);
+}
+
+.clue__row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.clue__initial {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  font-family: var(--sp-font-serif);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--sp-accent-contrast);
+  background: var(--sp-accent);
+  border-radius: var(--sp-radius-sm);
 }
 
 .clue__text {

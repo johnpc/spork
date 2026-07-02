@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { normalize, matchesAnswer, isComplete, revealQuote } from './acrosticEngine';
+import {
+  normalize,
+  matchesAnswer,
+  isComplete,
+  secretWord,
+  wordSlots,
+  type Clue,
+} from './acrosticEngine';
 
 describe('normalize', () => {
   it('lowercases and strips spaces + punctuation', () => {
@@ -32,19 +39,27 @@ describe('isComplete', () => {
   });
 });
 
-describe('revealQuote', () => {
-  const quote = 'Do or do not';
+const OCEAN: Clue[] = [
+  { clue: 'A citrus fruit', answer: 'orange' },
+  { clue: 'A baby cow', answer: 'calf' },
+  { clue: 'A large grey mammal', answer: 'elephant' },
+  { clue: 'Keeps the doctor away', answer: 'apple' },
+  { clue: 'Opposite of day', answer: 'night' },
+];
 
-  it('masks all words at zero solved', () => {
-    expect(revealQuote(quote, 0, 4)).toEqual(['__', '__', '__', '___']);
+describe('secretWord', () => {
+  it('spells the word from the answers’ initials', () => {
+    expect(secretWord(OCEAN)).toBe('OCEAN');
   });
-  it('reveals a proportional prefix of words', () => {
-    expect(revealQuote(quote, 2, 4)).toEqual(['Do', 'or', '__', '___']);
+  it('is empty for no clues', () => {
+    expect(secretWord([])).toBe('');
   });
-  it('reveals the whole quote when complete', () => {
-    expect(revealQuote(quote, 4, 4)).toEqual(['Do', 'or', 'do', 'not']);
-  });
-  it('returns raw words when there are no clues', () => {
-    expect(revealQuote(quote, 0, 0)).toEqual(['Do', 'or', 'do', 'not']);
+});
+
+describe('wordSlots', () => {
+  it('reveals a slot’s letter only once its clue is solved', () => {
+    const slots = wordSlots(OCEAN, new Set([0, 2]));
+    expect(slots.map((s) => s.letter)).toEqual(['O', 'C', 'E', 'A', 'N']);
+    expect(slots.map((s) => s.revealed)).toEqual([true, false, true, false, false]);
   });
 });

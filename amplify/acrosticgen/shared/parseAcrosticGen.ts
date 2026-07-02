@@ -18,7 +18,12 @@ const clueArr = (v: unknown): AcrosticClue[] =>
         .map((c) => ({ clue: str(c.clue), answer: str(c.answer) }))
     : [];
 
-export function parseAcrosticGen(body: { content?: ContentBlock[] }): AcrosticCandidate {
+/** Parse Claude's forced tool output into a candidate for the given secret
+ * `word` (the word is our input, not the model's, so we thread it through). */
+export function parseAcrosticGen(
+  body: { content?: ContentBlock[] },
+  word: string,
+): AcrosticCandidate {
   const block = body.content?.find((b) => b.type === 'tool_use' && b.name === 'make_acrostic');
   if (!block) throw new Error('no make_acrostic tool_use block in model response');
   const o = (block.input ?? {}) as Record<string, unknown>;
@@ -26,6 +31,7 @@ export function parseAcrosticGen(body: { content?: ContentBlock[] }): AcrosticCa
     throw new Error('make_acrostic missing quote/author');
   }
   return {
+    word,
     title: str(o.title),
     quote: o.quote,
     author: o.author,

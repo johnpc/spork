@@ -10,12 +10,12 @@ import {
 import { useParams } from 'react-router-dom';
 import { useAcrostic } from './useAcrostic';
 import { ClueInput } from './ClueInput';
-import { QuoteReveal } from './QuoteReveal';
+import { SecretWord } from './SecretWord';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import './acrostic.css';
 
-/** Acrostic play screen: solve each clue to progressively reveal a hidden quote.
- * Uses its OWN engine (useAcrostic) — no shared quiz machinery. */
+/** Acrostic play screen: solve each clue; the answers' initials spell a hidden
+ * word (SecretWord). Its own engine (useAcrostic) — no shared quiz machinery. */
 export function Acrostic() {
   const { id } = useParams<{ id: string }>();
   const a = useAcrostic(id);
@@ -40,13 +40,17 @@ export function Acrostic() {
           </p>
         ) : (
           <div className="acrostic" data-testid="acrostic">
+            <p className="sp-muted acrostic__how">
+              Solve each clue. The <strong>first letter</strong> of every answer spells the hidden
+              word.
+            </p>
+            <SecretWord slots={a.slots} quote={a.quote} complete={a.complete} author={a.author} />
             <p className="sp-muted acrostic__meta" data-testid="acrostic-progress">
               {a.solvedCount} / {a.total} solved
             </p>
-            <QuoteReveal words={a.revealed} author={a.complete ? a.author : null} />
             {a.complete ? (
               <p className="acrostic__solved" data-testid="acrostic-solved">
-                Solved! 🏆
+                Solved! 🏆 The word was <strong>{a.secret}</strong>.
               </p>
             ) : (
               <ol className="clue-list" data-testid="clue-list">

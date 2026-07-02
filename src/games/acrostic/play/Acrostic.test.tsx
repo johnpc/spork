@@ -24,7 +24,11 @@ const base = {
   quote: 'Do or do not',
   author: 'Yoda',
   solved: new Set<number>(),
-  revealed: ['__', '__', '__', '___'],
+  slots: [
+    { letter: 'C', revealed: false },
+    { letter: 'I', revealed: false },
+  ],
+  secret: 'CI',
   solvedCount: 0,
   total: 2,
   complete: false,
@@ -38,24 +42,29 @@ describe('Acrostic', () => {
     vi.clearAllMocks();
   });
 
-  it('renders the clue list + progress while unsolved', () => {
+  it('renders the clue list + progress + masked secret word while unsolved', () => {
     hook.state = base;
     renderAcrostic();
     expect(screen.getByTestId('acrostic-progress')).toHaveTextContent('0 / 2');
     expect(screen.getByTestId('clue-list')).toBeInTheDocument();
-    expect(screen.getByTestId('quote')).toHaveTextContent('__');
+    expect(screen.getByTestId('secret-word')).toBeInTheDocument();
+    expect(screen.getAllByTestId('secret-blank')).toHaveLength(2);
   });
 
-  it('shows the solved banner + author and hides clues when complete', () => {
+  it('shows the solved banner + secret word + quote and hides clues when complete', () => {
     hook.state = {
       ...base,
       solved: new Set([0, 1]),
-      revealed: ['Do', 'or', 'do', 'not'],
+      slots: [
+        { letter: 'C', revealed: true },
+        { letter: 'I', revealed: true },
+      ],
       solvedCount: 2,
       complete: true,
     };
     renderAcrostic();
-    expect(screen.getByTestId('acrostic-solved')).toBeInTheDocument();
+    expect(screen.getByTestId('acrostic-solved')).toHaveTextContent('CI');
+    expect(screen.getByTestId('secret-quote')).toBeInTheDocument();
     expect(screen.getByTestId('quote-author')).toHaveTextContent('Yoda');
     expect(screen.queryByTestId('clue-list')).not.toBeInTheDocument();
   });
