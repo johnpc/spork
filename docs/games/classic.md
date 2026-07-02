@@ -1,6 +1,6 @@
 # Classic — quiz type showcase
 
-**Mode:** `CLASSIC`  ·  **Input:** `type`  ·  **Scoring:** `membership`
+**Mode:** `CLASSIC` · **Input:** `type` · **Scoring:** `membership`
 
 Type answers to reveal a hidden list — each correct guess pops into its slot. The archetypal Sporcle format.
 
