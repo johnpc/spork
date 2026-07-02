@@ -1,6 +1,6 @@
 # Clickable — quiz type showcase
 
-**Mode:** `CLICKABLE`  ·  **Input:** `click`  ·  **Scoring:** `membership`
+**Mode:** `CLICKABLE` · **Input:** `click` · **Scoring:** `membership`
 
 Click the correct tiles out of a mixed grid. Decoy tiles never score; correct tiles fill in.
 
