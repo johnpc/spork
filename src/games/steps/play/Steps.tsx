@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useLadder } from './useLadder';
 import { StepInput } from './StepInput';
 import { LadderPath } from './LadderPath';
+import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import './steps.css';
 
 const ERRORS: Record<string, string> = {
@@ -25,6 +26,7 @@ const ERRORS: Record<string, string> = {
 export function Steps() {
   const { id } = useParams<{ id: string }>();
   const l = useLadder(id);
+  useRecordDailyOnDone('steps', l.solved, { score: l.moves, total: l.par ?? l.moves });
 
   return (
     <IonPage>

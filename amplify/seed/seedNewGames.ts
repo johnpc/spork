@@ -5,10 +5,12 @@ import { client, EDITOR_WRITE } from './seedClient';
 import { seedAcrostics } from './fixtures/acrostic';
 import { seedQuizzles } from './fixtures/quizzle';
 import { seedChessPuzzles } from './fixtures/chess';
+import { dateFor } from './fixtures/seedDates';
 
 export async function seedAcrosticData(): Promise<number> {
   const now = new Date().toISOString();
-  for (const a of seedAcrostics) {
+  for (let i = 0; i < seedAcrostics.length; i++) {
+    const a = seedAcrostics[i];
     const { errors } = await client.models.Acrostic.create(
       {
         title: a.title,
@@ -18,6 +20,7 @@ export async function seedAcrosticData(): Promise<number> {
         difficulty: a.difficulty,
         status: 'PUBLISHED',
         publishedAt: now,
+        puzzleDate: dateFor(i, seedAcrostics.length),
       },
       EDITOR_WRITE,
     );
@@ -29,7 +32,8 @@ export async function seedAcrosticData(): Promise<number> {
 
 export async function seedQuizzleData(): Promise<number> {
   const now = new Date().toISOString();
-  for (const q of seedQuizzles) {
+  for (let i = 0; i < seedQuizzles.length; i++) {
+    const q = seedQuizzles[i];
     const { errors } = await client.models.Quizzle.create(
       {
         topic: q.topic,
@@ -37,6 +41,7 @@ export async function seedQuizzleData(): Promise<number> {
         startingBank: q.startingBank,
         status: 'PUBLISHED',
         publishedAt: now,
+        puzzleDate: dateFor(i, seedQuizzles.length),
       },
       EDITOR_WRITE,
     );
@@ -48,7 +53,8 @@ export async function seedQuizzleData(): Promise<number> {
 
 export async function seedChessData(): Promise<number> {
   const now = new Date().toISOString();
-  for (const p of seedChessPuzzles) {
+  for (let i = 0; i < seedChessPuzzles.length; i++) {
+    const p = seedChessPuzzles[i];
     const { errors } = await client.models.ChessAttack.create(
       {
         name: p.name,
@@ -58,6 +64,7 @@ export async function seedChessData(): Promise<number> {
         difficulty: p.difficulty,
         status: 'PUBLISHED',
         publishedAt: now,
+        puzzleDate: dateFor(i, seedChessPuzzles.length),
       },
       EDITOR_WRITE,
     );
