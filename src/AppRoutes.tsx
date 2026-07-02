@@ -3,6 +3,7 @@ import { IonRouterOutlet } from '@ionic/react';
 import { Home } from './features/home/Home';
 import { QuizList } from './games/quizzes/list/QuizList';
 import { Play } from './games/quizzes/play/Play';
+import { QuizAdmin } from './games/quizzes/admin/QuizAdmin';
 import { Discover } from './features/discover/Discover';
 import { CategoryDecks } from './features/discover/CategoryDecks';
 import { DeckDetail } from './features/deck/DeckDetail';
@@ -61,6 +62,11 @@ export function AppRoutes() {
       <Route exact path="/admin/decks/:id">
         <EditorGate>
           <DeckEditor />
+        </EditorGate>
+      </Route>
+      <Route exact path="/admin/quizzes">
+        <EditorGate>
+          <QuizAdmin />
         </EditorGate>
       </Route>
       <Route exact path="/">

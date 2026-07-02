@@ -9,11 +9,13 @@ import {
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import { useQuizzes } from './useQuizzes';
+import { useIsEditor } from '../../../features/admin/useIsEditor';
 import './quizList.css';
 
 /** Quizzes home: the list of published quizzes, each linking into play. */
 export function QuizList() {
   const { quizzes, isLoading } = useQuizzes();
+  const { isEditor } = useIsEditor();
   return (
     <IonPage>
       <IonHeader>
@@ -25,6 +27,11 @@ export function QuizList() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
+        {isEditor && (
+          <Link to="/admin/quizzes" className="sp-kicker" data-testid="quiz-studio-link">
+            Quiz Studio →
+          </Link>
+        )}
         {isLoading ? (
           <p className="sp-muted">Loading…</p>
         ) : quizzes.length === 0 ? (

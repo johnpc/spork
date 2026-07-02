@@ -5,6 +5,9 @@ import type { QuizRecord } from '../../../lib/dataClient';
 
 const hook = vi.hoisted(() => ({ state: {} as { quizzes: QuizRecord[]; isLoading: boolean } }));
 vi.mock('./useQuizzes', () => ({ useQuizzes: () => hook.state }));
+vi.mock('../../../features/admin/useIsEditor', () => ({
+  useIsEditor: () => ({ isEditor: false, isLoading: false }),
+}));
 
 import { QuizList } from './QuizList';
 
