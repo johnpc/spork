@@ -28,6 +28,14 @@ describe('isCorrect', () => {
   it('works when accepted is missing', () => {
     expect(isCorrect('tokyo', { question: 'q', answer: 'Tokyo' })).toBe(true);
   });
+  it('forgives a typo (fuzzy match) on a longer answer', () => {
+    const falcon = { question: 'Han Solo’s ship?', answer: 'Millennium Falcon' };
+    expect(isCorrect('millenium falcon', falcon)).toBe(true); // dropped an n
+    expect(isCorrect('millennium falcom', falcon)).toBe(true); // n→m slip
+  });
+  it('still rejects a genuinely wrong answer', () => {
+    expect(isCorrect('x-wing', { question: 'q', answer: 'Millennium Falcon' })).toBe(false);
+  });
 });
 
 describe('clampWager', () => {

@@ -1,10 +1,11 @@
 /**
  * Pure Quizzle wager engine. Shares NOTHING with the Quizzes found-set engine —
  * a Quizzle is a bank you bet against, one question at a time. A guess is
- * correct iff it normalizes to the answer or any accepted spelling; a correct
- * wager ADDS to the bank, a wrong one SUBTRACTS. All pure + deterministic, so
- * it's unit-tested without React or AWS.
+ * correct iff it normalizes to (or is within typo tolerance of) the answer or
+ * any accepted spelling; a correct wager ADDS to the bank, a wrong one SUBTRACTS.
+ * All pure + deterministic, so it's unit-tested without React or AWS.
  */
+import { fuzzyMatch } from './fuzzy';
 
 /** Case/accent/punctuation-insensitive match key (Sporcle-style leniency). */
 export function normalizeGuess(input: string): string {
@@ -24,12 +25,13 @@ export interface QuizzleQuestion {
   accepted?: string[];
 }
 
-/** Does `guess` match the question's answer or any accepted spelling? */
+/** Does `guess` match the question's answer or any accepted spelling — exactly
+ * or within typo tolerance (so "millenium falcon" matches "Millennium Falcon")? */
 export function isCorrect(guess: string, q: QuizzleQuestion): boolean {
   const key = normalizeGuess(guess);
   if (!key) return false;
-  const targets = [q.answer, ...(q.accepted ?? [])].map(normalizeGuess);
-  return targets.includes(key);
+  const targets = [q.answer, ...(q.accepted ?? [])].map(normalizeGuess).filter(Boolean);
+  return targets.some((t) => t === key || fuzzyMatch(key, t));
 }
 
 /** Clamp a wager into the legal range [1, bank] (bank must be >= 1). */
