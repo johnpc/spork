@@ -4,11 +4,12 @@
  * unbounded. Adding a game type = one fixture in fixtures/quizzes/, no edit here. */
 import { client, EDITOR_WRITE } from './seedClient';
 import { SEED_QUIZZES } from './fixtures/quizzes';
+import { dateFor } from './fixtures/seedDates';
 import type { QuizFixture } from './fixtures/quizzes/types';
 
 const ANSWER_CONCURRENCY = 20;
 
-async function seedOne(quiz: QuizFixture, now: string): Promise<void> {
+async function seedOne(quiz: QuizFixture, now: string, puzzleDate: string): Promise<void> {
   const { data: created, errors } = await client.models.Quiz.create(
     {
       topic: quiz.topic,
@@ -22,6 +23,7 @@ async function seedOne(quiz: QuizFixture, now: string): Promise<void> {
       timeLimitSeconds: quiz.timeLimitSeconds,
       renderConfig: quiz.renderConfig ? JSON.stringify(quiz.renderConfig) : undefined,
       publishedAt: now,
+      puzzleDate,
     },
     EDITOR_WRITE,
   );
@@ -54,7 +56,9 @@ async function seedOne(quiz: QuizFixture, now: string): Promise<void> {
 
 export async function seedQuizData(): Promise<number> {
   const now = new Date().toISOString();
-  for (const quiz of SEED_QUIZZES) await seedOne(quiz, now);
+  for (let i = 0; i < SEED_QUIZZES.length; i++) {
+    await seedOne(SEED_QUIZZES[i], now, dateFor(i, SEED_QUIZZES.length));
+  }
   console.log(`Seeded ${SEED_QUIZZES.length} quizzes.`);
   return SEED_QUIZZES.length;
 }

@@ -10,6 +10,7 @@ import {
 import { useParams } from 'react-router-dom';
 import { useChessAttack } from './useChessAttack';
 import { ChessBoard } from './ChessBoard';
+import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import './chess.css';
 
 /** ChessAttack play screen: solve a mate/capture puzzle on a small board by
@@ -18,6 +19,7 @@ import './chess.css';
 export function ChessAttack() {
   const { id } = useParams<{ id: string }>();
   const c = useChessAttack(id);
+  useRecordDailyOnDone('chess', c.solved, { score: c.total, total: c.total });
 
   return (
     <IonPage>

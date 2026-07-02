@@ -9,6 +9,7 @@ import { QuizzleList } from './games/quizzle/list/QuizzleList';
 import { Quizzle } from './games/quizzle/play/Quizzle';
 import { ChessList } from './games/chess/list/ChessList';
 import { ChessAttack } from './games/chess/play/ChessAttack';
+import { DailyEntry } from './games/shared/daily/DailyEntry';
 
 /** The per-game list + play routes for every game island. Kept out of AppRoutes
  * so adding a game touches only this file (and Home's shelf data). Returned as a
@@ -16,6 +17,9 @@ import { ChessAttack } from './games/chess/play/ChessAttack';
 export function GameRoutes() {
   return (
     <>
+      <Route exact path="/daily/:game">
+        <DailyEntry />
+      </Route>
       <Route exact path="/quizzes">
         <QuizList />
       </Route>

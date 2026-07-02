@@ -2,11 +2,13 @@
  * each PUBLISHED WordLadder with its dictionary + par path as JSON. */
 import { client, EDITOR_WRITE } from './seedClient';
 import { seedLadders } from './fixtures/ladders';
+import { dateFor } from './fixtures/seedDates';
 
 export async function seedLadderData(): Promise<number> {
   const now = new Date().toISOString();
   let created = 0;
-  for (const l of seedLadders) {
+  for (let i = 0; i < seedLadders.length; i++) {
+    const l = seedLadders[i];
     const { errors } = await client.models.WordLadder.create(
       {
         start: l.start,
@@ -16,6 +18,7 @@ export async function seedLadderData(): Promise<number> {
         parPath: JSON.stringify(l.parPath),
         status: 'PUBLISHED',
         publishedAt: now,
+        puzzleDate: dateFor(i, seedLadders.length),
       },
       EDITOR_WRITE,
     );

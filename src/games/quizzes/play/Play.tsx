@@ -13,6 +13,7 @@ import { useBestScore } from './useBestScore';
 import { rendererFor, usesTypedInput } from './renderers';
 import { PlayHud } from './PlayHud';
 import { PlayControls } from './PlayControls';
+import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import './play.css';
 
 /** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
@@ -25,6 +26,10 @@ export function Play() {
   const { best, refresh } = useBestScore(id);
   const Renderer = rendererFor(p.quiz?.mode);
   const typed = usesTypedInput(p.quiz?.mode);
+  useRecordDailyOnDone('quizzes', p.status === 'done', {
+    score: p.score.found,
+    total: p.score.total,
+  });
 
   return (
     <IonPage>

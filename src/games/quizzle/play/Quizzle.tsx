@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useQuizzle } from './useQuizzle';
 import { QuizzleRound } from './QuizzleRound';
 import { QuizzleDone } from './QuizzleDone';
+import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import './quizzle.css';
 
 /** Quizzle play screen: a pub-quiz where you WAGER against a bank each question.
@@ -18,6 +19,7 @@ import './quizzle.css';
 export function Quizzle() {
   const { id } = useParams<{ id: string }>();
   const q = useQuizzle(id, window.localStorage);
+  useRecordDailyOnDone('quizzle', q.done && q.started, { score: q.bank, total: q.total });
 
   return (
     <IonPage>
