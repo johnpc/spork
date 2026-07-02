@@ -15,8 +15,11 @@ Given('the player opens the {string} order-up quiz', async ({ page }, topic: str
 });
 
 When('the player starts the order-up quiz', async ({ page }) => {
-  await page.getByTestId('play-start').click();
-  await expect(page.getByTestId('order-up-progress')).toBeVisible();
+  // CLICK/ARRANGE modes auto-start on first interaction — click Start only if
+  // it's shown, then confirm the board is live.
+  const start = page.getByTestId('play-start');
+  if (await start.count()) await start.click();
+  await expect(page.getByTestId('order-up-progress')).toBeVisible({ timeout: 15_000 });
 });
 
 When('the player places the item {string}', async ({ page }, label: string) => {

@@ -7,7 +7,12 @@ Given('a visitor opens the app at the root', async ({ page }) => {
   await page.goto('/');
 });
 
-Then('they are taken to the Discover tab', async ({ page }) => {
+Then('they are taken to the games home', async ({ page }) => {
+  await expect(page).toHaveURL(/\/home$/);
+});
+
+Given('a visitor opens Discover', async ({ page }) => {
+  await page.goto('/discover');
   await expect(page).toHaveURL(/\/discover$/);
 });
 
