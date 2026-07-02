@@ -1,45 +1,48 @@
-/** Seed the starter Quizzes (guest-only game). Slice 1 ships one MAP quiz —
- * "World Countries" — built from the reconciled world-countries fixture (the
- * same data the generateQuiz MAP path uses). Mirrors seedDecks: create the
- * PUBLISHED Quiz, then its Answers. Answers are created in bounded-concurrency
- * batches so ~174 rows don't fan out unbounded. */
+/** Seed the starter Quizzes (guest-only game). Loops over every registered quiz
+ * fixture (one per game type) and writes the PUBLISHED Quiz + its Answer rows.
+ * Answers are created in bounded-concurrency batches so large sets don't fan out
+ * unbounded. Adding a game type = one fixture in fixtures/quizzes/, no edit here. */
 import { client, EDITOR_WRITE } from './seedClient';
-import { WORLD_COUNTRIES } from '../quizgen/fixtures/worldCountries';
+import { SEED_QUIZZES } from './fixtures/quizzes';
+import type { QuizFixture } from './fixtures/quizzes/types';
 
 const ANSWER_CONCURRENCY = 20;
 
-export async function seedQuizData(): Promise<number> {
-  const now = new Date().toISOString();
-  const { data: quiz, errors } = await client.models.Quiz.create(
+async function seedOne(quiz: QuizFixture, now: string): Promise<void> {
+  const { data: created, errors } = await client.models.Quiz.create(
     {
-      topic: 'World Countries',
-      categorySlug: 'geography',
-      description: 'Name every country in the world before time runs out.',
-      mode: 'MAP',
-      inputMode: 'TYPE',
-      scoringMode: 'MEMBERSHIP',
+      topic: quiz.topic,
+      categorySlug: quiz.categorySlug,
+      description: quiz.description,
+      mode: quiz.mode,
+      inputMode: quiz.inputMode,
+      scoringMode: quiz.scoringMode,
       status: 'PUBLISHED',
-      answerCount: WORLD_COUNTRIES.length,
-      timeLimitSeconds: 900,
-      renderConfig: JSON.stringify({ topology: 'countries-110m', projection: 'geoEqualEarth' }),
+      answerCount: quiz.answers.length,
+      timeLimitSeconds: quiz.timeLimitSeconds,
+      renderConfig: quiz.renderConfig ? JSON.stringify(quiz.renderConfig) : undefined,
       publishedAt: now,
     },
     EDITOR_WRITE,
   );
-  if (errors || !quiz) throw new Error(`Quiz World Countries: ${JSON.stringify(errors)}`);
+  if (errors || !created) throw new Error(`Quiz ${quiz.topic}: ${JSON.stringify(errors)}`);
 
-  for (let i = 0; i < WORLD_COUNTRIES.length; i += ANSWER_CONCURRENCY) {
-    const batch = WORLD_COUNTRIES.slice(i, i + ANSWER_CONCURRENCY);
+  for (let i = 0; i < quiz.answers.length; i += ANSWER_CONCURRENCY) {
     await Promise.all(
-      batch.map(async (a) => {
+      quiz.answers.slice(i, i + ANSWER_CONCURRENCY).map(async (a, j) => {
         const { errors: aErr } = await client.models.Answer.create(
           {
-            quizId: quiz.id,
-            ord: a.ord,
-            promptKind: a.promptKind,
-            promptValue: a.promptValue,
+            quizId: created.id,
+            ord: i + j,
             display: a.display,
             accepted: JSON.stringify(a.accepted),
+            promptKind: a.promptKind,
+            promptValue: a.promptValue,
+            groupKey: a.groupKey,
+            hint: a.hint,
+            options: a.options ? JSON.stringify(a.options) : undefined,
+            orderIndex: a.orderIndex,
+            bucket: a.bucket,
           },
           EDITOR_WRITE,
         );
@@ -47,6 +50,11 @@ export async function seedQuizData(): Promise<number> {
       }),
     );
   }
-  console.log(`Seeded 1 quiz with ${WORLD_COUNTRIES.length} answers.`);
-  return 1;
+}
+
+export async function seedQuizData(): Promise<number> {
+  const now = new Date().toISOString();
+  for (const quiz of SEED_QUIZZES) await seedOne(quiz, now);
+  console.log(`Seeded ${SEED_QUIZZES.length} quizzes.`);
+  return SEED_QUIZZES.length;
 }
