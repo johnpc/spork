@@ -27,6 +27,25 @@
   font-size: 0.85rem;
 }
 
+.quizzle__lobby {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  padding: 1.5rem;
+  border-radius: var(--sp-radius);
+  background: var(--sp-surface);
+  box-shadow: var(--sp-shadow);
+  max-width: 26rem;
+}
+
+.quizzle__how {
+  text-align: center;
+  line-height: 1.5;
+  color: var(--sp-text-muted);
+}
+
 .quizzle__round,
 .quizzle__wager,
 .quizzle__answer,

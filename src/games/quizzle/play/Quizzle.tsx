@@ -45,9 +45,21 @@ export function Quizzle() {
               Bank: <strong>{q.bank}</strong>
             </p>
             {!q.started ? (
-              <button className="quizzle__btn" data-testid="quizzle-start" onClick={q.start}>
-                Start · {q.total} questions · bank {q.startingBank}
-              </button>
+              <div className="quizzle__lobby">
+                <p className="quizzle__how">
+                  Wager part of your bank on each of {q.total} questions. Answer right and your
+                  stake is <strong>added</strong>; wrong and it&rsquo;s <strong>lost</strong>. Bet
+                  big when you&rsquo;re sure.
+                </p>
+                {q.best != null && (
+                  <p className="sp-muted" data-testid="quizzle-best">
+                    Your best bank: {q.best}
+                  </p>
+                )}
+                <button className="quizzle__btn" data-testid="quizzle-start" onClick={q.start}>
+                  Start · bank {q.startingBank}
+                </button>
+              </div>
             ) : q.done ? (
               <QuizzleDone bank={q.bank} startingBank={q.startingBank} best={q.best} />
             ) : q.question ? (
