@@ -1,6 +1,6 @@
 # Picture Click — quiz type showcase
 
-**Mode:** `PICTURE_CLICK`  ·  **Input:** `click`  ·  **Scoring:** `membership`
+**Mode:** `PICTURE_CLICK` · **Input:** `click` · **Scoring:** `membership`
 
 Given a prompt, click the right spot on an image/diagram. The matching hotspot scores.
 
