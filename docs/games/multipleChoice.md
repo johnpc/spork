@@ -1,6 +1,6 @@
 # Multiple Choice — quiz type showcase
 
-**Mode:** `MULTIPLE_CHOICE`  ·  **Input:** `pick`  ·  **Scoring:** `membership`
+**Mode:** `MULTIPLE_CHOICE` · **Input:** `pick` · **Scoring:** `membership`
 
 One question at a time; pick the correct option from the choices. A wrong pick is a no-op, a right one advances.
 
