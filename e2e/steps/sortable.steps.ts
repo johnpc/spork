@@ -19,7 +19,8 @@ Given('the player opens the {string} sortable quiz', async ({ page }, topic: str
 });
 
 When('the player starts the sortable quiz', async ({ page }) => {
-  await page.getByTestId('play-start').click();
+  // Sortable is a click mode — it auto-starts on the first interaction, so
+  // there's no Start button; just confirm the board is present.
   await expect(page.getByTestId('sortable-buckets')).toBeVisible();
 });
 

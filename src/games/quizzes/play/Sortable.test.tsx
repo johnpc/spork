@@ -44,4 +44,25 @@ describe('Sortable', () => {
     expect(screen.getByTestId('sortable-empty')).toBeInTheDocument();
     expect(screen.queryByTestId('sortable-item')).not.toBeInTheDocument();
   });
+
+  it('shows a found item sitting inside its bucket', () => {
+    render(<Sortable answers={answers} found={new Set(['a1'])} attempt={() => false} />);
+    const placed = screen.getAllByTestId('sortable-placed');
+    expect(placed).toHaveLength(1);
+    expect(placed[0]).toHaveTextContent('Banana');
+  });
+
+  it('flashes the bucket wrong on an incorrect drop', () => {
+    render(<Sortable answers={answers} found={new Set()} attempt={() => false} />);
+    fireEvent.click(screen.getByText('Banana'));
+    fireEvent.click(screen.getByText('Vegetable'));
+    const wrong = screen.getAllByTestId('sortable-bucket')[1];
+    expect(wrong.className).toContain('sortable__bucket--wrong');
+  });
+
+  it('reveals every item in its bucket when the game is done', () => {
+    render(<Sortable answers={answers} found={new Set()} attempt={() => false} status="done" />);
+    expect(screen.getAllByTestId('sortable-placed')).toHaveLength(2);
+    expect(screen.getAllByTestId('sortable-bucket')[0]).toBeDisabled();
+  });
 });

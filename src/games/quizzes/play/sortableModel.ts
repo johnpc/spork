@@ -26,3 +26,14 @@ export function bucketsOf(answers: AnswerRecord[]): string[] {
 export function unsortedItems(answers: AnswerRecord[], found: ReadonlySet<string>): AnswerRecord[] {
   return answers.filter((a) => !found.has(a.id));
 }
+
+/** Correctly-sorted items now sitting in a given bucket (found + bucket match).
+ * With `reveal`, includes still-unsorted items too (to show answers on give-up). */
+export function itemsInBucket(
+  answers: AnswerRecord[],
+  found: ReadonlySet<string>,
+  bucket: string,
+  reveal = false,
+): AnswerRecord[] {
+  return answers.filter((a) => a.bucket?.trim() === bucket && (reveal || found.has(a.id)));
+}

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { bucketsOf, unsortedItems } from './sortableModel';
+import { bucketsOf, unsortedItems, itemsInBucket } from './sortableModel';
 import type { AnswerRecord } from '../../../lib/dataClient';
 
 const mk = (id: string, bucket?: string): AnswerRecord =>
@@ -32,5 +32,15 @@ describe('unsortedItems', () => {
   it('returns all items when nothing is found', () => {
     const answers = [mk('a', 'Fruit'), mk('b', 'Fruit')];
     expect(unsortedItems(answers, new Set())).toHaveLength(2);
+  });
+});
+
+describe('itemsInBucket', () => {
+  const answers = [mk('a', 'Fruit'), mk('b', 'Vegetable'), mk('c', 'Fruit')];
+  it('returns only found items in the bucket', () => {
+    expect(itemsInBucket(answers, new Set(['a']), 'Fruit').map((x) => x.id)).toEqual(['a']);
+  });
+  it('with reveal, includes unsorted items too', () => {
+    expect(itemsInBucket(answers, new Set(), 'Fruit', true).map((x) => x.id)).toEqual(['a', 'c']);
   });
 });

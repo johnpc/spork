@@ -11,10 +11,10 @@ Feature: Play a sortable quiz (sort items into buckets)
   Scenario: A guest sorts an item into the correct bucket and scores
     Given the player opens the "Fruit or Vegetable?" sortable quiz
     When the player starts the sortable quiz
-    And the player selects the item "Banana"
+    And the player selects the item "Tomato"
     And the player drops it into the "Fruit" bucket
     Then the sortable score shows "1"
-    And the item "Banana" is no longer in the unsorted list
+    And the item "Tomato" is no longer in the unsorted list
 
   Scenario: Dropping an item into the wrong bucket does not score
     Given the player opens the "Fruit or Vegetable?" sortable quiz

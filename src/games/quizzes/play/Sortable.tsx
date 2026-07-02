@@ -1,20 +1,20 @@
 import type { RendererProps } from './renderers';
-import { bucketsOf, unsortedItems } from './sortableModel';
+import { bucketsOf, unsortedItems, itemsInBucket } from './sortableModel';
 import { useSortableSelect } from './useSortableSelect';
 import './sortable.css';
 
 /**
- * SORTABLE renderer — put each item into its correct bucket/category. The
- * unsorted chips (answers not yet in the engine's found set) sit above the
- * bucket columns, which are DERIVED from the distinct answer.bucket values. The
- * player picks a chip then clicks a bucket, calling attempt(id, bucket); the
- * BUCKETING scoring rule only counts a correct bucket, so a wrong drop is a
- * no-op and the chip stays. Reads the RendererProps contract every mode honors.
+ * SORTABLE renderer — put each item into its correct bucket. Unsorted chips sit
+ * on top; below, each bucket column SHOWS the items dropped into it so progress
+ * is visible. Pick a chip then click a bucket → attempt(id, bucket); a correct
+ * drop moves the chip into the bucket (green), a wrong one flashes the bucket
+ * red and keeps the chip. On 'done', every item is revealed in its true bucket.
  */
-export function Sortable({ answers, found, attempt }: RendererProps) {
+export function Sortable({ answers, found, attempt, status }: RendererProps) {
   const buckets = bucketsOf(answers);
   const items = unsortedItems(answers, found);
-  const { selectedId, pick, place } = useSortableSelect(attempt);
+  const { selectedId, wrongBucket, pick, place } = useSortableSelect(attempt);
+  const done = status === 'done';
 
   return (
     <div className="sortable" data-testid="sortable">
@@ -45,12 +45,29 @@ export function Sortable({ answers, found, attempt }: RendererProps) {
           <button
             key={b}
             type="button"
-            className="sortable__bucket"
+            className={
+              wrongBucket === b ? 'sortable__bucket sortable__bucket--wrong' : 'sortable__bucket'
+            }
             data-testid="sortable-bucket"
-            disabled={!selectedId}
+            disabled={!selectedId || done}
             onClick={() => place(b)}
           >
-            {b}
+            <span className="sortable__bucket-label">{b}</span>
+            <span className="sortable__placed">
+              {itemsInBucket(answers, found, b, done).map((a) => (
+                <span
+                  key={a.id}
+                  className={
+                    found.has(a.id)
+                      ? 'sortable__placed-item'
+                      : 'sortable__placed-item sortable__placed-item--revealed'
+                  }
+                  data-testid="sortable-placed"
+                >
+                  {a.display}
+                </span>
+              ))}
+            </span>
           </button>
         ))}
       </div>

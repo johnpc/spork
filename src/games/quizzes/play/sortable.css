@@ -36,6 +36,11 @@
 
 .sortable__bucket {
   flex: 1 1 8rem;
+  min-height: 6rem;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.4rem;
   padding: 0.75rem 1rem;
   font-size: 1rem;
   font-weight: 600;
@@ -44,6 +49,51 @@
   border: 2px dashed var(--sp-border);
   border-radius: var(--sp-radius);
   cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.sortable__bucket:not(:disabled):hover {
+  border-color: var(--sp-accent);
+}
+
+.sortable__bucket--wrong {
+  border-color: var(--sp-incorrect);
+  border-style: solid;
+  animation: sortable-shake 0.3s ease;
+}
+
+@keyframes sortable-shake {
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+.sortable__bucket-label {
+  text-align: center;
+}
+
+.sortable__placed {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: center;
+}
+
+.sortable__placed-item {
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.2rem 0.5rem;
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-correct);
+  color: var(--sp-accent-contrast);
+}
+
+.sortable__placed-item--revealed {
+  background: var(--sp-border);
+  color: var(--sp-text);
 }
 
 .sortable__empty {
