@@ -107,7 +107,10 @@ specific game; a game knows only the platform contracts it plugs into.
   - **Flashcards** — decks/cards, spaced-repetition study (the original flashstack app, kept intact).
   - **Quizzes** — Sporcle-style: a set of accepted answers, type/click to reveal them against a
     timer. See the engine+renderer design below.
-  - **Acrostic, Quizzle, Chess Attack, …** — future islands, same seams.
+  - **Acrostic, Steps, Chess Attack, Quizzle, Live Trivia** — future islands, each a genuinely
+    distinct game (word puzzle / word ladder / chess variant / wager trivia / real-time multiplayer),
+    NOT quiz modes. They share only the platform (home, guest identity, streaks, look, CI) — do not
+    try to force them through the Quizzes engine.
 
 **Adding a game = a new island, not a rewrite.** A new game adds its models to the schema, a
 `generate<Game>` mutation (if AI-generated) following the pipeline pattern, a `src/games/<game>/`

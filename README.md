@@ -4,15 +4,20 @@
 
 # Spork
 
-**A stack of little brain games.** Spork is one app that hosts many small, timed brain games —
-Sporcle-style **Quizzes** (name every country on a map, the US presidents, the periodic table, before
-the clock runs out), **Flashcards** (AI-generated decks studied with spaced repetition), and more to
-come. Play instantly as a **guest** — no account required.
+**A stack of little brain games.** Spork is one app — one home screen — that hosts a growing shelf of
+**distinct games**, the way Sporcle offers Quizzes _and_ Acrostic, Chess Attack, Quizzle, and Steps as
+separate games with their own rules. Not one engine wearing hats: genuinely different games, unified
+by a shared shell and a common feel. Play instantly as a **guest** — no account required.
 
-Spork is built as a **shell + game islands**: the platform (home, streaks, the AI generation
-pipeline, admin dashboard, quality/CI rig) is shared, and each game is a self-contained island that
-plugs into it. **Adding a game — or a new quiz type — is new data or a new renderer, never a
-rewrite.**
+Shipping today: **Quizzes** (Sporcle-style — name every country on a map, the US presidents, the
+periodic table, against a clock) and **Flashcards** (AI-generated decks, spaced-repetition study). On
+the roadmap: **Acrostic**, **Chess Attack**, **Quizzle**, **Steps**, and **Live Trivia** — each a
+real, independent game (see [The games](#the-games)).
+
+Spork is built as a **shell + game islands**: the platform (home, guest identity, streaks, the AI
+generation pipeline, admin dashboard, quality/CI rig) is shared; each game is a self-contained island
+under `src/games/<game>/` that plugs into it. **Adding a whole new game is a new island, not a
+rewrite** — and _within_ a game like Quizzes, adding a new format is just new data or a new renderer.
 
 > Architecture, quality bar, and toolchain descend from the **stoop** app via **flashstack** — the
 > same Ionic + Amplify Gen2 stack, strict CI gates, and Gherkin-first → full-e2e workflow.
@@ -21,25 +26,52 @@ rewrite.**
 
 ## The vision
 
-Sporcle proved that "name them all against a clock" is endlessly replayable, and that the real moat
-isn't any single quiz — it's **breadth**: ~1.5M quizzes across dozens of formats. Spork's bet is that
-this breadth is not dozens of different apps. It's **one small engine, a handful of renderers, and an
-ocean of data**:
+Sporcle isn't one game — it's a **destination for many bite-sized brain games**, each with its own
+mechanic, sharing an audience and a habit. Spork chases the same shape at two levels:
+
+**Level 1 — a shelf of distinct games.** Quizzes, Acrostic, Chess Attack, Quizzle, Steps, Live
+Trivia, Flashcards. These are _not_ variations of one engine; a chess variant and a word-ladder and a
+timed quiz have nothing mechanically in common. What they share is the **platform**: one guest-first
+home, streaks, a consistent look, and the build/quality rig. Each new game is an island you can add
+without touching the others — the payoff is a habit-forming _stack_, not a single hit.
+
+**Level 2 — within a game, breadth for free.** The first game, Quizzes, is itself broad (~1.5M
+Sporcle quizzes span dozens of formats). Here the bet is **one small engine, a handful of renderers,
+and an ocean of data**:
 
 1. **One content model.** Every quiz — a world map, a flag grid, a "name the Beatles" foursome, the
-   periodic table — is stored as a `Quiz` plus a list of universal `Answer` rows. Not a table per
-   type; **one shape, discriminated by a `promptKind` + grouping** (this mirrors how Sporcle's own
-   `game` + `entry` tables work under the hood).
-2. **A few renderers.** How you're _prompted_ (a map region, an image, a text clue, a grid cell,
-   nothing) and how you _answer_ (type, click, pick, arrange) are small, swappable axes on top of the
-   same engine.
-3. **An ocean of data.** Most of Spork's value is content. It comes from three places: **curated
-   templates** (maps — the topology _is_ the answer set, so nothing is hallucinated), **AI
-   generation** (Claude writes typed/multiple-choice/picture quizzes on demand), and eventually
-   **imported community quizzes** (see [Importing Sporcle quizzes](#importing-sporcle-quizzes)).
+   periodic table — is a `Quiz` plus universal `Answer` rows. One shape, discriminated by a
+   `promptKind` + grouping (mirroring how Sporcle's own `game` + `entry` tables work under the hood).
+2. **A few renderers.** How you're _prompted_ (map region, image, text clue, grid cell, nothing) and
+   how you _answer_ (type, click, pick, arrange) are small, swappable axes over the same engine.
+3. **An ocean of data.** Content comes from **curated templates** (maps — the topology _is_ the
+   answer set, so nothing is hallucinated), **AI generation** (Claude writes typed/MC/picture quizzes
+   on demand), and eventually **imported quizzes** (see [Importing quizzes](#importing-sporcle-quizzes)).
 
-The engine is the easy 10%. Getting the **data model** right so the breadth comes almost for free is
-the whole game — and it's what this repo is organized around.
+The engineering discipline that makes both levels cheap is the same: get the **seams** right (a sharp
+platform/game boundary; a universal answer model) so breadth — more games, more formats — comes
+almost for free.
+
+---
+
+## The games
+
+Each is a real, independent game. Quizzes and Flashcards ship today; the rest are on the roadmap, each
+planned as its own island under `src/games/<game>/` reusing the shared shell.
+
+| Game             | Status      | What it is                                                                                                   |
+| ---------------- | ----------- | ------------------------------------------------------------------------------------------------------------ |
+| **Quizzes**      | ✅ shipping | Sporcle-style "name them all against a clock," across 9 interaction formats (see [Quiz types](#game-types)). |
+| **Flashcards**   | ✅ shipping | AI-generated decks studied with spaced repetition (SM-2). The flashstack app, folded in as a game.           |
+| **Acrostic**     | ⬜ planned  | A word puzzle: solve clues whose letters fill a grid, revealing a hidden quote a little at a time.           |
+| **Steps**        | ⬜ planned  | Word ladder — transform a start word into a target one change at a time.                                     |
+| **Chess Attack** | ⬜ planned  | A fast chess variant on a small board — few powerful pieces, quick chaotic games.                            |
+| **Quizzle**      | ⬜ planned  | A pub-quiz "road trip" where you **wager** on your confidence per answer — points ride on the bet.           |
+| **Live Trivia**  | ⬜ planned  | Real-time multiplayer rounds — everyone answers the same question on a shared clock, live leaderboard.       |
+
+These differ on every axis that matters — input (type/click/drag/move a piece), scoring (found-set /
+wager / win-condition), session (solo-vs-clock / real-time-multiplayer). That diversity is the point:
+the shared platform is what makes carrying all of them viable, not a pretense that they're one engine.
 
 ---
 
@@ -63,8 +95,8 @@ Spork's Quizzes game targets every Sporcle-style interaction format. Each one re
 
 On top of these sit **scoring variants** that reuse a type's renderer with one engine flag —
 **Minefield** (one wrong answer ends the run), **Blitz** (race a short clock), **Alphabet** (one
-answer per letter). And beyond Quizzes, Spork will grow sibling games: **Flashcards** (shipping),
-then **Acrostic**, **Quizzle**, and **Chess Attack**.
+answer per letter). (These are all _within_ the Quizzes game — the separate games like Acrostic and
+Chess Attack live at [Level 1](#the-games).)
 
 ### The three axes, concretely
 
@@ -224,11 +256,11 @@ ships **light, dark, and tinted** variants.
 | #   | Milestone                                                                              | Status |
 | --- | -------------------------------------------------------------------------------------- | ------ |
 | 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified) | ✅     |
-| 2   | Universal 3-axis model + all Sporcle interaction types (renderer + seed + e2e each)    | 🔨     |
-| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                 | ⬜     |
+| 2   | Universal 3-axis model + all 9 Sporcle quiz formats (renderer + seed + e2e each)       | ✅     |
+| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                 | 🔨     |
 | 4   | Quiz import pipeline (scrape → map → normalize → load)                                 | ⬜     |
 | 5   | Discovery: browse/search/categories, popularity, per-device history                    | ⬜     |
-| 6   | Sibling games — Acrostic, Quizzle, Chess Attack                                        | ⬜     |
+| 6   | **New games** (own islands): Acrostic, Steps, Chess Attack, Quizzle, Live Trivia       | ⬜     |
 
 ---
 
