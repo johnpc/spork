@@ -67,9 +67,15 @@ Generate the artifact from the slice's own acceptance test — don't stage a thr
   `test-results/`. Run the one scenario (`npx playwright test <path> -g "<scenario>"`) and grab it.
 - **Screenshot (enough for a static change):** `await page.screenshot({ path: '...' })` in the step.
 
-Upload to `files.jpc.io` and paste the direct URL into the PR description — a `.webm`/`.png`/`.gif`
-URL renders inline in the GitHub PR body. All `aws` calls use **`AWS_PROFILE=personal`**; never inline
-keys.
+Upload to `files.jpc.io` and paste the direct URL into the PR description — a `.webm`/`.mp4`/`.png`/
+`.gif` URL renders inline in the GitHub PR body. All `aws` calls use **`AWS_PROFILE=personal`**; never
+inline keys.
+
+> **`https://files.jpc.io/d/<name>` is a PERMANENT URL.** `files.jpc.io` is a Next.js server that
+> re-generates a fresh presigned S3 link on every render, so a `curl -I` on it returns a **307 redirect
+> to a short-lived presigned S3 URL** — that expiry is on the *redirect target*, not the `/d/` link. Do
+> NOT mistake the 307 for a broken/expiring link and fall back to committing media into the repo; the
+> `/d/` URL keeps working indefinitely. (For MP4, GitHub renders it inline as a `<video>` player.)
 
 ```bash
 FILE_PATH="test-results/<…>/video.webm"   # or your screenshot .png
