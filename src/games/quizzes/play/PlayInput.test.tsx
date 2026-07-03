@@ -12,6 +12,8 @@ describe('PlayInput', () => {
     expect(onSubmit).toHaveBeenCalledWith('Brazil');
     expect(box.value).toBe(''); // cleared on hit
     expect(box.className).toContain('play-input__box--hit');
+    // Screen readers hear the result via the live region, not just the flash.
+    expect(screen.getByTestId('play-feedback')).toHaveTextContent('Correct!');
   });
 
   it('keeps the text and flashes miss on a wrong guess', () => {
@@ -22,6 +24,7 @@ describe('PlayInput', () => {
     fireEvent.submit(box.closest('form') as HTMLFormElement);
     expect(box.value).toBe('Narnia');
     expect(box.className).toContain('play-input__box--miss');
+    expect(screen.getByTestId('play-feedback')).toHaveTextContent('Not a match');
   });
 
   it('ignores empty submissions', () => {

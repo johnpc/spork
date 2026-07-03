@@ -131,3 +131,17 @@ ion-header ion-toolbar:first-of-type {
   font-family: var(--sp-font-serif);
   font-weight: 600;
 }
+
+/* Visually hidden but available to screen readers — for live-region
+ * announcements (answer feedback, etc.) that shouldn't show on screen. */
+.sp-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}

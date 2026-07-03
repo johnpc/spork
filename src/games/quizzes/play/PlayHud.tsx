@@ -15,7 +15,14 @@ export function PlayHud({ remaining, found, total }: PlayHudProps) {
       <span className="play-hud__clock" data-testid="play-clock">
         {formatClock(remaining)}
       </span>
-      <span className="play-hud__score" data-testid="play-score">
+      {/* Announce score changes to screen readers as answers land — the clock is
+          NOT live (it would spam AT every second). */}
+      <span
+        className="play-hud__score"
+        data-testid="play-score"
+        aria-live="polite"
+        aria-label={`${found} of ${total} found`}
+      >
         {found} / {total}
       </span>
       <span className="sp-muted play-hud__pct">{scorePercent(found, total)}%</span>

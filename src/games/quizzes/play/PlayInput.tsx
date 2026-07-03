@@ -63,6 +63,10 @@ export function PlayInput({ onSubmit, disabled, live }: PlayInputProps) {
         disabled={disabled}
         onChange={handleChange}
       />
+      {/* The green/red flash is visual only — announce the result to AT too. */}
+      <span className="sp-sr-only" role="status" data-testid="play-feedback">
+        {flash === 'hit' ? 'Correct!' : flash === 'miss' ? 'Not a match' : ''}
+      </span>
     </form>
   );
 }
