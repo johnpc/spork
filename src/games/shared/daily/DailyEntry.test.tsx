@@ -44,6 +44,8 @@ describe('DailyEntry', () => {
     });
     renderAt('/daily/quizzes');
     expect(screen.getByTestId('come-back-score')).toHaveTextContent('4 / 6 · 30s');
+    // Per-route document title for browser history + screen-reader announcement.
+    expect(document.title).toBe('Quizzes · Spork');
   });
 
   it('redirects into the play surface when a puzzle resolves', () => {

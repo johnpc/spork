@@ -10,6 +10,7 @@ import {
 } from '@ionic/react';
 import { useDailyEntry } from './useDailyEntry';
 import { useNextGame } from './useNextGame';
+import { useDocumentTitle } from '../../../features/shell/useDocumentTitle';
 import { ComeBackTomorrow } from './ComeBackTomorrow';
 
 /** The `/daily/:game` landing route. Resolves today's puzzle for the game and
@@ -20,6 +21,7 @@ export function DailyEntry() {
   const { game: gameKey } = useParams<{ game: string }>();
   const { game, date, playedToday, result, playPath, empty } = useDailyEntry(gameKey);
   const next = useNextGame(gameKey);
+  useDocumentTitle(game?.name);
 
   if (!game) return <Redirect to="/home" />;
   if (playPath) return <Redirect to={playPath} />;

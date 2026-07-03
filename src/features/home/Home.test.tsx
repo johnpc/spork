@@ -14,6 +14,11 @@ function renderHome() {
 }
 
 describe('Home', () => {
+  it('sets the browser document title to the brand', () => {
+    renderHome();
+    expect(document.title).toBe('Spork');
+  });
+
   it('shows a card per daily game — each quiz type as its own game', () => {
     render(
       <MemoryRouter>

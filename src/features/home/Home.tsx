@@ -4,6 +4,7 @@ import { GAMES } from './homeGames';
 import { HomeCard } from './HomeCard';
 import { useDailyProgress } from './useDailyProgress';
 import { useDailyStreak } from './useDailyStreak';
+import { useDocumentTitle } from '../shell/useDocumentTitle';
 import './home.css';
 
 /** Spork Home: the platform's game shelf. Each entry (see homeGames) routes into
@@ -13,6 +14,7 @@ export function Home() {
   const keys = useMemo(() => GAMES.map((g) => g.dailyKey), []);
   const progress = useDailyProgress(keys);
   const streak = useDailyStreak();
+  useDocumentTitle('Spork');
 
   return (
     <IonPage>
