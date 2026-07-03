@@ -6,17 +6,24 @@
  * the shared PlayInput instead. Adding a mode is a new entry here + its
  * component — the engine never changes.
  */
-import type { ComponentType } from 'react';
+import { lazy, type ComponentType } from 'react';
 import type { AnswerRecord } from '../../../lib/dataClient';
-import { WorldMap } from './WorldMap';
 import { ClassicList } from './ClassicList';
 import { PictureBox } from './PictureBox';
 import { MultipleChoice } from './MultipleChoice';
-import { ClickableMap } from './ClickableMap';
 import { PictureClick } from './PictureClick';
 import { Slideshow } from './Slideshow';
 import { Sortable } from './Sortable';
 import { OrderUp } from './OrderUp';
+
+// The map renderers pull in react-simple-maps + d3-geo + the world-atlas
+// topology (~hundreds of KB) that only MAP and CLICKABLE need. Lazy-load them so
+// a text-quiz player never downloads the map stack (Play wraps renderers in
+// Suspense). Named exports → default-export shims for React.lazy.
+const WorldMap = lazy(() => import('./WorldMap').then((m) => ({ default: m.WorldMap })));
+const ClickableMap = lazy(() =>
+  import('./ClickableMap').then((m) => ({ default: m.ClickableMap })),
+);
 
 /** The one prop contract every renderer honors. */
 export interface RendererProps {

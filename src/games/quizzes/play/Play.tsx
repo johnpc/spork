@@ -7,6 +7,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
+import { Suspense } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import { usePlay } from './usePlay';
 import { useBestScore } from './useBestScore';
@@ -67,7 +68,14 @@ export function Play() {
                   {modeHint(p.quiz.mode)}
                 </p>
               )}
-              <Renderer answers={p.answers} found={p.found} attempt={p.attempt} status={p.status} />
+              <Suspense fallback={<p className="sp-muted">Loading…</p>}>
+                <Renderer
+                  answers={p.answers}
+                  found={p.found}
+                  attempt={p.attempt}
+                  status={p.status}
+                />
+              </Suspense>
               <PlayControls
                 status={p.status}
                 typed={typed}

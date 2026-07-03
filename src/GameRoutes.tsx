@@ -1,3 +1,4 @@
+import { lazy, Suspense, type ReactNode } from 'react';
 import { Route } from 'react-router-dom';
 import { QuizList } from './games/quizzes/list/QuizList';
 import { Play } from './games/quizzes/play/Play';
@@ -8,8 +9,20 @@ import { Acrostic } from './games/acrostic/play/Acrostic';
 import { QuizzleList } from './games/quizzle/list/QuizzleList';
 import { Quizzle } from './games/quizzle/play/Quizzle';
 import { ChessList } from './games/chess/list/ChessList';
-import { ChessAttack } from './games/chess/play/ChessAttack';
 import { DailyEntry } from './games/shared/daily/DailyEntry';
+
+// Chess pulls in chess.js (a large legal-move engine) only this route needs —
+// lazy-load it so no other game carries the weight. Wrapped in Suspense here
+// (IonRouterOutlet needs direct <Route> children, so the boundary lives inside
+// the route element, not around the outlet).
+const ChessAttack = lazy(() =>
+  import('./games/chess/play/ChessAttack').then((m) => ({ default: m.ChessAttack })),
+);
+function Lazy({ children }: { children: ReactNode }) {
+  return (
+    <Suspense fallback={<p className="sp-muted ion-padding">Loading…</p>}>{children}</Suspense>
+  );
+}
 
 /** The per-game list + play routes for every game island. Kept out of AppRoutes
  * so adding a game touches only this file (and Home's shelf data).
@@ -51,7 +64,9 @@ export function gameRoutes() {
       <ChessList />
     </Route>,
     <Route exact path="/chess/:id" key="chess-play">
-      <ChessAttack />
+      <Lazy>
+        <ChessAttack />
+      </Lazy>
     </Route>,
   ];
 }
