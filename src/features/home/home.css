@@ -39,6 +39,19 @@
   font-variant-numeric: tabular-nums;
 }
 
+.home-hero__share {
+  display: inline-block;
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 1.3rem;
+  border-radius: 999px;
+  font-weight: 800;
+  font-size: 0.9rem;
+  color: var(--sp-accent-contrast);
+  background: var(--sp-accent);
+  border: none;
+  cursor: pointer;
+}
+
 .home-games {
   list-style: none;
   margin: 0 auto;

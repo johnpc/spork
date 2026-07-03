@@ -72,4 +72,16 @@ describe('Home', () => {
     renderHome();
     expect(screen.queryByTestId('home-streak')).not.toBeInTheDocument();
   });
+
+  it('offers "Share my day" once a game is finished, and hides it otherwise', () => {
+    renderHome();
+    expect(screen.queryByTestId('share-day')).not.toBeInTheDocument();
+    window.localStorage.setItem(
+      `spork.daily.quizzes:MAP.${dayStamp(new Date())}`,
+      JSON.stringify({ score: 4, total: 6 }),
+    );
+    // Re-render with a finished game present.
+    renderHome();
+    expect(screen.getAllByTestId('share-day').length).toBeGreaterThan(0);
+  });
 });

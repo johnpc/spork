@@ -5,6 +5,9 @@ import { HomeCard } from './HomeCard';
 import { useDailyProgress } from './useDailyProgress';
 import { useDailyStreak } from './useDailyStreak';
 import { useDocumentTitle } from '../shell/useDocumentTitle';
+import { buildDaySummaryText } from './daySummary';
+import { ShareDayButton } from './ShareDayButton';
+import { dayStamp } from '../../games/shared/daily/today';
 import './home.css';
 
 /** Spork Home: the platform's game shelf. Each entry (see homeGames) routes into
@@ -15,6 +18,7 @@ export function Home() {
   const progress = useDailyProgress(keys);
   const streak = useDailyStreak();
   useDocumentTitle('Spork');
+  const daySummary = buildDaySummaryText(GAMES, progress.resultFor, dayStamp(new Date()));
 
   return (
     <IonPage>
@@ -37,6 +41,7 @@ export function Home() {
               🔥 {streak}-day streak
             </p>
           )}
+          <ShareDayButton text={daySummary} />
         </header>
         <ul className="home-games" data-testid="home-games">
           {GAMES.map((g) => (
