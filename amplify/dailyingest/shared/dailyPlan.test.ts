@@ -1,5 +1,29 @@
 import { describe, it, expect } from 'vitest';
-import { dayNumber, rotate, planFor, quizTopicFor, QUIZ_TOPICS } from './dailyPlan';
+import {
+  dayNumber,
+  rotate,
+  planFor,
+  quizTopicFor,
+  QUIZ_TOPICS,
+  ACROSTIC_WORDS,
+  QUIZZLE_TOPICS,
+} from './dailyPlan';
+
+describe('topic pools', () => {
+  it('have no duplicate entries (a dupe shortens the repeat cadence silently)', () => {
+    for (const pool of [QUIZ_TOPICS, ACROSTIC_WORDS, QUIZZLE_TOPICS]) {
+      expect(new Set(pool).size).toBe(pool.length);
+    }
+  });
+  it('are large enough that a daily player rarely repeats within a month', () => {
+    expect(QUIZ_TOPICS.length).toBeGreaterThanOrEqual(30);
+    expect(ACROSTIC_WORDS.length).toBeGreaterThanOrEqual(21);
+    expect(QUIZZLE_TOPICS.length).toBeGreaterThanOrEqual(14);
+  });
+  it('acrostic words are single all-caps words of a clue-able length', () => {
+    for (const w of ACROSTIC_WORDS) expect(w).toMatch(/^[A-Z]{4,9}$/);
+  });
+});
 
 describe('dayNumber', () => {
   it('counts whole UTC days since the epoch', () => {

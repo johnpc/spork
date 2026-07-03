@@ -21,7 +21,11 @@ const SKIP_DIRS = new Set(['node_modules', '.amplify', 'dist', 'build']);
 //   - Amplify config files: amplify/backend.ts and any amplify/**/resource.ts
 // Fixture DATA trees: seed fixtures + generated game templates (e.g. the
 // reconciled world-countries map answer set) are records, not logic.
-const EXCLUDE_DIRS = ['amplify/seed/fixtures', 'amplify/quizgen/fixtures'];
+const EXCLUDE_DIRS = [
+  'amplify/seed/fixtures',
+  'amplify/quizgen/fixtures',
+  'amplify/dailyingest/fixtures',
+];
 // Pure DATA files (records, not logic) — same category as the fixture trees.
 // The game catalog is one record per daily game (names/emoji/gradients/slugs);
 // prettier expands each to a block, so it runs long without holding any logic.

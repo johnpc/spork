@@ -7,7 +7,13 @@
  *
  * MAP + CLICKABLE are template-backed (the world map doesn't change), so they're
  * not part of the daily generation plan — they keep their seeded puzzle.
+ *
+ * The curated pools live in ../fixtures/topicPools (DATA); re-exported here so
+ * callers keep a single import.
  */
+import { QUIZ_TOPICS, ACROSTIC_WORDS, QUIZZLE_TOPICS } from '../fixtures/topicPools';
+
+export { QUIZ_TOPICS, ACROSTIC_WORDS, QUIZZLE_TOPICS };
 
 /** Whole days since the Unix epoch for a YYYY-MM-DD stamp (the rotation index). */
 export function dayNumber(dateStamp: string): number {
@@ -28,44 +34,6 @@ export function rotate<T>(pool: readonly T[], day: number): T {
 export function quizTopicFor(date: string, index: number): string {
   return rotate(QUIZ_TOPICS, dayNumber(date) + index * 3);
 }
-
-/** Curated topic pools — enough that a topic doesn't repeat for weeks. */
-export const QUIZ_TOPICS = [
-  'World Capitals',
-  'Elements of the Periodic Table',
-  'Shakespeare Plays',
-  'Planets and Moons of the Solar System',
-  'Famous Painters',
-  'Countries of South America',
-  'US Presidents',
-  'Greek Gods and Goddesses',
-  'Programming Languages',
-  'Olympic Host Cities',
-  'Human Body Systems',
-  'Classic Rock Bands',
-  'World Rivers',
-  'Nobel Prize Categories',
-] as const;
-
-export const ACROSTIC_WORDS = [
-  'OCEAN',
-  'WONDER',
-  'COURAGE',
-  'PLANET',
-  'GARDEN',
-  'JOURNEY',
-  'HARMONY',
-  'FREEDOM',
-] as const;
-
-export const QUIZZLE_TOPICS = [
-  'World Geography',
-  'Movie Trivia',
-  'Science Facts',
-  'Music History',
-  'Sports Legends',
-  'Ancient History',
-] as const;
 
 const DIFFICULTIES = ['EASY', 'MEDIUM', 'HARD'] as const;
 const LADDER_LENGTHS = [3, 4, 5] as const;
