@@ -8,6 +8,7 @@ import { deckgenWorker } from './deckgen/worker/resource';
 import { regenerateMedia } from './deckgen/regenerate/resource';
 import { generateQuizStarter } from './quizgen/start/resource';
 import { quizgenWorker } from './quizgen/worker/resource';
+import { dailyIngest } from './dailyingest/resource';
 
 /**
  * SPORK backend.
@@ -34,6 +35,7 @@ const backend = defineBackend({
   regenerateMedia,
   generateQuizStarter,
   quizgenWorker,
+  dailyIngest,
 });
 
 const tables = backend.data.resources.tables;
@@ -121,3 +123,20 @@ bucket.grantWrite(quizWorker, 'media/quizzes/*');
 tables['Quiz'].grantWriteData(quizWorker);
 tables['Answer'].grantWriteData(quizWorker);
 tables['GenerationRun'].grantWriteData(quizWorker);
+
+// --- Daily ingest (scheduled): Bedrock (Claude) + writes one fresh PUBLISHED
+// puzzle per generative game type each day, straight to the game tables. ---
+const ingest = backend.dailyIngest.resources.lambda;
+ingest.addToRolePolicy(bedrockGrant());
+const ingestTables: Record<string, string> = {
+  QUIZ_TABLE: 'Quiz',
+  ANSWER_TABLE: 'Answer',
+  WORD_LADDER_TABLE: 'WordLadder',
+  ACROSTIC_TABLE: 'Acrostic',
+  QUIZZLE_TABLE: 'Quizzle',
+  CHESS_ATTACK_TABLE: 'ChessAttack',
+};
+for (const [envName, model] of Object.entries(ingestTables)) {
+  backend.dailyIngest.addEnvironment(envName, tables[model].tableName);
+  tables[model].grantWriteData(ingest);
+}
