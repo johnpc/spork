@@ -39,6 +39,7 @@ describe('DailyEntry', () => {
       result: { score: 4, total: 6, timeSeconds: 30 },
       isLoading: false,
       playPath: null,
+      empty: false,
     });
     renderAt('/daily/quizzes');
     expect(screen.getByTestId('come-back-score')).toHaveTextContent('4 / 6 · 30s');
@@ -56,6 +57,7 @@ describe('DailyEntry', () => {
       result: null,
       isLoading: false,
       playPath: '/quizzes/abc/play',
+      empty: false,
     });
     renderAt('/daily/quizzes');
     expect(screen.getByTestId('play-surface')).toBeInTheDocument();
@@ -68,8 +70,47 @@ describe('DailyEntry', () => {
       result: null,
       isLoading: false,
       playPath: null,
+      empty: false,
     });
     renderAt('/daily/nope');
     expect(screen.getByTestId('home')).toBeInTheDocument();
+  });
+
+  it('shows a graceful empty state (not an infinite spinner) when no puzzle exists', () => {
+    vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      game: {
+        name: 'Worldle',
+        fetchList: vi.fn(),
+        playPath: (id) => `/quizzes/${id}/play`,
+        dailyKey: 'quizzes:MAP',
+      },
+      playedToday: false,
+      result: null,
+      isLoading: false,
+      playPath: null,
+      empty: true,
+    });
+    renderAt('/daily/worldle');
+    expect(screen.getByTestId('daily-empty')).toBeInTheDocument();
+    expect(screen.queryByTestId('daily-loading')).not.toBeInTheDocument();
+    expect(screen.getByTestId('daily-empty-home')).toHaveAttribute('href', '/home');
+  });
+
+  it('shows the loading state only while genuinely loading', () => {
+    vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      game: {
+        name: 'Worldle',
+        fetchList: vi.fn(),
+        playPath: (id) => `/quizzes/${id}/play`,
+        dailyKey: 'quizzes:MAP',
+      },
+      playedToday: false,
+      result: null,
+      isLoading: true,
+      playPath: null,
+      empty: false,
+    });
+    renderAt('/daily/worldle');
+    expect(screen.getByTestId('daily-loading')).toBeInTheDocument();
   });
 });

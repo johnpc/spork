@@ -12,7 +12,7 @@ export function useDailyEntry(gameKey: string) {
   // play screen records under), not the route slug.
   const { date, playedToday, result } = useDaily(game?.dailyKey ?? gameKey);
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isSuccess } = useQuery({
     queryKey: ['daily-list', gameKey],
     queryFn: () => (game ? game.fetchList() : Promise.resolve([])),
     enabled: !!game && !playedToday,
@@ -25,5 +25,9 @@ export function useDailyEntry(gameKey: string) {
     result,
     isLoading: !!game && !playedToday && isLoading,
     playPath: game && todays ? game.playPath(todays.id) : null,
+    // The list loaded but held no puzzle for this game — a real "nothing today"
+    // state, distinct from still-loading. Prevents an infinite spinner when a
+    // game type has no published puzzle (e.g. a mode not yet ingested).
+    empty: !!game && !playedToday && isSuccess && !todays,
   };
 }
