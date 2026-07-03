@@ -25,6 +25,9 @@
   --sp-radius: 16px;
   --sp-radius-sm: 10px;
   --sp-gap: 16px;
+  /* Keyboard focus ring — a visible, high-contrast outline for :focus-visible. */
+  --sp-focus-ring: 3px solid var(--sp-accent-strong);
+  --sp-focus-offset: 2px;
   --sp-shadow: 0 1px 2px rgba(20, 28, 46, 0.04), 0 4px 16px rgba(20, 28, 46, 0.06);
   --sp-shadow-hover: 0 2px 6px rgba(20, 28, 46, 0.08), 0 10px 28px rgba(20, 28, 46, 0.1);
   /* Soft cast under piece glyphs / icons — usable inside drop-shadow(). */
@@ -61,6 +64,36 @@
 
 body {
   font-family: var(--sp-font-sans);
+}
+
+/* Accessibility: a clear keyboard-focus ring for anything interactive. Only
+ * :focus-visible (keyboard/AT), so mouse/touch taps don't show a ring. Applies
+ * app-wide — every button/link/tappable card gets a consistent, visible focus. */
+a:focus-visible,
+button:focus-visible,
+[tabindex]:focus-visible,
+[role='button']:focus-visible,
+ion-button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: var(--sp-focus-ring);
+  outline-offset: var(--sp-focus-offset);
+  border-radius: var(--sp-radius-sm);
+}
+
+/* Respect the OS "reduce motion" setting: drop transitions/animations so the
+ * card hover-lifts, timers, and slide transitions don't trigger vestibular
+ * discomfort. Near-instant (0.01ms) rather than 0 so onTransitionEnd still fires. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* Safe-area: keep the top toolbar clear of the notch / Dynamic Island / status
