@@ -18,7 +18,7 @@ vi.mock('./shared/generators', () => ({
   genQuizzle: e.genQuizzle,
 }));
 
-import { handler } from './handler';
+import { handler, summarize } from './handler';
 
 describe('daily ingest handler', () => {
   beforeEach(() => {
@@ -71,5 +71,24 @@ describe('daily ingest handler', () => {
     expect(e.putItem).toHaveBeenCalledTimes(7);
     const quizzleWritten = e.putItem.mock.calls.some(([, i]) => i.__typename === 'Quizzle');
     expect(quizzleWritten).toBe(false);
+  });
+
+  it('THROWS when the whole run produces nothing (so the Errors metric fires)', async () => {
+    const boom = new Error('bedrock down');
+    e.genQuizAnswers.mockRejectedValue(boom);
+    e.genLadder.mockRejectedValue(boom);
+    e.genAcrostic.mockRejectedValue(boom);
+    e.genQuizzle.mockRejectedValue(boom);
+    await expect(handler()).rejects.toThrow(/produced NOTHING/);
+    expect(e.putItem).not.toHaveBeenCalled();
+  });
+});
+
+describe('summarize', () => {
+  it('does not throw when at least one game was generated', () => {
+    expect(() => summarize([true, false, false], '2026-07-03')).not.toThrow();
+  });
+  it('throws on a total wipeout (0 successes)', () => {
+    expect(() => summarize([false, false], '2026-07-03')).toThrow(/produced NOTHING/);
   });
 });

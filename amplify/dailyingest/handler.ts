@@ -28,13 +28,27 @@ function stampFor(d: Date): string {
   return `${d.getUTCFullYear()}-${`${d.getUTCMonth() + 1}`.padStart(2, '0')}-${`${d.getUTCDate()}`.padStart(2, '0')}`;
 }
 
-async function run(step: string, fn: () => Promise<void>): Promise<void> {
+/** Run one game's generation, tolerating its failure (a bad topic shouldn't sink
+ * the rest), and record the outcome in `results` so the handler can detect a
+ * total wipeout. */
+async function run(results: boolean[], step: string, fn: () => Promise<void>): Promise<void> {
   try {
     await fn();
     console.log(`daily: ${step} ✓`);
+    results.push(true);
   } catch (e) {
     console.error(`daily: ${step} FAILED — ${e instanceof Error ? e.message : e}`);
+    results.push(false);
   }
+}
+
+/** Log a machine-greppable summary and THROW if nothing was produced — a total
+ * wipeout surfaces on the Lambda Errors metric (alarmable) instead of a
+ * silently-green run that left the shelf stale. Exported for unit testing. */
+export function summarize(results: boolean[], date: string): void {
+  const ok = results.filter(Boolean).length;
+  console.log(`daily ingest complete: ${ok}/${results.length} generated`);
+  if (ok === 0) throw new Error(`daily ingest produced NOTHING (0/${results.length}) for ${date}`);
 }
 
 export async function handler(): Promise<void> {
@@ -44,11 +58,12 @@ export async function handler(): Promise<void> {
   const answerTable = env('ANSWER_TABLE');
   const id = (g: string) => `daily-${g}-${date}-${randomUUID().slice(0, 8)}`;
   console.log(`daily ingest for ${date}: ${JSON.stringify(plan)}`);
+  const results: boolean[] = [];
 
   // Each quiz type gets its OWN topic (offset per index) so the day's five
   // quizzes cover five different subjects, not one topic five ways.
   for (const [i, t] of DAILY_QUIZ_TYPES.entries()) {
-    await run(`quiz:${t.mode}`, async () => {
+    await run(results, `quiz:${t.mode}`, async () => {
       const topic = quizTopicFor(date, i);
       const answers = await gen.genQuizAnswers(invokeText, t.mode, topic);
       const { quiz, answers: rows } = quizRows(t.mode, topic, t.categorySlug, answers, {
@@ -60,25 +75,19 @@ export async function handler(): Promise<void> {
     });
   }
 
-  await run('steps', async () => {
+  await run(results, 'steps', async () => {
     const l = await gen.genLadder(invokeText, plan.ladderLength, plan.difficulty);
-    await putItem(
-      env('WORD_LADDER_TABLE'),
-      wordLadderRow(l, plan.difficulty, { id: id('steps'), date }),
-    );
+    await putItem(env('WORD_LADDER_TABLE'), wordLadderRow(l, plan.difficulty, { id: id('steps'), date })); // prettier-ignore
   });
-  await run('acrostic', async () => {
+  await run(results, 'acrostic', async () => {
     const a = await gen.genAcrostic(invokeText, plan.acrosticWord);
-    await putItem(
-      env('ACROSTIC_TABLE'),
-      acrosticRow(a, plan.difficulty, { id: id('acrostic'), date }),
-    );
+    await putItem(env('ACROSTIC_TABLE'), acrosticRow(a, plan.difficulty, { id: id('acrostic'), date })); // prettier-ignore
   });
-  await run('quizzle', async () => {
+  await run(results, 'quizzle', async () => {
     const q = await gen.genQuizzle(invokeText, plan.quizzleTopic);
     await putItem(env('QUIZZLE_TABLE'), quizzleRow(q, 1000, { id: id('quizzle'), date }));
   });
   // Chess is not daily-generated — it's the curated Lichess mate set (template-
   // backed, chess.js-verified), so nothing to generate here.
-  console.log('daily ingest complete');
+  summarize(results, date);
 }
