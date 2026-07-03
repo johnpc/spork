@@ -65,7 +65,8 @@
 }
 
 .auth__alt-link {
-  color: var(--sp-accent);
+  /* accent-strong: this is TEXT on the light bg (accent is only 4.35:1 there). */
+  color: var(--sp-accent-strong);
   font-weight: 600;
   cursor: pointer;
 }

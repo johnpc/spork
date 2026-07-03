@@ -43,3 +43,21 @@ export function pieceAt(pieces: BoardPiece[], sq: string): BoardPiece | null {
 export function glyph(piece: BoardPiece): string {
   return SOLID[piece.type.toLowerCase()] ?? '';
 }
+
+const PIECE_NAMES: Record<string, string> = {
+  p: 'pawn',
+  n: 'knight',
+  b: 'bishop',
+  r: 'rook',
+  q: 'queen',
+  k: 'king',
+};
+
+/** Accessible label for a board square, so a screen reader announces "e4, white
+ * pawn" / "a1, empty" instead of an unnamed button. */
+export function squareLabel(sq: string, piece: BoardPiece | null): string {
+  if (!piece) return `${sq}, empty`;
+  const color = piece.color === 'w' ? 'white' : 'black';
+  const name = PIECE_NAMES[piece.type.toLowerCase()] ?? 'piece';
+  return `${sq}, ${color} ${name}`;
+}

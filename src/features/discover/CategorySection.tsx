@@ -30,7 +30,12 @@ export function CategorySection({
       >
         <span className="discover__dot" aria-hidden="true" />
         <span className="cat-section__title">{shelf.title}</span>
-        <IonIcon className="cat-section__chevron" icon={open ? chevronDown : chevronForward} />
+        {/* Decorative — the button's aria-expanded already conveys open/closed. */}
+        <IonIcon
+          className="cat-section__chevron"
+          icon={open ? chevronDown : chevronForward}
+          aria-hidden="true"
+        />
       </button>
       {open && (
         <div className="cat-section__body">

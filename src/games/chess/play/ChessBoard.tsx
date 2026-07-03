@@ -1,4 +1,4 @@
-import { squares, isLightSquare, pieceAt, glyph, BOARD_SIZE } from './board';
+import { squares, isLightSquare, pieceAt, glyph, squareLabel, BOARD_SIZE } from './board';
 import type { BoardPiece } from './chess';
 
 /** The 8×8 board: tappable squares with unicode glyphs. A tap calls `onTap(sq)`;
@@ -33,7 +33,13 @@ export function ChessBoard({
           .filter(Boolean)
           .join(' ');
         return (
-          <button key={sq} className={cls} data-testid={`sq-${sq}`} onClick={() => onTap(sq)}>
+          <button
+            key={sq}
+            className={cls}
+            data-testid={`sq-${sq}`}
+            aria-label={squareLabel(sq, p)}
+            onClick={() => onTap(sq)}
+          >
             {p && (
               <span className={`chess-piece chess-piece--${p.color}`} data-testid={`piece-${sq}`}>
                 {glyph(p)}

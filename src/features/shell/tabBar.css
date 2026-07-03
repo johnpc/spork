@@ -26,7 +26,9 @@
 }
 
 .tab-bar__tab--active {
-  color: var(--sp-accent);
+  /* accent-strong (not accent) — the active label is small text on white, so it
+     needs the AA-contrast token (--sp-accent is 3.23:1, fails WCAG AA). */
+  color: var(--sp-accent-strong);
 }
 
 .tab-bar__icon {

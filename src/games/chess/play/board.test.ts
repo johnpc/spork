@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { squares, isLightSquare, pieceAt, glyph } from './board';
+import { squares, isLightSquare, pieceAt, glyph, squareLabel } from './board';
 import type { BoardPiece } from './chess';
 
 describe('squares', () => {
@@ -38,5 +38,15 @@ describe('glyph', () => {
   });
   it('returns empty string for an unknown piece', () => {
     expect(glyph({ sq: 'a1', type: 'z', color: 'w' })).toBe('');
+  });
+});
+
+describe('squareLabel', () => {
+  it('describes an occupied square with colour + piece name (screen-reader name)', () => {
+    expect(squareLabel('e4', { sq: 'e4', type: 'p', color: 'w' })).toBe('e4, white pawn');
+    expect(squareLabel('d8', { sq: 'd8', type: 'q', color: 'b' })).toBe('d8, black queen');
+  });
+  it('labels an empty square', () => {
+    expect(squareLabel('a1', null)).toBe('a1, empty');
   });
 });

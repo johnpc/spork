@@ -13,8 +13,10 @@ export function DeckCard({ deck }: { deck: DeckCardData }) {
         {coverUrl ? (
           <img className="deck-card__img" src={coverUrl} alt="" />
         ) : (
-          <div className="deck-card__placeholder" aria-hidden="true">
-            <IonIcon icon={layersOutline} />
+          <div className="deck-card__placeholder">
+            {/* Decorative placeholder icon — aria-hidden on the icon itself so
+                the internal role="img" isn't flagged for missing alt text. */}
+            <IonIcon icon={layersOutline} aria-hidden="true" />
           </div>
         )}
       </div>

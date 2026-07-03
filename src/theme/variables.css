@@ -8,8 +8,15 @@
   --sp-font-sans: 'Inter', system-ui, sans-serif;
   --sp-font-serif: 'Newsreader', Georgia, serif;
 
-  --sp-accent: #5b8def;
-  --sp-accent-strong: #3f6fd6;
+  /* accent doubles as the fill under WHITE button text across the app, so it must
+     clear WCAG AA 4.5:1 for white — the old #5b8def was only 3.23:1. #3f6fd6
+     (4.71:1) is the on-brand blue that shipped as accent-strong for months. The
+     Home card gradients use their own literal hex (gameCatalog.ts), not this
+     token, so they're unaffected. */
+  --sp-accent: #3f6fd6;
+  /* accent-strong is used for TEXT (score, links) on light backgrounds — must
+     also clear 4.5:1, and stay a touch darker than accent for hierarchy. */
+  --sp-accent-strong: #3a67cc;
   --sp-accent-contrast: #ffffff;
   --sp-accent-soft: #eaf1fe;
   --sp-accent-gradient: linear-gradient(135deg, #6f9bf5 0%, #4f7ce8 100%);
@@ -20,7 +27,7 @@
   --sp-surface: #ffffff;
   --sp-border: #e6e9f0;
   --sp-text: #1b1d22;
-  --sp-text-muted: #6b7280;
+  --sp-text-muted: #646b78; /* was #6b7280 (4.47:1) — bumped to 4.96:1 for WCAG AA */
 
   --sp-radius: 16px;
   --sp-radius-sm: 10px;
@@ -120,7 +127,8 @@ ion-header ion-toolbar:first-of-type {
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--sp-accent);
+  /* accent-strong: kicker is small text on light bg — accent is only 4.35:1. */
+  color: var(--sp-accent-strong);
 }
 
 .sp-muted {

@@ -18,10 +18,10 @@
 
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#5B8DEF" />
-    <meta
-      name="viewport"
-      content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"
-    />
+    <!-- Allow pinch-zoom (no maximum-scale / user-scalable=no) — disabling it
+         fails WCAG 1.4.4 and blocks low-vision users. viewport-fit=cover is kept
+         for the notch/Dynamic Island safe-area insets. -->
+    <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
 
