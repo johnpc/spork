@@ -1,7 +1,7 @@
 {
   "name": "Spork — a stack of little brain games",
   "short_name": "Spork",
-  "description": "A stack of little brain games: quizzes, flashcards, and more — many AI-generated.",
+  "description": "A new set of daily brain games every day — maps, trivia, word ladders, chess puzzles and more. Play free, no account needed.",
   "id": "/",
   "start_url": "/",
   "scope": "/",
@@ -10,7 +10,7 @@
   "orientation": "portrait",
   "theme_color": "#5B8DEF",
   "background_color": "#F7F8FA",
-  "categories": ["education", "productivity"],
+  "categories": ["games", "education", "productivity"],
   "lang": "en-US",
   "dir": "ltr",
   "icons": [
