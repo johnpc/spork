@@ -75,6 +75,10 @@ function ProfileShell({ children }: { children: React.ReactNode }) {
       </IonHeader>
       <IonContent className="ion-padding">
         {children}
+        <Link to="/download" className="profile__row" data-testid="profile-download">
+          Get the iOS app
+          <span aria-hidden="true">→</span>
+        </Link>
         <TabBar active="You" />
       </IonContent>
     </IonPage>

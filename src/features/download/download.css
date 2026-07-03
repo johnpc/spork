@@ -1,0 +1,52 @@
+/* Public download / TestFlight page. --sp-* tokens only. */
+.download {
+  max-width: 480px;
+  margin: 2rem auto 0;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.download__emoji {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+.download__title {
+  font-size: 1.8rem;
+  margin: 0;
+}
+
+.download__sub {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.download__cta {
+  display: inline-block;
+  margin: 0.5rem 0;
+  padding: 0.9rem 1.6rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sp-accent-contrast);
+  background: var(--sp-accent);
+  border-radius: var(--sp-radius);
+  text-decoration: none;
+  box-shadow: var(--sp-shadow);
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease;
+}
+
+.download__cta:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sp-shadow-hover);
+}
+
+.download__hint {
+  margin: 0;
+  font-size: 0.9rem;
+}

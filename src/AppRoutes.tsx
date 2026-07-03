@@ -9,6 +9,7 @@ import { DeckDetail } from './features/deck/DeckDetail';
 import { Study } from './features/study/Study';
 import { MyDecks } from './features/mydecks/MyDecks';
 import { Profile } from './features/profile/Profile';
+import { Download } from './features/download/Download';
 import { SignIn } from './features/auth/SignIn';
 import { SignUp } from './features/auth/SignUp';
 import { EditorGate } from './features/admin/EditorGate';
@@ -41,6 +42,9 @@ export function AppRoutes() {
       </Route>
       <Route exact path="/you">
         <Profile />
+      </Route>
+      <Route exact path="/download">
+        <Download />
       </Route>
       <Route exact path="/signin">
         <SignIn />
