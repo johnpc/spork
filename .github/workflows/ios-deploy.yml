@@ -37,15 +37,44 @@ jobs:
         with:
           ref: main
           token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 2 # need the parent commit to diff what changed
+
+      # Only re-archive + upload to the App Store when the change actually affects
+      # the native app. Pure backend (amplify/**), docs, CI, or hosting-config
+      # commits don't change the iOS binary, so re-uploading them just burns build
+      # minutes and Apple's daily upload limit. Fail-SAFE: a manual dispatch, or
+      # any diff we can't compute, deploys. Paths that DO affect the app: the web
+      # source/build inputs (src, index.html, vite/capacitor/tsconfig, package
+      # manifest, public assets) and the native project (ios/**).
+      - name: Detect native-relevant changes
+        id: changes
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "native=true" >> "$GITHUB_OUTPUT"; echo "manual dispatch → deploy"; exit 0
+          fi
+          BASE=$(git rev-parse HEAD^ 2>/dev/null || echo "")
+          if [ -z "$BASE" ]; then
+            echo "native=true" >> "$GITHUB_OUTPUT"; echo "no parent → deploy (fail-safe)"; exit 0
+          fi
+          CHANGED=$(git diff --name-only "$BASE" HEAD)
+          echo "changed files:"; echo "$CHANGED"
+          if echo "$CHANGED" | grep -qE '^(src/|public/|ios/|index\.html|vite\.config\.ts|capacitor\.config\.ts|tsconfig|package(-lock)?\.json)'; then
+            echo "native=true" >> "$GITHUB_OUTPUT"; echo "→ affects the app, deploy"
+          else
+            echo "native=false" >> "$GITHUB_OUTPUT"; echo "→ no native-relevant changes, skip"
+          fi
 
       - uses: actions/setup-node@v6
+        if: steps.changes.outputs.native == 'true'
         with:
           node-version: 22
           cache: 'npm'
 
       - run: npm ci
+        if: steps.changes.outputs.native == 'true'
 
       - name: Configure AWS "personal" profile
+        if: steps.changes.outputs.native == 'true'
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
@@ -62,19 +91,23 @@ jobs:
           EOF
 
       - name: Generate amplify_outputs.json from prod backend
+        if: steps.changes.outputs.native == 'true'
         run: npm run prod-config
 
       - name: Build web and sync to Capacitor iOS
+        if: steps.changes.outputs.native == 'true'
         run: |
           npm run build
           npx cap sync ios
 
       - name: Write App Store Connect API key
+        if: steps.changes.outputs.native == 'true'
         run: |
           mkdir -p ~/private_keys
           echo "${{ secrets.ASC_KEY_CONTENT }}" > ~/private_keys/AuthKey_${{ secrets.ASC_KEY_ID }}.p8
 
       - name: Revoke stale API-created certificates
+        if: steps.changes.outputs.native == 'true'
         run: |
           python3 - << 'EOF'
           import json, time, urllib.request, ssl
@@ -143,6 +176,7 @@ jobs:
           EOF
 
       - name: Increment build number
+        if: steps.changes.outputs.native == 'true'
         working-directory: ios/App
         run: |
           BUILD_NUM=$(date +%Y%m%d%H%M%S)
@@ -153,6 +187,7 @@ jobs:
           echo "BUILD_NUM=$BUILD_NUM" >> "$GITHUB_ENV"
 
       - name: Archive and upload (auto-bump version on conflict)
+        if: steps.changes.outputs.native == 'true'
         run: |
           cat > /tmp/ExportOptions.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
@@ -219,6 +254,7 @@ jobs:
           fi
 
       - name: Distribute to external beta testers
+        if: steps.changes.outputs.native == 'true'
         env:
           ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
           ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
