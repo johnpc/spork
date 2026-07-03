@@ -50,12 +50,14 @@ describe('ChessAttack', () => {
     hook.state = { ...base, solved: false, wrong: true };
     renderPage();
     expect(screen.getByTestId('chess-error')).toHaveTextContent('try again');
+    expect(screen.getByTestId('chess-error')).toHaveAttribute('role', 'alert');
   });
 
   it('shows the checkmate banner when solved', () => {
     hook.state = { ...base, moves: 2, solved: true };
     renderPage();
     expect(screen.getByTestId('chess-solved')).toHaveTextContent('Checkmate');
+    expect(screen.getByTestId('chess-solved')).toHaveAttribute('role', 'status');
     expect(screen.queryByTestId('chess-hint')).not.toBeInTheDocument();
   });
 

@@ -64,6 +64,7 @@ describe('Acrostic', () => {
     };
     renderAcrostic();
     expect(screen.getByTestId('acrostic-solved')).toHaveTextContent('CI');
+    expect(screen.getByTestId('acrostic-solved')).toHaveAttribute('role', 'status');
     expect(screen.getByTestId('secret-quote')).toBeInTheDocument();
     expect(screen.getByTestId('quote-author')).toHaveTextContent('Yoda');
     expect(screen.queryByTestId('clue-list')).not.toBeInTheDocument();

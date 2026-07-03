@@ -55,11 +55,15 @@ export function Acrostic() {
                 word.
               </p>
               <SecretWord slots={a.slots} quote={a.quote} complete={a.complete} author={a.author} />
-              <p className="sp-muted acrostic__meta" data-testid="acrostic-progress">
+              <p
+                className="sp-muted acrostic__meta"
+                data-testid="acrostic-progress"
+                aria-live="polite"
+              >
                 {a.solvedCount} / {a.total} solved
               </p>
               {a.complete ? (
-                <p className="acrostic__solved" data-testid="acrostic-solved">
+                <p className="acrostic__solved" data-testid="acrostic-solved" role="status">
                   Solved! 🏆 The word was <strong>{a.secret}</strong>.
                 </p>
               ) : (

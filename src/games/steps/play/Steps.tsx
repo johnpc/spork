@@ -68,14 +68,14 @@ export function Steps() {
               </p>
               <LadderPath path={l.path} target={l.target} />
               {l.solved ? (
-                <p className="steps__solved" data-testid="steps-solved">
+                <p className="steps__solved" data-testid="steps-solved" role="status">
                   Solved in {l.moves} moves! {l.par && l.moves <= l.par ? '🏆 par or better' : ''}
                 </p>
               ) : (
                 <>
                   <StepInput onSubmit={l.submit} />
                   {l.lastError && (
-                    <p className="steps__error" data-testid="steps-error">
+                    <p className="steps__error" data-testid="steps-error" role="alert">
                       {ERRORS[l.lastError] ?? 'Invalid move.'}
                     </p>
                   )}

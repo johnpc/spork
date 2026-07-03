@@ -63,11 +63,11 @@ export function ChessAttack() {
                 onTap={c.tap}
               />
               {c.solved ? (
-                <p className="chess__solved" data-testid="chess-solved">
+                <p className="chess__solved" data-testid="chess-solved" role="status">
                   Checkmate! 🏆 Solved in {c.total}.
                 </p>
               ) : c.wrong ? (
-                <p className="chess__error" data-testid="chess-error">
+                <p className="chess__error" data-testid="chess-error" role="alert">
                   Not the mate — try again.
                 </p>
               ) : (

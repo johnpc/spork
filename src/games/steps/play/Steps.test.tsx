@@ -47,6 +47,8 @@ describe('Steps', () => {
     hook.state = { ...base, solved: false, lastError: 'not-one-letter' };
     renderSteps();
     expect(screen.getByTestId('steps-error')).toHaveTextContent('exactly one letter');
+    // Assertive so a screen reader hears the rejected move immediately.
+    expect(screen.getByTestId('steps-error')).toHaveAttribute('role', 'alert');
   });
 
   it('shows the solved banner and hides the input when solved', () => {
@@ -59,6 +61,7 @@ describe('Steps', () => {
     };
     renderSteps();
     expect(screen.getByTestId('steps-solved')).toBeInTheDocument();
+    expect(screen.getByTestId('steps-solved')).toHaveAttribute('role', 'status');
     expect(screen.queryByTestId('step-input')).not.toBeInTheDocument();
   });
 
