@@ -9,12 +9,22 @@ interface ComeBackTomorrowProps {
   total: number;
   timeSeconds?: number;
   date?: string; // YYYY-MM-DD — for the share string
+  nextTo?: string; // route of the next unplayed daily game, if any
+  nextName?: string; // its display name
 }
 
 /** Shown when the player has already finished today's puzzle for a game. Recaps
- * their result, lets them SHARE it, counts down to the next puzzle, and points
- * home — the daily is play-once, so no replay. */
-export function ComeBackTomorrow({ game, score, total, timeSeconds, date }: ComeBackTomorrowProps) {
+ * their result, lets them SHARE it, offers the next unplayed daily game, counts
+ * down to tomorrow, and points home — the daily is play-once, so no replay. */
+export function ComeBackTomorrow({
+  game,
+  score,
+  total,
+  timeSeconds,
+  date,
+  nextTo,
+  nextName,
+}: ComeBackTomorrowProps) {
   return (
     <div className="come-back" data-testid="come-back">
       <span className="come-back__emoji" aria-hidden="true">
@@ -35,6 +45,11 @@ export function ComeBackTomorrow({ game, score, total, timeSeconds, date }: Come
         />
       )}
       <NextPuzzleCountdown />
+      {nextTo && (
+        <Link className="come-back__next" to={nextTo} data-testid="come-back-next">
+          Play {nextName} →
+        </Link>
+      )}
       <Link className="come-back__home" to="/home" data-testid="come-back-home">
         Back to games
       </Link>

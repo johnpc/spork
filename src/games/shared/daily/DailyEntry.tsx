@@ -9,6 +9,7 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import { useDailyEntry } from './useDailyEntry';
+import { useNextGame } from './useNextGame';
 import { ComeBackTomorrow } from './ComeBackTomorrow';
 
 /** The `/daily/:game` landing route. Resolves today's puzzle for the game and
@@ -18,6 +19,7 @@ import { ComeBackTomorrow } from './ComeBackTomorrow';
 export function DailyEntry() {
   const { game: gameKey } = useParams<{ game: string }>();
   const { game, date, playedToday, result, playPath, empty } = useDailyEntry(gameKey);
+  const next = useNextGame(gameKey);
 
   if (!game) return <Redirect to="/home" />;
   if (playPath) return <Redirect to={playPath} />;
@@ -40,6 +42,8 @@ export function DailyEntry() {
             total={result.total}
             timeSeconds={result.timeSeconds}
             date={date}
+            nextTo={next ? `/daily/${next.slug}` : undefined}
+            nextName={next?.name}
           />
         ) : empty ? (
           <div className="daily-empty" data-testid="daily-empty">

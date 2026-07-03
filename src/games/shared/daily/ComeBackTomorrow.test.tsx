@@ -25,6 +25,33 @@ describe('ComeBackTomorrow', () => {
     expect(screen.getByTestId('next-puzzle-countdown')).toBeInTheDocument();
   });
 
+  it('offers a "Play next" link when a next game is given', () => {
+    render(
+      <MemoryRouter>
+        <ComeBackTomorrow
+          game="Worldle"
+          score={3}
+          total={5}
+          date="2026-07-03"
+          nextTo="/daily/steps"
+          nextName="Steps"
+        />
+      </MemoryRouter>,
+    );
+    const next = screen.getByTestId('come-back-next');
+    expect(next).toHaveAttribute('href', '/daily/steps');
+    expect(next).toHaveTextContent('Play Steps →');
+  });
+
+  it('omits the "Play next" link when there is no next game', () => {
+    render(
+      <MemoryRouter>
+        <ComeBackTomorrow game="Worldle" score={3} total={5} date="2026-07-03" />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByTestId('come-back-next')).not.toBeInTheDocument();
+  });
+
   it('hides the share button when no date is given', () => {
     render(
       <MemoryRouter>
