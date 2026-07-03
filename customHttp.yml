@@ -7,9 +7,16 @@
 #  - Referrer-Policy: send only the origin on cross-site nav (privacy).
 #  - Permissions-Policy: disable device APIs the web app never uses.
 #
-# A full Content-Security-Policy is intentionally NOT set here: Ionic injects
-# inline styles and the legacy build emits inline scripts, so a mis-scoped CSP
-# would silently break rendering. Add one only after verifying every flow.
+# Content-Security-Policy: 'unsafe-inline' for script/style is REQUIRED — Vite's
+# bootstrap emits inline module/legacy scripts and Ionic injects inline styles at
+# runtime (so 'self' alone would white-screen the app). Everything else is scoped
+# tight: connect-src to the exact backends the running app calls (AppSync +
+# Cognito + S3 under *.amazonaws.com, media under *.jpc.io), object-src none,
+# frame-ancestors none, base-uri self. VERIFIED empirically: a browser sweep of
+# every flow (home, text quiz, map, multiple-choice feedback, chess lazy chunk,
+# discover, you) with this exact policy enforced produced ZERO violations, and a
+# network trace confirmed connect-src covers every runtime origin. Re-verify with
+# scripts/... if the build tooling or backend endpoints change.
 customHeaders:
   - pattern: '**'
     headers:
@@ -23,3 +30,5 @@ customHeaders:
         value: 'strict-origin-when-cross-origin'
       - key: Permissions-Policy
         value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
+      - key: Content-Security-Policy
+        value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data:; connect-src 'self' https://*.amazonaws.com wss://*.amazonaws.com https://*.jpc.io; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'"
