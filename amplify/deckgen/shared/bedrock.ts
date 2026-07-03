@@ -2,12 +2,21 @@
  * Thin isolation wrappers over Bedrock — the only impure AI units. Mocked in
  * handler tests; all logic (prompt/parse) lives in the pure modules.
  *
- * Claude Opus 4.8 for card text (our "Claude for all AI" default); Stability
- * stable-image-core for card illustrations (active low-cost text-to-image).
+ * Claude Haiku 4.5 for generated text; Stability stable-image-core for card
+ * illustrations (active low-cost text-to-image).
+ *
+ * Model choice: our generation tasks are small, tool-forced, schema-bound
+ * outputs (answer sets, word ladders, acrostics, trivia decks) — not reasoning-
+ * heavy — and every game runs the result through a downstream validator +
+ * retry (validateLadder/validateQuizzle/validateAcrostic/verifyMate/retryGen),
+ * so the quality floor is enforced in code. Haiku is ~10x cheaper than Opus with
+ * no meaningful quality risk here. Chess puzzles are template-backed (Lichess),
+ * not LLM-generated. Bump this constant to a stronger model if a task ever needs
+ * it — it's the single text-generation entry point for the whole app.
  */
 import { BedrockRuntimeClient, InvokeModelCommand } from '@aws-sdk/client-bedrock-runtime';
 
-export const TEXT_MODEL_ID = 'us.anthropic.claude-opus-4-8';
+export const TEXT_MODEL_ID = 'us.anthropic.claude-haiku-4-5-20251001-v1:0';
 export const IMAGE_MODEL_ID = 'stability.stable-image-core-v1:1';
 
 const client = new BedrockRuntimeClient({});
