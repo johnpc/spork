@@ -1,0 +1,25 @@
+# Security response headers for Amplify Hosting (served via CloudFront on every
+# response). Deliberately the SAFE, high-value set that can't break the app:
+#
+#  - HSTS: force HTTPS for a year incl. subdomains (site is HTTPS-only via CF).
+#  - X-Content-Type-Options: stop MIME-sniffing (defends against content confusion).
+#  - X-Frame-Options: DENY framing → clickjacking protection (app is never embedded).
+#  - Referrer-Policy: send only the origin on cross-site nav (privacy).
+#  - Permissions-Policy: disable device APIs the web app never uses.
+#
+# A full Content-Security-Policy is intentionally NOT set here: Ionic injects
+# inline styles and the legacy build emits inline scripts, so a mis-scoped CSP
+# would silently break rendering. Add one only after verifying every flow.
+customHeaders:
+  - pattern: '**'
+    headers:
+      - key: Strict-Transport-Security
+        value: 'max-age=31536000; includeSubDomains'
+      - key: X-Content-Type-Options
+        value: 'nosniff'
+      - key: X-Frame-Options
+        value: 'DENY'
+      - key: Referrer-Policy
+        value: 'strict-origin-when-cross-origin'
+      - key: Permissions-Policy
+        value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()'
