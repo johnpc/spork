@@ -4,18 +4,24 @@ import { genQuizAnswers, genAcrostic } from './generators';
 /** A fake Bedrock response wrapping a forced tool_use block. */
 const tool = (name: string, input: unknown) => ({ content: [{ type: 'tool_use', name, input }] });
 
+const capitals = (names: string[]) =>
+  tool('generate_answers', { answers: names.map((n) => ({ display: n, accepted: [n] })) });
+
 describe('genQuizAnswers', () => {
   it('parses + returns a valid answer set', async () => {
-    const invoke = vi.fn().mockResolvedValue(
-      tool('generate_answers', {
-        answers: [
-          { display: 'Tokyo', accepted: ['Tokyo'] },
-          { display: 'Paris', accepted: ['Paris'] },
-        ],
-      }),
-    );
+    const invoke = vi.fn().mockResolvedValue(capitals(['Tokyo', 'Paris', 'Rome', 'Cairo']));
     const out = await genQuizAnswers(invoke, 'CLASSIC', 'World Capitals');
-    expect(out.map((a) => a.display)).toEqual(['Tokyo', 'Paris']);
+    expect(out.map((a) => a.display)).toEqual(['Tokyo', 'Paris', 'Rome', 'Cairo']);
+  });
+
+  it('retries past a too-thin set (< 4 answers) then returns a valid one', async () => {
+    const invoke = vi
+      .fn()
+      .mockResolvedValueOnce(capitals(['Tokyo', 'Paris'])) // too few → rejected
+      .mockResolvedValueOnce(capitals(['Tokyo', 'Paris', 'Rome', 'Cairo', 'Lima']));
+    const out = await genQuizAnswers(invoke, 'CLASSIC', 'World Capitals');
+    expect(out).toHaveLength(5);
+    expect(invoke).toHaveBeenCalledTimes(2);
   });
 });
 

@@ -7,6 +7,7 @@
 import { retryGen, type Invoke } from './retryGen';
 import { buildAnswersRequest, type GenMode } from '../../quizgen/shared/answersPrompt';
 import { parseAnswers, type ParsedAnswer } from '../../quizgen/shared/parseAnswers';
+import { validateQuizAnswers } from '../../quizgen/shared/validateQuizAnswers';
 import { buildLadderRequest } from '../../laddergen/shared/ladderPrompt';
 import { parseLadderGen } from '../../laddergen/shared/parseLadderGen';
 import { validateLadder } from '../../laddergen/shared/validateLadder';
@@ -34,7 +35,8 @@ export function genQuizAnswers(
   return retryGen(`quiz:${mode}`, ATTEMPTS, async () => {
     const body = (await invoke(buildAnswersRequest({ mode, topic, answerCount }))) as Body;
     const answers = parseAnswers(mode, body as Parameters<typeof parseAnswers>[1]);
-    return { ok: answers.length > 0, value: answers, reason: 'empty' };
+    const v = validateQuizAnswers(mode, answers);
+    return { ok: v.ok, value: answers, reason: v.reason ?? 'invalid' };
   });
 }
 
