@@ -6,7 +6,13 @@ import { defineConfig } from 'vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), legacy()],
+  // chess.js uses BigInt literals (0n). The default legacy-plugin target is
+  // es2020, whose configured browser floor (chrome64/safari12) predates BigInt,
+  // so esbuild refuses to transpile it. Target browsers that support BigInt
+  // (all evergreen since ~2020) for the modern build; the legacy plugin still
+  // emits an ES5 fallback bundle for older ones.
+  build: { target: ['es2020', 'chrome67', 'safari14', 'firefox68', 'edge79'] },
+  plugins: [react(), legacy({ modernTargets: 'chrome>=67, safari>=14, firefox>=68, edge>=79' })],
   test: {
     globals: true,
     environment: 'jsdom',
