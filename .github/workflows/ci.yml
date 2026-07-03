@@ -135,6 +135,8 @@ jobs:
             paths: .features-gen/e2e/features/chess
           - name: daily
             paths: .features-gen/e2e/features/daily
+          - name: shell
+            paths: .features-gen/e2e/features/shell
     steps:
       - uses: actions/checkout@v7
 

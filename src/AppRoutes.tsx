@@ -15,6 +15,7 @@ import { SignUp } from './features/auth/SignUp';
 import { EditorGate } from './features/admin/EditorGate';
 import { ManageDecks } from './features/admin/ManageDecks';
 import { DeckEditor } from './features/admin/DeckEditor';
+import { NotFound } from './features/shell/NotFound';
 
 /** App routes. Home is the platform shell (game shelf); per-game list/play
  * routes live in GameRoutes so adding a game doesn't touch this file. */
@@ -69,6 +70,11 @@ export function AppRoutes() {
       </Route>
       <Route exact path="/">
         <Redirect to="/home" />
+      </Route>
+      {/* Catch-all 404 — a pathless route matches anything the routes above
+          didn't, so a mistyped/stale URL lands on a friendly dead-end. */}
+      <Route>
+        <NotFound />
       </Route>
     </IonRouterOutlet>
   );
