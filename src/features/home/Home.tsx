@@ -3,6 +3,7 @@ import { useMemo } from 'react';
 import { GAMES } from './homeGames';
 import { HomeCard } from './HomeCard';
 import { useDailyProgress } from './useDailyProgress';
+import { useDailyStreak } from './useDailyStreak';
 import './home.css';
 
 /** Spork Home: the platform's game shelf. Each entry (see homeGames) routes into
@@ -11,6 +12,7 @@ import './home.css';
 export function Home() {
   const keys = useMemo(() => GAMES.map((g) => g.dailyKey), []);
   const progress = useDailyProgress(keys);
+  const streak = useDailyStreak();
 
   return (
     <IonPage>
@@ -28,6 +30,11 @@ export function Home() {
               ? `All ${progress.total} done today 🎉`
               : `Today: ${progress.done}/${progress.total} done`}
           </p>
+          {streak > 0 && (
+            <p className="home-hero__streak" data-testid="home-streak">
+              🔥 {streak}-day streak
+            </p>
+          )}
         </header>
         <ul className="home-games" data-testid="home-games">
           {GAMES.map((g) => (

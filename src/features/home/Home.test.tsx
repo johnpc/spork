@@ -48,4 +48,23 @@ describe('Home', () => {
     // A game not yet played shows no badge.
     expect(screen.queryByTestId('game-steps-done')).not.toBeInTheDocument();
   });
+
+  it('shows the daily streak once at least one puzzle is done', () => {
+    const stamp = (offsetDays: number) => dayStamp(new Date(Date.now() - offsetDays * 86_400_000));
+    window.localStorage.setItem(
+      `spork.daily.quizzes:MAP.${stamp(1)}`,
+      JSON.stringify({ score: 1, total: 1 }),
+    );
+    window.localStorage.setItem(
+      `spork.daily.steps.${stamp(0)}`,
+      JSON.stringify({ score: 1, total: 1 }),
+    );
+    renderHome();
+    expect(screen.getByTestId('home-streak')).toHaveTextContent('🔥 2-day streak');
+  });
+
+  it('hides the streak when nothing has been played', () => {
+    renderHome();
+    expect(screen.queryByTestId('home-streak')).not.toBeInTheDocument();
+  });
 });
