@@ -1,11 +1,14 @@
 /* Quizzle home list. --sp-* tokens only. */
 .quizzle-list {
   list-style: none;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: var(--sp-gap);
+  /* Center in a comfortable column on desktop; full-width on phones. */
+  width: 100%;
+  max-width: 40rem;
 }
 
 .quizzle-list__link {
