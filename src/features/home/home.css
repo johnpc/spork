@@ -19,6 +19,14 @@
   font-size: 1rem;
 }
 
+.home-hero__progress {
+  margin: 0.6rem 0 0;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--sp-accent-strong);
+  font-variant-numeric: tabular-nums;
+}
+
 .home-games {
   list-style: none;
   margin: 0 auto;
@@ -36,6 +44,7 @@
 }
 
 .home-card {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -48,6 +57,23 @@
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease;
+}
+
+.home-card--done {
+  opacity: 0.85;
+}
+
+.home-card__badge {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 800;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.35);
+  font-variant-numeric: tabular-nums;
 }
 
 .home-card:hover {
