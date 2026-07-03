@@ -7,13 +7,14 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import { usePlay } from './usePlay';
 import { useBestScore } from './useBestScore';
 import { rendererFor, usesTypedInput } from './renderers';
 import { PlayHud } from './PlayHud';
 import { PlayControls } from './PlayControls';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
+import { useDailyGuard } from '../../shared/daily/useDailyGuard';
 import { dailyKeyForMode } from './dailyKey';
 import { LoadState } from '../../../features/shell/LoadState';
 import './play.css';
@@ -29,11 +30,17 @@ export function Play() {
   const { best } = useBestScore(id);
   const Renderer = rendererFor(p.quiz?.mode);
   const typed = usesTypedInput(p.quiz?.mode);
-  useRecordDailyOnDone(dailyKeyForMode(p.quiz?.mode), p.status === 'done', {
+  const dailyKey = dailyKeyForMode(p.quiz?.mode);
+  useRecordDailyOnDone(dailyKey, p.status === 'done', {
     score: p.score.found,
     total: p.score.total,
     timeSeconds: p.timeSeconds,
   });
+  // One-per-day: if today's puzzle of this type is already finished AND the
+  // player isn't mid-session here, send them to the recap. `status==='idle'`
+  // means a fresh entry (a just-finished session is 'done', so it stays put).
+  const recap = useDailyGuard(dailyKey);
+  if (p.quiz && recap && p.status === 'idle') return <Redirect to={recap} />;
 
   return (
     <IonPage>

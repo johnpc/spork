@@ -7,11 +7,12 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import { useChessAttack } from './useChessAttack';
 import { ChessBoard } from './ChessBoard';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
+import { useDailyGuard } from '../../shared/daily/useDailyGuard';
 import { LoadState } from '../../../features/shell/LoadState';
 import './chess.css';
 
@@ -27,6 +28,9 @@ export function ChessAttack() {
     total: c.total,
     timeSeconds: elapsed,
   });
+  // One-per-day: a fresh entry after today's is done → recap (not mid/just-solved).
+  const recap = useDailyGuard('chess');
+  if (c.puzzle && recap && !c.solved && c.moves === 0) return <Redirect to={recap} />;
 
   return (
     <IonPage>
@@ -71,11 +75,13 @@ export function ChessAttack() {
                   Tap your piece, then its destination.
                 </p>
               )}
-              <div className="chess__actions">
-                <button data-testid="chess-reset" onClick={c.reset} disabled={c.moves === 0}>
-                  Reset
-                </button>
-              </div>
+              {!c.solved && (
+                <div className="chess__actions">
+                  <button data-testid="chess-reset" onClick={c.reset} disabled={c.moves === 0}>
+                    Reset
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </LoadState>

@@ -35,6 +35,7 @@ const base = {
 describe('ChessAttack', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    localStorage.clear(); // the daily guard reads localStorage — isolate cases
   });
 
   it('shows the mate-in-N goal + board + hint while unsolved', () => {

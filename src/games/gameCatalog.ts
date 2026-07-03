@@ -148,3 +148,14 @@ export const OTHER_GAMES: GameDef[] = [
 
 /** All games in shelf order: quiz types first, then the other islands. */
 export const ALL_GAMES: GameDef[] = [...QUIZ_TYPE_GAMES, ...OTHER_GAMES];
+
+/** The /daily/:slug recap route for a daily key (the localStorage key a play
+ * screen records under). Quiz keys are "quizzes:<MODE>"; islands are the slug
+ * itself. Used by the daily guard to send a finished player back to the recap. */
+export function dailyPathForKey(dailyKey: string): string {
+  const mode = dailyKey.startsWith('quizzes:') ? dailyKey.slice('quizzes:'.length) : null;
+  const g = mode
+    ? QUIZ_TYPE_GAMES.find((q) => q.quizMode === mode)
+    : OTHER_GAMES.find((o) => o.slug === dailyKey);
+  return g ? `/daily/${g.slug}` : '/home';
+}

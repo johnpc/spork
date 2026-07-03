@@ -7,12 +7,13 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import { useQuizzle } from './useQuizzle';
 import { QuizzleRound } from './QuizzleRound';
 import { QuizzleDone } from './QuizzleDone';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
+import { useDailyGuard } from '../../shared/daily/useDailyGuard';
 import { LoadState } from '../../../features/shell/LoadState';
 import './quizzle.css';
 
@@ -24,6 +25,9 @@ export function Quizzle() {
   const done = q.done && q.started;
   const elapsed = useElapsed(done);
   useRecordDailyOnDone('quizzle', done, { score: q.bank, total: q.total, timeSeconds: elapsed });
+  // One-per-day: a fresh entry (not yet started) after today's is done → recap.
+  const recap = useDailyGuard('quizzle');
+  if (q.quizzle && recap && !q.started) return <Redirect to={recap} />;
 
   return (
     <IonPage>

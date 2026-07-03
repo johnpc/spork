@@ -7,12 +7,13 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import { useLadder } from './useLadder';
 import { StepInput } from './StepInput';
 import { LadderPath } from './LadderPath';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
+import { useDailyGuard } from '../../shared/daily/useDailyGuard';
 import { LoadState } from '../../../features/shell/LoadState';
 import './steps.css';
 
@@ -34,6 +35,9 @@ export function Steps() {
     total: l.par ?? l.moves,
     timeSeconds: elapsed,
   });
+  // One-per-day: a fresh entry after today's is done → recap.
+  const recap = useDailyGuard('steps');
+  if (l.ladder && recap && !l.solved && l.moves === 0) return <Redirect to={recap} />;
 
   return (
     <IonPage>

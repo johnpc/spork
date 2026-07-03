@@ -7,12 +7,13 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { useParams } from 'react-router-dom';
+import { Redirect, useParams } from 'react-router-dom';
 import { useAcrostic } from './useAcrostic';
 import { ClueInput } from './ClueInput';
 import { SecretWord } from './SecretWord';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
+import { useDailyGuard } from '../../shared/daily/useDailyGuard';
 import { LoadState } from '../../../features/shell/LoadState';
 import './acrostic.css';
 
@@ -27,6 +28,9 @@ export function Acrostic() {
     total: a.total,
     timeSeconds: elapsed,
   });
+  // One-per-day: a fresh entry after today's is done → recap.
+  const recap = useDailyGuard('acrostic');
+  if (a.acrostic && recap && !a.complete && a.solvedCount === 0) return <Redirect to={recap} />;
 
   return (
     <IonPage>
