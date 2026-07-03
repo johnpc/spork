@@ -9,11 +9,12 @@ import {
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import { useAcrostics } from './useAcrostics';
+import { LoadState } from '../../../features/shell/LoadState';
 import './acrosticList.css';
 
 /** Acrostic home: the list of published puzzles, each linking into play. */
 export function AcrosticList() {
-  const { acrostics, isLoading } = useAcrostics();
+  const { acrostics, isLoading, isError, refetch } = useAcrostics();
   return (
     <IonPage>
       <IonHeader>
@@ -25,13 +26,13 @@ export function AcrosticList() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {isLoading ? (
-          <p className="sp-muted">Loading…</p>
-        ) : acrostics.length === 0 ? (
-          <p className="sp-muted" data-testid="acrostics-empty">
-            No acrostics yet.
-          </p>
-        ) : (
+        <LoadState
+          isLoading={isLoading}
+          isError={isError}
+          isEmpty={acrostics.length === 0}
+          emptyTitle="No acrostics yet"
+          onRetry={refetch}
+        >
           <ul className="acrostic-list" data-testid="acrostic-list">
             {acrostics.map((a) => (
               <li key={a.id} className="acrostic-list__item">
@@ -46,7 +47,7 @@ export function AcrosticList() {
               </li>
             ))}
           </ul>
-        )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );

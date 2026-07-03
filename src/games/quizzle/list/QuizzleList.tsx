@@ -9,11 +9,12 @@ import {
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import { useQuizzleList } from './useQuizzleList';
+import { LoadState } from '../../../features/shell/LoadState';
 import './quizzleList.css';
 
 /** Quizzle home: the list of published wager quizzes, each linking into play. */
 export function QuizzleList() {
-  const { quizzles, isLoading } = useQuizzleList();
+  const { quizzles, isLoading, isError, refetch } = useQuizzleList();
   return (
     <IonPage>
       <IonHeader>
@@ -25,13 +26,13 @@ export function QuizzleList() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {isLoading ? (
-          <p className="sp-muted">Loading…</p>
-        ) : quizzles.length === 0 ? (
-          <p className="sp-muted" data-testid="quizzles-empty">
-            No quizzles yet.
-          </p>
-        ) : (
+        <LoadState
+          isLoading={isLoading}
+          isError={isError}
+          isEmpty={quizzles.length === 0}
+          emptyTitle="No quizzles yet"
+          onRetry={refetch}
+        >
           <ul className="quizzle-list" data-testid="quizzle-list">
             {quizzles.map((q) => (
               <li key={q.id} className="quizzle-list__item">
@@ -46,7 +47,7 @@ export function QuizzleList() {
               </li>
             ))}
           </ul>
-        )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );

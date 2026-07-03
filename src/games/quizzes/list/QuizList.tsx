@@ -10,11 +10,12 @@ import {
 import { Link } from 'react-router-dom';
 import { useQuizzes } from './useQuizzes';
 import { useIsEditor } from '../../../features/admin/useIsEditor';
+import { LoadState } from '../../../features/shell/LoadState';
 import './quizList.css';
 
 /** Quizzes home: the list of published quizzes, each linking into play. */
 export function QuizList() {
-  const { quizzes, isLoading } = useQuizzes();
+  const { quizzes, isLoading, isError, refetch } = useQuizzes();
   const { isEditor } = useIsEditor();
   return (
     <IonPage>
@@ -32,13 +33,13 @@ export function QuizList() {
             Quiz Studio →
           </Link>
         )}
-        {isLoading ? (
-          <p className="sp-muted">Loading…</p>
-        ) : quizzes.length === 0 ? (
-          <p className="sp-muted" data-testid="quizzes-empty">
-            No quizzes yet.
-          </p>
-        ) : (
+        <LoadState
+          isLoading={isLoading}
+          isError={isError}
+          isEmpty={quizzes.length === 0}
+          emptyTitle="No quizzes yet"
+          onRetry={refetch}
+        >
           <ul className="quiz-list" data-testid="quiz-list">
             {quizzes.map((q) => (
               <li key={q.id} className="quiz-list__item">
@@ -55,7 +56,7 @@ export function QuizList() {
               </li>
             ))}
           </ul>
-        )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );

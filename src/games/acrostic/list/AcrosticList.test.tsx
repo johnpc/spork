@@ -36,13 +36,13 @@ describe('AcrosticList', () => {
   it('shows an empty message when there are none', () => {
     hook.state = { isLoading: false, acrostics: [] };
     renderList();
-    expect(screen.getByTestId('acrostics-empty')).toBeInTheDocument();
+    expect(screen.getByTestId('load-empty')).toBeInTheDocument();
   });
 
   it('shows a loading state', () => {
     hook.state = { isLoading: true, acrostics: [] };
     renderList();
     expect(screen.queryByTestId('acrostic-list')).not.toBeInTheDocument();
-    expect(screen.queryByTestId('acrostics-empty')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('load-empty')).not.toBeInTheDocument();
   });
 });

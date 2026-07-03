@@ -9,11 +9,12 @@ import {
 } from '@ionic/react';
 import { Link } from 'react-router-dom';
 import { useChessPuzzles } from './useChessPuzzles';
+import { LoadState } from '../../../features/shell/LoadState';
 import './chessList.css';
 
 /** Chess Attack home: the list of published puzzles, each linking into play. */
 export function ChessList() {
-  const { puzzles, isLoading } = useChessPuzzles();
+  const { puzzles, isLoading, isError, refetch } = useChessPuzzles();
   return (
     <IonPage>
       <IonHeader>
@@ -25,13 +26,13 @@ export function ChessList() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {isLoading ? (
-          <p className="sp-muted">Loading…</p>
-        ) : puzzles.length === 0 ? (
-          <p className="sp-muted" data-testid="chess-empty">
-            No puzzles yet.
-          </p>
-        ) : (
+        <LoadState
+          isLoading={isLoading}
+          isError={isError}
+          isEmpty={puzzles.length === 0}
+          emptyTitle="No puzzles yet"
+          onRetry={refetch}
+        >
           <ul className="chess-list" data-testid="chess-list">
             {puzzles.map((p) => (
               <li key={p.id} className="chess-list__item">
@@ -42,7 +43,7 @@ export function ChessList() {
               </li>
             ))}
           </ul>
-        )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );

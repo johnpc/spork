@@ -36,7 +36,7 @@ describe('ChessList', () => {
   it('shows an empty message when there are none', () => {
     hook.state = { isLoading: false, puzzles: [] };
     renderList();
-    expect(screen.getByTestId('chess-empty')).toBeInTheDocument();
+    expect(screen.getByTestId('load-empty')).toBeInTheDocument();
   });
 
   it('shows a loading message while loading', () => {

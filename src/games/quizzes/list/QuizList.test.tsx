@@ -38,6 +38,6 @@ describe('QuizList', () => {
   it('shows an empty message when there are no quizzes', () => {
     hook.state = { isLoading: false, quizzes: [] };
     renderList();
-    expect(screen.getByTestId('quizzes-empty')).toBeInTheDocument();
+    expect(screen.getByTestId('load-empty')).toBeInTheDocument();
   });
 });
