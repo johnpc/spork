@@ -1,0 +1,43 @@
+/* Guest daily stats card on the You tab. --sp-* tokens only. */
+.guest-stats {
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  box-shadow: var(--sp-shadow);
+  padding: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.guest-stats__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+}
+
+.guest-stats__num {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: var(--sp-accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.guest-stats__den {
+  font-size: 1.2rem;
+  color: var(--sp-text-muted);
+}
+
+.guest-stats__label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--sp-text);
+}
+
+.guest-stats__streak {
+  margin: 8px 0 0;
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: var(--sp-text);
+  font-variant-numeric: tabular-nums;
+}

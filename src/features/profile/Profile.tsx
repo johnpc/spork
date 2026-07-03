@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../auth/useAuth';
 import { useIsEditor } from '../admin/useIsEditor';
 import { StreakCard } from '../stats/StreakCard';
+import { GuestDailyStats } from './GuestDailyStats';
 import { ReminderToggle } from '../reminders/ReminderToggle';
 import { TabBar } from '../shell/TabBar';
 import { EmptyState } from '../shell/EmptyState';
@@ -17,6 +18,7 @@ export function Profile() {
   if (status !== 'authenticated') {
     return (
       <ProfileShell>
+        <GuestDailyStats />
         <EmptyState
           icon={personCircleOutline}
           title="You're browsing as a guest"
