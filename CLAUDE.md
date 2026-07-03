@@ -256,6 +256,18 @@ npx ampx sandbox       # personal cloud backend sandbox
 - **Repo:** `johnpc/spork`.
 - **iOS/Android bundle id:** `com.johncorser.spork`. Region `us-west-2`, AWS profile `personal`.
 - **Sandbox stack:** set on first `npx ampx sandbox`, then wire into `package.json` `e2e-config`.
+- **SPA rewrite (Amplify Hosting custom rule) — required for SEO.** Prod app id
+  `d1s1t7ajahnjkc`. Client routes (`/daily/*`, `/discover`, `/you`, …) must serve `index.html` with a
+  **200**, not a 404. Amplify's default `{"source":"/<*>","target":"/index.html","status":"404-200"}`
+  returns a 404 STATUS to crawlers (page still renders, but Googlebot won't index it — and our
+  sitemap lists those URLs). Fix = a regex rule that matches non-file routes and returns **200**:
+  ```
+  source: </^[^.]+$|\.(?!(css|gif|ico|jpg|jpeg|js|png|txt|svg|woff|woff2|ttf|map|json|xml|webmanifest)$)([^.]+$)/>
+  target: /index.html   status: 200
+  ```
+  Apply with `AWS_PROFILE=personal aws amplify update-app --app-id d1s1t7ajahnjkc --region us-west-2
+--custom-rules file://rules.json`. Not captured in the repo (console/API config) — re-apply if the
+  app is re-provisioned. Verify: `curl -so/dev/null -w '%{http_code}' https://spork.jpc.io/daily/worldle` → 200.
 - **CI:** `.github/workflows/ci.yml` (quality + Gherkin acceptance matrix, one area per feature/game)
   blocks PRs. `ios-deploy.yml` / `android-deploy.yml` publish after CI on `main`. Secrets:
   `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `TEST_USERNAME`, `TEST_PASSWORD`, `ASC_KEY_ID`,
