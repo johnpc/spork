@@ -1,9 +1,19 @@
+/* Center the study surface in a comfortable column on desktop; full-width on
+   phones. Both the bar and the card share the same cap so they stay aligned. */
+.study__bar,
+.study-card {
+  width: 100%;
+  max-width: 34rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .study__bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin: 0 0 16px;
+  margin-bottom: 16px;
 }
 
 .study__progress {

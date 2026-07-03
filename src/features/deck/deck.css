@@ -1,3 +1,10 @@
+.deck {
+  /* Center in a comfortable column on desktop; full-width on phones. */
+  width: 100%;
+  max-width: 40rem;
+  margin: 0 auto;
+}
+
 .deck__title {
   font-size: 1.5rem;
   margin: 0 0 8px;

@@ -1,10 +1,13 @@
 .my-decks {
   list-style: none;
-  margin: 0;
+  margin: 0 auto;
   padding: 0;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  /* Center in a comfortable column on desktop; full-width on phones. */
+  width: 100%;
+  max-width: 40rem;
 }
 
 .my-decks__row {

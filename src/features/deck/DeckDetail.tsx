@@ -33,7 +33,7 @@ export function DeckDetail() {
         {isLoading || !deck ? (
           <p className="sp-muted">{isLoading ? 'Loading deck…' : 'Deck not found.'}</p>
         ) : (
-          <>
+          <div className="deck">
             <h1 className="sp-heading deck__title" data-testid="deck-title">
               {deck.topic}
             </h1>
@@ -60,7 +60,7 @@ export function DeckDetail() {
                 </li>
               ))}
             </ul>
-          </>
+          </div>
         )}
       </IonContent>
     </IonPage>

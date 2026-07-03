@@ -4,7 +4,10 @@
   border-radius: var(--sp-radius);
   box-shadow: var(--sp-shadow);
   padding: 18px;
-  margin-bottom: 20px;
+  margin: 0 auto 20px;
+  /* Match the .my-decks column width so the panel and list align on desktop. */
+  width: 100%;
+  max-width: 40rem;
 }
 
 .due-today__count {
