@@ -1,10 +1,61 @@
-// Minimal service worker for SPORK. Its only job today is to make the app
-// installable as a PWA — Chromium requires a registered SW (plus the manifest)
-// before it fires `beforeinstallprompt`. We deliberately do NOT cache anything
-// yet: every request passes straight through to the network, so there is no
-// stale-asset risk. Offline/precache support can be layered on later.
-self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (event) => event.waitUntil(self.clients.claim()));
-self.addEventListener('fetch', () => {
-  // No-op: let the browser handle the request normally (network passthrough).
+// Service worker for SPORK — makes the app installable AND resilient offline,
+// without any stale-asset risk. Two strategies:
+//
+//  • Hashed static assets (/assets/*, produced by Vite with a content hash in
+//    the filename) are CACHE-FIRST: a filename only ever maps to one exact
+//    build output, so serving it from cache can never be stale. A new build
+//    ships new filenames, which miss the cache and are fetched + cached fresh.
+//
+//  • Navigations (HTML documents) are NETWORK-FIRST: online, we always fetch
+//    the latest index.html (so a new deploy is picked up immediately); offline,
+//    we fall back to the cached shell so the app still boots and plays.
+//
+// The cache is versioned; activate() deletes older versions so redeploys don't
+// accumulate stale caches. Bump CACHE on any strategy change.
+const CACHE = 'spork-v1';
+const SHELL = '/index.html';
+
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE)
+      .then((c) => c.add(SHELL))
+      .then(() => self.skipWaiting()),
+  );
+});
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches
+      .keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim()),
+  );
+});
+
+self.addEventListener('fetch', (event) => {
+  const { request } = event;
+  // Only handle same-origin GETs; let everything else (APIs, POSTs) pass through.
+  if (request.method !== 'GET' || new URL(request.url).origin !== self.location.origin) return;
+
+  // Navigations → network-first, cached shell as the offline fallback.
+  if (request.mode === 'navigate') {
+    event.respondWith(fetch(request).catch(() => caches.match(SHELL)));
+    return;
+  }
+
+  // Hashed static assets → cache-first (immutable per build; fetch + store on miss).
+  if (new URL(request.url).pathname.startsWith('/assets/')) {
+    event.respondWith(
+      caches.match(request).then(
+        (hit) =>
+          hit ||
+          fetch(request).then((res) => {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(request, copy));
+            return res;
+          }),
+      ),
+    );
+  }
 });
