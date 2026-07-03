@@ -46,6 +46,10 @@ describe('MultipleChoice', () => {
     expect(screen.getByText('Berlin').className).toContain('mc__option--wrong');
     // the correct option is revealed green alongside the wrong pick
     expect(screen.getByText('Paris').className).toContain('mc__option--correct');
+    // Non-colour cue (WCAG 1.4.1): ✓ on the right answer, ✗ on the wrong pick —
+    // so red/green colour-blind players can still read the feedback.
+    expect(screen.getByText('Paris').textContent).toContain('✓');
+    expect(screen.getByText('Berlin').textContent).toContain('✗');
   });
 
   it('renders a completion message when all are found', () => {

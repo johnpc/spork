@@ -37,6 +37,13 @@
   border-color: var(--sp-accent);
 }
 
+/* Non-colour cue (✓/✗) so feedback doesn't rely on green/red alone. */
+.mc__mark {
+  display: inline-block;
+  margin-right: 0.4rem;
+  font-weight: 800;
+}
+
 .mc__option--correct {
   border-color: var(--sp-correct);
   background: var(--sp-correct);

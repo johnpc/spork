@@ -42,6 +42,13 @@ export function MultipleChoice({ answers, found, attempt }: RendererProps) {
               disabled={!!picked}
               onClick={() => choose(option)}
             >
+              {/* A ✓/✗ glyph so correct/wrong isn't signaled by COLOUR alone
+                  (WCAG 1.4.1) — red/green is the most common colour-blindness. */}
+              {state && (
+                <span className="mc__mark" aria-hidden="true">
+                  {state === 'correct' ? '✓' : '✗'}
+                </span>
+              )}
               {option}
             </button>
           );
