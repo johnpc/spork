@@ -17,7 +17,7 @@ import { ComeBackTomorrow } from './ComeBackTomorrow';
  * none published) — never an infinite spinner. */
 export function DailyEntry() {
   const { game: gameKey } = useParams<{ game: string }>();
-  const { game, playedToday, result, playPath, empty } = useDailyEntry(gameKey);
+  const { game, date, playedToday, result, playPath, empty } = useDailyEntry(gameKey);
 
   if (!game) return <Redirect to="/home" />;
   if (playPath) return <Redirect to={playPath} />;
@@ -39,6 +39,7 @@ export function DailyEntry() {
             score={result.score}
             total={result.total}
             timeSeconds={result.timeSeconds}
+            date={date}
           />
         ) : empty ? (
           <div className="daily-empty" data-testid="daily-empty">

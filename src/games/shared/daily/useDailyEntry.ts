@@ -21,6 +21,7 @@ export function useDailyEntry(gameKey: string) {
   const todays = data ? pickDaily(data, date) : null;
   return {
     game,
+    date,
     playedToday,
     result,
     isLoading: !!game && !playedToday && isLoading,

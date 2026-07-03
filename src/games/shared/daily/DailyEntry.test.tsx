@@ -29,6 +29,7 @@ beforeEach(() => {
 describe('DailyEntry', () => {
   it('shows the recap when today is already played', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      date: '2026-07-03',
       game: {
         name: 'Quizzes',
         fetchList: vi.fn(),
@@ -47,6 +48,7 @@ describe('DailyEntry', () => {
 
   it('redirects into the play surface when a puzzle resolves', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      date: '2026-07-03',
       game: {
         name: 'Quizzes',
         fetchList: vi.fn(),
@@ -65,6 +67,7 @@ describe('DailyEntry', () => {
 
   it('redirects home for an unknown game', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      date: '2026-07-03',
       game: undefined as unknown as ReturnType<typeof entry.useDailyEntry>['game'],
       playedToday: false,
       result: null,
@@ -78,6 +81,7 @@ describe('DailyEntry', () => {
 
   it('shows a graceful empty state (not an infinite spinner) when no puzzle exists', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      date: '2026-07-03',
       game: {
         name: 'Worldle',
         fetchList: vi.fn(),
@@ -98,6 +102,7 @@ describe('DailyEntry', () => {
 
   it('shows the loading state only while genuinely loading', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
+      date: '2026-07-03',
       game: {
         name: 'Worldle',
         fetchList: vi.fn(),

@@ -29,6 +29,21 @@
   font-variant-numeric: tabular-nums;
 }
 
+.share-result {
+  padding: 0.55rem 1.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--sp-accent-strong);
+  background: var(--sp-accent-soft);
+  border: 1px solid var(--sp-accent);
+  border-radius: var(--sp-radius);
+  cursor: pointer;
+}
+
+.come-back__countdown {
+  font-variant-numeric: tabular-nums;
+}
+
 .come-back__home {
   margin-top: 0.5rem;
   padding: 0.6rem 1.4rem;

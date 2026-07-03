@@ -15,6 +15,25 @@ describe('ComeBackTomorrow', () => {
     expect(screen.getByTestId('come-back-home')).toHaveAttribute('href', '/home');
   });
 
+  it('shows the share button and next-puzzle countdown when a date is given', () => {
+    render(
+      <MemoryRouter>
+        <ComeBackTomorrow game="Worldle" score={3} total={5} date="2026-07-03" />
+      </MemoryRouter>,
+    );
+    expect(screen.getByTestId('share-result')).toBeInTheDocument();
+    expect(screen.getByTestId('next-puzzle-countdown')).toBeInTheDocument();
+  });
+
+  it('hides the share button when no date is given', () => {
+    render(
+      <MemoryRouter>
+        <ComeBackTomorrow game="Quizzes" score={1} total={2} />
+      </MemoryRouter>,
+    );
+    expect(screen.queryByTestId('share-result')).not.toBeInTheDocument();
+  });
+
   it('omits time when not provided', () => {
     render(
       <MemoryRouter>
