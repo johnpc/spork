@@ -16,9 +16,10 @@ import { validateAcrostic } from '../../acrosticgen/shared/validateAcrostic';
 import { buildQuizzleRequest } from '../../quizzlegen/shared/quizzlePrompt';
 import { parseQuizzleGen } from '../../quizzlegen/shared/parseQuizzleGen';
 import { validateQuizzle } from '../../quizzlegen/shared/validateQuizzle';
-import { buildChessRequest } from '../../chessgen/shared/chessPrompt';
-import { parseChessGen } from '../../chessgen/shared/parseChessGen';
-import { validateChess } from '../../chessgen/shared/validateChess';
+
+// Chess is NOT daily-generated: mate puzzles come from the curated Lichess set
+// (chess.js-verified at build time), like the template-backed map — an LLM can't
+// reliably compose sound forced mates.
 
 type Body = { content?: unknown };
 const ATTEMPTS = 4;
@@ -59,13 +60,5 @@ export function genQuizzle(invoke: Invoke, topic: string) {
     const body = (await invoke(buildQuizzleRequest({ topic }))) as Body;
     const v = validateQuizzle(parseQuizzleGen(body as Parameters<typeof parseQuizzleGen>[0]));
     return { ok: v.ok, reason: v.reason, value: v.quizzle };
-  });
-}
-
-export function genChess(invoke: Invoke, difficulty: 'EASY' | 'MEDIUM' | 'HARD') {
-  return retryGen('chess', ATTEMPTS, async () => {
-    const body = (await invoke(buildChessRequest({ difficulty }))) as Body;
-    const v = validateChess(parseChessGen(body as Parameters<typeof parseChessGen>[0]));
-    return { ok: v.ok, reason: v.reason, value: v.puzzle };
   });
 }

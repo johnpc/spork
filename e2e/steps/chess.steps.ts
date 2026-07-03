@@ -5,10 +5,9 @@ const { Given, When, Then } = createBdd();
 
 Given('the player opens the {string} puzzle', async ({ page }, name: string) => {
   await page.goto('/chess');
-  await page
-    .getByTestId('chess-link')
-    .filter({ hasText: new RegExp(name) })
-    .click();
+  // Plain-string hasText is a substring match (no regex) — safe for names with
+  // parentheses like "Forced Mate (mate in 1)".
+  await page.getByTestId('chess-link').filter({ hasText: name }).first().click();
   await expect(page.getByTestId('chess')).toBeVisible({ timeout: 15_000 });
 });
 

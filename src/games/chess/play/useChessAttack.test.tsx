@@ -13,20 +13,13 @@ function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
+// Verified mate-in-2 (Lichess): Black to move — 1...Re1+ 2.Kf2 Rf1#
 const puzzle = {
   id: 'p1',
-  name: 'Clear the Rank',
-  position: JSON.stringify({
-    size: 5,
-    pieces: [
-      { sq: 'a1', piece: 'R', side: 'w' },
-      { sq: 'a5', piece: 'P', side: 'b' },
-      { sq: 'e5', piece: 'K', side: 'b' },
-    ],
-    toMove: 'w',
-    goal: 'Capture the black king in two moves',
-  }),
-  solution: JSON.stringify(['a1a5', 'a5e5']),
+  name: 'Forced Mate (mate in 2)',
+  position: '4r3/1k6/pp3P2/1b5p/3R1p2/P1R2P2/1P4PP/6K1 b - - 0 1',
+  solution: JSON.stringify(['e8e1', 'g1f2', 'e1f1']),
+  movesToWin: 2,
 };
 
 describe('useChessAttack', () => {
@@ -37,40 +30,40 @@ describe('useChessAttack', () => {
 
   const ready = async () => {
     const view = renderHook(() => useChessAttack('p1'), { wrapper });
-    await waitFor(() => expect(view.result.current.pieces).toHaveLength(3));
+    await waitFor(() => expect(view.result.current.pieces.length).toBeGreaterThan(0));
     return view;
   };
 
-  it('loads the board, goal and total', async () => {
+  it('loads the board, side to move and total', async () => {
     const { result } = await ready();
-    expect(result.current.goal).toContain('two moves');
+    expect(result.current.solverSide).toBe('b');
     expect(result.current.total).toBe(2);
     expect(result.current.solved).toBe(false);
   });
 
   it('selects only a piece belonging to the side to move', async () => {
     const { result } = await ready();
-    act(() => result.current.tap('a5')); // black pawn — not selectable
+    act(() => result.current.tap('d4')); // white rook — not the solver's
     expect(result.current.selected).toBeNull();
-    act(() => result.current.tap('a1')); // white rook
-    expect(result.current.selected).toBe('a1');
+    act(() => result.current.tap('e8')); // black rook (solver)
+    expect(result.current.selected).toBe('e8');
   });
 
-  it('plays the solution to solved, capturing along the way', async () => {
+  it('plays the mate: solver move + auto-played defender reply, to checkmate', async () => {
     const { result } = await ready();
-    act(() => result.current.tap('a1'));
-    act(() => result.current.tap('a5')); // a1a5 captures pawn
+    act(() => result.current.tap('e8'));
+    act(() => result.current.tap('e1')); // 1...Re1+ ; engine auto-plays 2.Kf2
     expect(result.current.moves).toBe(1);
-    act(() => result.current.tap('a5'));
-    act(() => result.current.tap('e5')); // a5e5 captures king
+    expect(result.current.solved).toBe(false);
+    act(() => result.current.tap('e1'));
+    act(() => result.current.tap('f1')); // 2...Rf1#
     expect(result.current.solved).toBe(true);
-    expect(result.current.pieces).toEqual([{ sq: 'e5', piece: 'R', side: 'w' }]);
   });
 
   it('flags a wrong move and clears the selection', async () => {
     const { result } = await ready();
-    act(() => result.current.tap('a1'));
-    act(() => result.current.tap('a2')); // not the expected a1a5
+    act(() => result.current.tap('e8'));
+    act(() => result.current.tap('e2')); // not the expected e8e1
     expect(result.current.wrong).toBe(true);
     expect(result.current.moves).toBe(0);
     expect(result.current.selected).toBeNull();
@@ -78,28 +71,18 @@ describe('useChessAttack', () => {
 
   it('deselects when tapping the selected square again', async () => {
     const { result } = await ready();
-    act(() => result.current.tap('a1'));
-    act(() => result.current.tap('a1'));
+    act(() => result.current.tap('e8'));
+    act(() => result.current.tap('e8'));
     expect(result.current.selected).toBeNull();
   });
 
-  it('reset restores the initial board', async () => {
+  it('reset restores the initial position', async () => {
     const { result } = await ready();
-    act(() => result.current.tap('a1'));
-    act(() => result.current.tap('a5'));
+    const before = result.current.pieces.length;
+    act(() => result.current.tap('e8'));
+    act(() => result.current.tap('e1'));
     act(() => result.current.reset());
     expect(result.current.moves).toBe(0);
-    expect(result.current.pieces).toHaveLength(3);
-  });
-
-  it('ignores taps once solved', async () => {
-    const { result } = await ready();
-    act(() => result.current.tap('a1'));
-    act(() => result.current.tap('a5'));
-    act(() => result.current.tap('a5'));
-    act(() => result.current.tap('e5'));
-    expect(result.current.solved).toBe(true);
-    act(() => result.current.tap('e5'));
-    expect(result.current.selected).toBeNull();
+    expect(result.current.pieces.length).toBe(before);
   });
 });

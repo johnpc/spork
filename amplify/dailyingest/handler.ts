@@ -15,7 +15,7 @@ import { planFor } from './shared/dailyPlan';
 import { DAILY_QUIZ_TYPES } from './shared/plan';
 import * as gen from './shared/generators';
 import { quizRows } from './shared/rowBuilders';
-import { wordLadderRow, acrosticRow, quizzleRow, chessRow } from './shared/islandRows';
+import { wordLadderRow, acrosticRow, quizzleRow } from './shared/islandRows';
 
 const env = (n: string): string => {
   const v = process.env[n];
@@ -75,12 +75,7 @@ export async function handler(): Promise<void> {
     const q = await gen.genQuizzle(invokeText, plan.quizzleTopic);
     await putItem(env('QUIZZLE_TABLE'), quizzleRow(q, 1000, { id: id('quizzle'), date }));
   });
-  await run('chess', async () => {
-    const p = await gen.genChess(invokeText, plan.difficulty);
-    await putItem(
-      env('CHESS_ATTACK_TABLE'),
-      chessRow(p, plan.difficulty, { id: id('chess'), date }),
-    );
-  });
+  // Chess is not daily-generated — it's the curated Lichess mate set (template-
+  // backed, chess.js-verified), so nothing to generate here.
   console.log('daily ingest complete');
 }

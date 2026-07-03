@@ -1,16 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { fetchPuzzle } from './chessApi';
-import { parsePosition, parseSolution } from './parseChess';
-import { applyMove, isExpectedMove, isSolved } from './chess';
-import { pieceAt } from './board';
+import { parseFen, parseSolution } from './parseChess';
+import { boardFromFen, legalTargets, playSolverMove, turnOf } from './chess';
+import { tapAction } from './tapAction';
 
 /**
- * ChessAttack play engine: load the puzzle, hold the live board + how many
- * solution moves have been played, and drive a select-piece-then-pick-target
- * interaction. A tap on the player's piece selects it; a tap on a destination
- * attempts from→to. The move is accepted iff it matches the next solution step;
- * a wrong move sets a "try again" flag. Pure logic lives in chess/chessState.
+ * ChessAttack play engine (real chess via chess.js). Load the puzzle (FEN + a
+ * solver UCI line), hold the live FEN + ply index, and drive a
+ * select-piece-then-pick-target interaction. A correct solver move is applied
+ * and the defender's forced reply auto-plays; a wrong move flashes "try again".
+ * Solved when the position is checkmate.
  */
 export function useChessAttack(id: string | undefined) {
   const {
@@ -24,66 +24,73 @@ export function useChessAttack(id: string | undefined) {
     enabled: !!id,
   });
 
-  const position = useMemo(() => parsePosition(puzzle?.position), [puzzle]);
-  const solution = useMemo(() => parseSolution(puzzle?.solution), [puzzle]);
+  const startFen = useMemo(() => parseFen(puzzle?.position), [puzzle]);
+  const line = useMemo(() => parseSolution(puzzle?.solution), [puzzle]);
+  const total = puzzle?.movesToWin ?? Math.ceil(line.length / 2);
+  const solverSide = turnOf(startFen);
 
-  const [pieces, setPieces] = useState(position.pieces);
-  const [played, setPlayed] = useState(0);
+  const [fen, setFen] = useState(startFen);
+  const [ply, setPly] = useState(0); // index into `line` (solver plies are even)
   const [selected, setSelected] = useState<string | null>(null);
   const [wrong, setWrong] = useState(false);
+  const [solved, setSolved] = useState(false);
 
   // Re-sync when the loaded puzzle changes (query resolves after first render).
   const [loadedId, setLoadedId] = useState<string | null>(null);
   if (puzzle && puzzle.id !== loadedId) {
     setLoadedId(puzzle.id);
-    setPieces(position.pieces);
-    setPlayed(0);
+    setFen(startFen);
+    setPly(0);
     setSelected(null);
     setWrong(false);
+    setSolved(false);
   }
 
-  const solved = isSolved(solution, played);
+  const pieces = useMemo(() => boardFromFen(fen), [fen]);
+  const targets = useMemo(() => (selected ? legalTargets(fen, selected) : []), [fen, selected]);
 
   const tap = useCallback(
     (sq: string) => {
       if (solved) return;
-      if (selected === null) {
-        const p = pieceAt(pieces, sq);
-        if (p && p.side === position.toMove) setSelected(sq);
-        return;
-      }
-      if (sq === selected) return setSelected(null);
-      const move = `${selected}${sq}`;
-      if (isExpectedMove(solution, played, move)) {
-        setPieces((p) => applyMove(p, move));
-        setPlayed((n) => n + 1);
+      const ownHere = pieces.some((p) => p.sq === sq && p.color === solverSide);
+      const action = tapAction(sq, selected, ownHere);
+      if (action.kind === 'select') return setSelected(action.sq);
+      if (action.kind === 'deselect') return setSelected(null);
+      if (action.kind === 'ignore') return;
+      const r = playSolverMove(fen, line, ply, action.from, action.to);
+      if (r.ok) {
+        setFen(r.fen);
+        setPly((n) => n + 2); // advance past solver + defender ply
+        setSolved(r.solved);
         setWrong(false);
       } else setWrong(true);
       setSelected(null);
     },
-    [solved, selected, pieces, position.toMove, solution, played],
+    [solved, pieces, selected, solverSide, fen, line, ply],
   );
 
   const reset = useCallback(() => {
-    setPieces(position.pieces);
-    setPlayed(0);
+    setFen(startFen);
+    setPly(0);
     setSelected(null);
     setWrong(false);
-  }, [position.pieces]);
+    setSolved(false);
+  }, [startFen]);
 
   return {
     puzzle: puzzle ?? null,
     isLoading: !!id && isLoading,
     isError,
     refetch,
-    size: position.size,
-    goal: position.goal,
+    fen,
     pieces,
     selected,
+    targets,
+    solverSide,
     wrong,
     solved,
-    moves: played,
-    total: solution.length,
+    moves: Math.floor(ply / 2),
+    total,
     tap,
     reset,
   };

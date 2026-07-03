@@ -1,32 +1,33 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ChessBoard } from './ChessBoard';
-import type { Piece } from './chess';
+import type { BoardPiece } from './chess';
 
-const pieces: Piece[] = [
-  { sq: 'a1', piece: 'R', side: 'w' },
-  { sq: 'a5', piece: 'K', side: 'b' },
+const pieces: BoardPiece[] = [
+  { sq: 'a1', type: 'r', color: 'w' },
+  { sq: 'g8', type: 'k', color: 'b' },
 ];
 
 describe('ChessBoard', () => {
   it('renders every square and the piece glyphs', () => {
-    render(<ChessBoard size={5} pieces={pieces} selected={null} onTap={() => {}} />);
+    render(<ChessBoard pieces={pieces} selected={null} targets={[]} onTap={() => {}} />);
     expect(screen.getByTestId('sq-a1')).toBeInTheDocument();
-    expect(screen.getByTestId('sq-e5')).toBeInTheDocument();
-    expect(screen.getByTestId('piece-a1')).toHaveTextContent('♖');
-    expect(screen.getByTestId('piece-a5')).toHaveTextContent('♚');
+    expect(screen.getByTestId('sq-h8')).toBeInTheDocument();
+    expect(screen.getByTestId('piece-a1')).toHaveTextContent('♜'); // solid; color via CSS
+    expect(screen.getByTestId('piece-g8')).toHaveTextContent('♚');
   });
 
-  it('marks the selected square', () => {
-    render(<ChessBoard size={5} pieces={pieces} selected="a1" onTap={() => {}} />);
+  it('marks the selected square and legal targets', () => {
+    render(<ChessBoard pieces={pieces} selected="a1" targets={['a8']} onTap={() => {}} />);
     expect(screen.getByTestId('sq-a1').className).toContain('chess-sq--selected');
-    expect(screen.getByTestId('sq-a5').className).not.toContain('chess-sq--selected');
+    expect(screen.getByTestId('sq-a8').className).toContain('chess-sq--target');
+    expect(screen.getByTestId('sq-g8').className).not.toContain('chess-sq--selected');
   });
 
   it('calls onTap with the square name', () => {
     const onTap = vi.fn();
-    render(<ChessBoard size={5} pieces={pieces} selected={null} onTap={onTap} />);
-    fireEvent.click(screen.getByTestId('sq-a5'));
-    expect(onTap).toHaveBeenCalledWith('a5');
+    render(<ChessBoard pieces={pieces} selected={null} targets={[]} onTap={onTap} />);
+    fireEvent.click(screen.getByTestId('sq-g8'));
+    expect(onTap).toHaveBeenCalledWith('g8');
   });
 });

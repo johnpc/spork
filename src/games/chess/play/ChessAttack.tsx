@@ -47,19 +47,24 @@ export function ChessAttack() {
           ) : (
             <div className="chess" data-testid="chess">
               <p className="chess__goal" data-testid="chess-goal">
-                {c.goal}
+                {c.solverSide === 'w' ? 'White' : 'Black'} to move · mate in {c.total}
               </p>
               <p className="sp-muted chess__meta">
                 {c.moves} / {c.total} moves
               </p>
-              <ChessBoard size={c.size} pieces={c.pieces} selected={c.selected} onTap={c.tap} />
+              <ChessBoard
+                pieces={c.pieces}
+                selected={c.selected}
+                targets={c.targets}
+                onTap={c.tap}
+              />
               {c.solved ? (
                 <p className="chess__solved" data-testid="chess-solved">
-                  Solved in {c.total} moves! 🏆
+                  Checkmate! 🏆 Solved in {c.total}.
                 </p>
               ) : c.wrong ? (
                 <p className="chess__error" data-testid="chess-error">
-                  Try again.
+                  Not the mate — try again.
                 </p>
               ) : (
                 <p className="sp-muted chess__hint" data-testid="chess-hint">

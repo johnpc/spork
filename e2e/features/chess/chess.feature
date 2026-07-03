@@ -1,23 +1,23 @@
-Feature: Chess Attack — capture puzzle
+Feature: Chess Attack — mate-in-N puzzle
   As a player
-  I want to solve a small-board capture puzzle by moving pieces
-  So that I can capture the black king by following the solution
+  I want to deliver checkmate by playing the forced solution
+  So that I solve a real chess mate puzzle (the defender replies too)
 
-  # Honest e2e against the seeded "Rook's Reach" puzzle: tap the white rook
-  # then the black king's square to play the real capture, asserting on the
-  # moved piece + the solved banner. A wrong first move is rejected with "try
-  # again". Guest-playable, no auth.
+  # Honest e2e against the seeded "Forced Mate (mate in 1)" puzzle: it's Black to
+  # move and 1...Qh2# is mate (queen d6→h2). Tap the queen then h2, asserting on
+  # the moved piece + the checkmate banner. A wrong first move is rejected with
+  # "try again". Guest-playable, no auth.
 
-  Scenario: A guest solves a one-move capture puzzle
-    Given the player opens the "Rook's Reach" puzzle
-    When the player taps square "a1"
-    And the player taps square "a5"
-    Then the piece on square "a5" is shown
+  Scenario: A guest delivers a one-move checkmate
+    Given the player opens the "Forced Mate (mate in 1)" puzzle
+    When the player taps square "d6"
+    And the player taps square "h2"
+    Then the piece on square "h2" is shown
     And the puzzle is solved
 
   Scenario: A wrong move is rejected
-    Given the player opens the "Rook's Reach" puzzle
-    When the player taps square "a1"
-    And the player taps square "a2"
+    Given the player opens the "Forced Mate (mate in 1)" puzzle
+    When the player taps square "d6"
+    And the player taps square "d4"
     Then a try-again message is shown
     And the puzzle is not solved

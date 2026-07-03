@@ -134,7 +134,7 @@ const ingestTables: Record<string, string> = {
   WORD_LADDER_TABLE: 'WordLadder',
   ACROSTIC_TABLE: 'Acrostic',
   QUIZZLE_TABLE: 'Quizzle',
-  CHESS_ATTACK_TABLE: 'ChessAttack',
+  // Chess is not daily-generated (curated Lichess set) — no write grant needed.
 };
 for (const [envName, model] of Object.entries(ingestTables)) {
   backend.dailyIngest.addEnvironment(envName, tables[model].tableName);

@@ -1,15 +1,15 @@
 import { describe, it, expect } from 'vitest';
 import { squares, isLightSquare, pieceAt, glyph } from './board';
-import type { Piece } from './chess';
+import type { BoardPiece } from './chess';
 
 describe('squares', () => {
-  it('lists a 5×5 board top rank first, left→right', () => {
-    const sq = squares(5);
-    expect(sq).toHaveLength(25);
-    expect(sq[0]).toBe('a5');
-    expect(sq[4]).toBe('e5');
-    expect(sq[20]).toBe('a1');
-    expect(sq[24]).toBe('e1');
+  it('lists the 8×8 board top rank first, left→right', () => {
+    const sq = squares();
+    expect(sq).toHaveLength(64);
+    expect(sq[0]).toBe('a8');
+    expect(sq[7]).toBe('h8');
+    expect(sq[56]).toBe('a1');
+    expect(sq[63]).toBe('h1');
   });
 });
 
@@ -22,9 +22,9 @@ describe('isLightSquare', () => {
 });
 
 describe('pieceAt', () => {
-  const pieces: Piece[] = [{ sq: 'a1', piece: 'R', side: 'w' }];
+  const pieces: BoardPiece[] = [{ sq: 'a1', type: 'r', color: 'w' }];
   it('finds a piece on a square', () => {
-    expect(pieceAt(pieces, 'a1')).toEqual({ sq: 'a1', piece: 'R', side: 'w' });
+    expect(pieceAt(pieces, 'a1')).toEqual({ sq: 'a1', type: 'r', color: 'w' });
   });
   it('returns null for an empty square', () => {
     expect(pieceAt(pieces, 'b2')).toBeNull();
@@ -32,11 +32,11 @@ describe('pieceAt', () => {
 });
 
 describe('glyph', () => {
-  it('maps side + piece to a unicode glyph', () => {
-    expect(glyph({ sq: 'a1', piece: 'R', side: 'w' })).toBe('♖');
-    expect(glyph({ sq: 'a5', piece: 'k', side: 'b' })).toBe('♚');
+  it('maps type to a solid unicode glyph (color is applied via CSS)', () => {
+    expect(glyph({ sq: 'a1', type: 'r', color: 'w' })).toBe('♜');
+    expect(glyph({ sq: 'a5', type: 'k', color: 'b' })).toBe('♚');
   });
   it('returns empty string for an unknown piece', () => {
-    expect(glyph({ sq: 'a1', piece: 'Z', side: 'w' })).toBe('');
+    expect(glyph({ sq: 'a1', type: 'z', color: 'w' })).toBe('');
   });
 });

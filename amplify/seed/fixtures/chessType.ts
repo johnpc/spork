@@ -1,11 +1,11 @@
 /** Shape of a seeded ChessAttack puzzle — DATA (gate-exempt). Shared by the
- * hand-authored fixture (chess.ts) and the seed runner. `position` + `solution`
- * are pre-stringified JSON, ready to write straight to the model's string
- * fields. */
+ * generated fixture (chess.ts) and the seed runner. `position` is a FEN;
+ * `solution` is a JSON UCI line (solver + defender plies), ready to write
+ * straight to the model's string fields. */
 export interface ChessFixture {
   name: string;
-  position: string; // JSON {size, pieces:[{sq,piece,side}], toMove, goal}
-  solution: string; // JSON string[] of coordinate moves, e.g. ["a1a5"]
+  position: string; // FEN, e.g. "6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1"
+  solution: string; // JSON UCI line, e.g. ["e8e1","g1f2","e1f1"]
   movesToWin: number;
   difficulty: 'EASY' | 'MEDIUM' | 'HARD';
 }

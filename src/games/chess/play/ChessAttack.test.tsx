@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import type { Piece } from './chess';
+import type { BoardPiece } from './chess';
 
 const hook = vi.hoisted(() => ({ state: {} as Record<string, unknown> }));
 vi.mock('./useChessAttack', () => ({ useChessAttack: () => hook.state }));
@@ -15,17 +15,19 @@ const renderPage = () =>
     </MemoryRouter>,
   );
 
-const pieces: Piece[] = [{ sq: 'a1', piece: 'R', side: 'w' }];
+const pieces: BoardPiece[] = [{ sq: 'a1', type: 'r', color: 'w' }];
 const base = {
-  puzzle: { id: 'p1', name: 'Rook Takes All' },
+  puzzle: { id: 'p1', name: 'Forced Mate (mate in 2)' },
   isLoading: false,
-  size: 5,
-  goal: 'Capture the black king in one move',
+  isError: false,
+  fen: '6k1/8/8/8/8/8/8/R5K1 w - - 0 1',
   pieces,
   selected: null,
+  targets: [],
+  solverSide: 'w' as const,
   wrong: false,
   moves: 0,
-  total: 1,
+  total: 2,
   tap: vi.fn(),
   reset: vi.fn(),
 };
@@ -35,10 +37,10 @@ describe('ChessAttack', () => {
     vi.clearAllMocks();
   });
 
-  it('shows the goal + board + hint while unsolved', () => {
+  it('shows the mate-in-N goal + board + hint while unsolved', () => {
     hook.state = { ...base, solved: false };
     renderPage();
-    expect(screen.getByTestId('chess-goal')).toHaveTextContent('Capture the black king');
+    expect(screen.getByTestId('chess-goal')).toHaveTextContent('White to move · mate in 2');
     expect(screen.getByTestId('chess-board')).toBeInTheDocument();
     expect(screen.getByTestId('chess-hint')).toBeInTheDocument();
   });
@@ -46,13 +48,13 @@ describe('ChessAttack', () => {
   it('shows the try-again message on a wrong move', () => {
     hook.state = { ...base, solved: false, wrong: true };
     renderPage();
-    expect(screen.getByTestId('chess-error')).toHaveTextContent('Try again');
+    expect(screen.getByTestId('chess-error')).toHaveTextContent('try again');
   });
 
-  it('shows the solved banner when solved', () => {
-    hook.state = { ...base, moves: 1, solved: true };
+  it('shows the checkmate banner when solved', () => {
+    hook.state = { ...base, moves: 2, solved: true };
     renderPage();
-    expect(screen.getByTestId('chess-solved')).toBeInTheDocument();
+    expect(screen.getByTestId('chess-solved')).toHaveTextContent('Checkmate');
     expect(screen.queryByTestId('chess-hint')).not.toBeInTheDocument();
   });
 
@@ -65,6 +67,6 @@ describe('ChessAttack', () => {
   it('shows a loading message while loading', () => {
     hook.state = { ...base, isLoading: true, solved: false };
     renderPage();
-    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(screen.getByTestId('load-loading')).toBeInTheDocument();
   });
 });

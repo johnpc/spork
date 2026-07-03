@@ -1,68 +1,53 @@
 import { describe, it, expect } from 'vitest';
-import { splitMove, applyMove, isExpectedMove, isSolved, type Piece } from './chess';
+import { boardFromFen, turnOf, legalTargets, playSolverMove } from './chess';
 
-const board: Piece[] = [
-  { sq: 'a1', piece: 'R', side: 'w' },
-  { sq: 'a5', piece: 'K', side: 'b' },
-];
+// Back-rank mate-in-1: 1.Ra8#
+const M1 = '6k1/5ppp/8/8/8/8/8/R5K1 w - - 0 1';
+// Verified mate-in-2 (from the Lichess fixture): 1...Re1+ 2.Kf2 Rf1#
+const M2_FEN = '4r3/1k6/pp3P2/1b5p/3R1p2/P1R2P2/1P4PP/6K1 b - - 0 1';
+const M2_LINE = ['e8e1', 'g1f2', 'e1f1'];
 
-describe('splitMove', () => {
-  it('splits a coordinate move into from/to', () => {
-    expect(splitMove('a1a5')).toEqual({ from: 'a1', to: 'a5' });
+describe('boardFromFen + turnOf', () => {
+  it('reads the occupied squares and side to move', () => {
+    const pieces = boardFromFen(M1);
+    expect(pieces).toContainEqual({ sq: 'a1', type: 'r', color: 'w' });
+    expect(pieces).toContainEqual({ sq: 'g8', type: 'k', color: 'b' });
+    expect(turnOf(M1)).toBe('w');
   });
-  it('is case + whitespace tolerant', () => {
-    expect(splitMove('  A1A5 ')).toEqual({ from: 'a1', to: 'a5' });
-  });
-  it('rejects malformed moves', () => {
-    expect(splitMove('a1')).toBeNull();
-    expect(splitMove('zz')).toBeNull();
+  it('degrades to empty on a bad FEN', () => {
+    expect(boardFromFen('nonsense')).toEqual([]);
   });
 });
 
-describe('applyMove', () => {
-  it('relocates the mover and captures the occupant', () => {
-    const out = applyMove(board, 'a1a5');
-    expect(out).toEqual([{ sq: 'a5', piece: 'R', side: 'w' }]);
-  });
-  it('moves to an empty square without capture', () => {
-    const out = applyMove(board, 'a1a3');
-    expect(out).toContainEqual({ sq: 'a3', piece: 'R', side: 'w' });
-    expect(out).toContainEqual({ sq: 'a5', piece: 'K', side: 'b' });
-  });
-  it('does not mutate the input array', () => {
-    const copy = [...board];
-    applyMove(board, 'a1a5');
-    expect(board).toEqual(copy);
-  });
-  it('leaves the board unchanged for a malformed move', () => {
-    expect(applyMove(board, 'nope')).toBe(board);
-  });
-  it('leaves the board unchanged when from is empty', () => {
-    expect(applyMove(board, 'b1b2')).toBe(board);
+describe('legalTargets', () => {
+  it('lists a rook’s legal destinations (incl. the mating square)', () => {
+    const t = legalTargets(M1, 'a1');
+    expect(t).toContain('a8'); // the mate
+    expect(t).not.toContain('b2'); // off the rook's lines
   });
 });
 
-describe('isExpectedMove', () => {
-  const sol = ['a1a5', 'a5e5'];
-  it('matches the next solution step', () => {
-    expect(isExpectedMove(sol, 0, 'a1a5')).toBe(true);
-    expect(isExpectedMove(sol, 1, 'A5E5')).toBe(true);
+describe('playSolverMove', () => {
+  it('accepts the expected move and reports checkmate (mate in 1)', () => {
+    const r = playSolverMove(M1, ['a1a8'], 0, 'a1', 'a8');
+    expect(r.ok).toBe(true);
+    expect(r.solved).toBe(true);
   });
-  it('rejects a wrong move', () => {
-    expect(isExpectedMove(sol, 0, 'a1a2')).toBe(false);
-  });
-  it('rejects when index is past the solution', () => {
-    expect(isExpectedMove(sol, 2, 'a1a5')).toBe(false);
-  });
-});
 
-describe('isSolved', () => {
-  it('is solved once every move is played', () => {
-    expect(isSolved(['a1a5'], 1)).toBe(true);
-    expect(isSolved(['a1a5', 'a5e5'], 2)).toBe(true);
+  it('rejects a wrong move and leaves the position unchanged', () => {
+    const r = playSolverMove(M1, ['a1a8'], 0, 'g1', 'g2');
+    expect(r.ok).toBe(false);
+    expect(r.solved).toBe(false);
+    expect(r.fen).toBe(M1);
   });
-  it('is not solved partway or with an empty solution', () => {
-    expect(isSolved(['a1a5', 'a5e5'], 1)).toBe(false);
-    expect(isSolved([], 0)).toBe(false);
+
+  it('auto-plays the defender reply between solver moves (mate in 2)', () => {
+    const r1 = playSolverMove(M2_FEN, M2_LINE, 0, 'e8', 'e1');
+    expect(r1.ok).toBe(true);
+    expect(r1.solved).toBe(false);
+    expect(r1.fen).not.toBe(M2_FEN); // defender moved too
+    const r2 = playSolverMove(r1.fen, M2_LINE, 2, 'e1', 'f1');
+    expect(r2.ok).toBe(true);
+    expect(r2.solved).toBe(true);
   });
 });

@@ -24,6 +24,7 @@
 }
 
 .chess-sq {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,9 +49,31 @@
   box-shadow: inset 0 0 0 4px var(--sp-correct);
 }
 
+/* A legal destination for the selected piece: a soft centered dot. */
+.chess-sq--target::after {
+  content: '';
+  width: 28%;
+  height: 28%;
+  border-radius: 50%;
+  background: var(--sp-correct);
+  opacity: 0.55;
+  position: absolute;
+}
+
 .chess-piece {
-  color: var(--sp-text);
-  filter: drop-shadow(0 1px 1px var(--sp-glyph-shadow));
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.35));
+}
+
+/* White pieces: white fill; black pieces: near-black — distinct on any square. */
+.chess-piece--w {
+  color: #fafafa;
+  text-shadow:
+    0 0 1px #1a1a1a,
+    0 0 2px #1a1a1a;
+}
+
+.chess-piece--b {
+  color: #16181d;
 }
 
 .chess__solved {
