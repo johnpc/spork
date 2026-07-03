@@ -60,6 +60,9 @@ export function Steps() {
               <p className="steps__goal" data-testid="steps-goal">
                 <strong>{l.start.toUpperCase()}</strong> → <strong>{l.target.toUpperCase()}</strong>
               </p>
+              <p className="sp-muted steps__intro">
+                Change <strong>one letter</strong> at a time — each step must be a real word.
+              </p>
               <p className="sp-muted steps__meta">
                 {l.moves} moves{l.par ? ` · par ${l.par}` : ''}
               </p>

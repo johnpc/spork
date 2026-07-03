@@ -39,6 +39,8 @@ describe('Steps', () => {
     renderSteps();
     expect(screen.getByTestId('steps-goal')).toHaveTextContent('CAT');
     expect(screen.getByTestId('step-input')).toBeInTheDocument();
+    // First-timer onboarding: the one-letter rule is stated up front.
+    expect(screen.getByText(/Change/)).toHaveTextContent('Change one letter at a time');
   });
 
   it('shows an error message on an invalid move', () => {
