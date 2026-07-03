@@ -9,15 +9,19 @@
 separate games with their own rules. Not one engine wearing hats: genuinely different games, unified
 by a shared shell and a common feel. Play instantly as a **guest** — no account required.
 
-Shipping today: **Quizzes** (Sporcle-style — name every country on a map, the US presidents, the
-periodic table, against a clock) and **Flashcards** (AI-generated decks, spaced-repetition study). On
-the roadmap: **Acrostic**, **Chess Attack**, **Quizzle**, and **Live Trivia** — each a
-real, independent game (see [The games](#the-games)).
+Shipping today, six games: **Quizzes** (Sporcle-style, across nine interaction formats — each its
+own daily game), **Steps** (word ladder), **Acrostic** (spell a hidden word from clue initials),
+**Quizzle** (wager pub-quiz), **Chess Attack** (5×5 capture puzzle), and **Flashcards** (AI-generated
+decks). **Live Trivia** (real-time multiplayer) is on the roadmap. **One fresh puzzle of each type
+every day**, generated + validated automatically — see [Where quizzes come from](#where-quizzes-come-from).
 
 Spork is built as a **shell + game islands**: the platform (home, guest identity, streaks, the AI
 generation pipeline, admin dashboard, quality/CI rig) is shared; each game is a self-contained island
 under `src/games/<game>/` that plugs into it. **Adding a whole new game is a new island, not a
 rewrite** — and _within_ a game like Quizzes, adding a new format is just new data or a new renderer.
+
+**Play:** open **[spork.jpc.io](https://spork.jpc.io)** in any browser (installable as a PWA), or get
+the iOS app via **[TestFlight](https://testflight.apple.com/join/b25fhqgK)**.
 
 > Architecture, quality bar, and toolchain descend from the **stoop** app via **flashstack** — the
 > same Ionic + Amplify Gen2 stack, strict CI gates, and Gherkin-first → full-e2e workflow.
@@ -29,8 +33,8 @@ rewrite** — and _within_ a game like Quizzes, adding a new format is just new 
 Sporcle isn't one game — it's a **destination for many bite-sized brain games**, each with its own
 mechanic, sharing an audience and a habit. Spork chases the same shape at two levels:
 
-**Level 1 — a shelf of distinct games.** Three ship today — **Quizzes**, **Steps**, and
-**Flashcards** — with **Acrostic, Chess Attack, Quizzle, and Live Trivia** on the roadmap. These are _not_ variations
+**Level 1 — a shelf of distinct games.** Six ship today — **Quizzes**, **Steps**, **Acrostic**,
+**Quizzle**, **Chess Attack**, and **Flashcards** — with **Live Trivia** on the roadmap. These are _not_ variations
 of one engine: a spaced-repetition card deck, a chess variant, a word ladder, and a timed quiz have
 nothing mechanically in common. What they share is the **platform**: one guest-first home, streaks, a
 consistent look, and the build/quality rig. Each game is an island you can add without touching the
@@ -57,18 +61,18 @@ almost for free.
 
 ## The games
 
-Each is a real, independent game. Quizzes and Flashcards ship today; the rest are on the roadmap, each
-planned as its own island under `src/games/<game>/` reusing the shared shell.
+Each is a real, independent game. Six ship today; Live Trivia is on the roadmap. Each is its own
+island under `src/games/<game>/` reusing the shared shell.
 
-| Game             | Status      | What it is                                                                                                   |
-| ---------------- | ----------- | ------------------------------------------------------------------------------------------------------------ |
-| **Quizzes**      | ✅ shipping | Sporcle-style "name them all against a clock," across 9 interaction formats (see [Quiz types](#game-types)). |
-| **Flashcards**   | ✅ shipping | AI-generated decks studied with spaced repetition (SM-2). The flashstack app, folded in as a game.           |
-| **Acrostic**     | ⬜ planned  | A word puzzle: solve clues whose letters fill a grid, revealing a hidden quote a little at a time.           |
-| **Steps**        | ✅ shipping | Word ladder — transform a start word into a target one letter at a time, each step a real word.              |
-| **Chess Attack** | ⬜ planned  | A fast chess variant on a small board — few powerful pieces, quick chaotic games.                            |
-| **Quizzle**      | ⬜ planned  | A pub-quiz "road trip" where you **wager** on your confidence per answer — points ride on the bet.           |
-| **Live Trivia**  | ⬜ planned  | Real-time multiplayer rounds — everyone answers the same question on a shared clock, live leaderboard.       |
+| Game             | Status      | What it is                                                                                                      |
+| ---------------- | ----------- | --------------------------------------------------------------------------------------------------------------- |
+| **Quizzes**      | ✅ shipping | Sporcle-style "name them all against a clock," across 9 interaction formats (see [Quiz types](#game-types)).    |
+| **Flashcards**   | ✅ shipping | AI-generated decks studied straight through to a score (SM-2 for signed-in players). Folded in from flashstack. |
+| **Acrostic**     | ✅ shipping | A word puzzle: solve clues whose **first letters spell a hidden word**, revealed a letter at a time.            |
+| **Steps**        | ✅ shipping | Word ladder — transform a start word into a target one letter at a time, each step a real word.                 |
+| **Chess Attack** | ✅ shipping | A capture puzzle on a 5×5 board — find the move(s) that take the enemy king.                                    |
+| **Quizzle**      | ✅ shipping | A pub-quiz where you **wager** on your confidence per answer — points ride on the bet.                          |
+| **Live Trivia**  | ⬜ planned  | Real-time multiplayer rounds — everyone answers the same question on a shared clock, live leaderboard.          |
 
 These differ on every axis that matters — input (type/click/drag/move a piece), scoring (found-set /
 wager / win-condition), session (solo-vs-clock / real-time-multiplayer). That diversity is the point:
@@ -99,6 +103,17 @@ On top of these sit **scoring variants** that reuse a type's renderer with one e
 answer per letter). (These are all _within_ the Quizzes game — the separate games like Acrostic and
 Chess Attack live at [Level 1](#the-games).)
 
+### Every type, in play
+
+Each is its own daily game on the home shelf (a Map puzzle and an Order Up puzzle feel like different
+games), all reusing the one `Answer` row + play engine:
+
+|                                                                                                        |                                                                                                         |                                                                                                              |
+| ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ |
+| **Map** — fill the map<br><img src="https://files.jpc.io/d/mUtNm-spork-MAP.png" width="260">           | **Classic** — name them all<br><img src="https://files.jpc.io/d/dnkZ3-spork-CLASSIC.png" width="260">   | **Multiple Choice**<br><img src="https://files.jpc.io/d/Zuk9e-spork-MULTIPLE_CHOICE.png" width="260">        |
+| **Picture Box** — AI art<br><img src="https://files.jpc.io/d/rtegd-spork-PICTURE_BOX.png" width="260"> | **Find It** — click the map<br><img src="https://files.jpc.io/d/jEF0d-spork-CLICKABLE.png" width="260"> | **Spot It** — click the spot<br><img src="https://files.jpc.io/d/1IybZ-spork-PICTURE_CLICK.png" width="260"> |
+| **Slideshow**<br><img src="https://files.jpc.io/d/2rp95-spork-SLIDESHOW.png" width="260">              | **Sort It** — buckets<br><img src="https://files.jpc.io/d/aY9d1-spork-SORTABLE.png" width="260">        | **In Order** — sequence<br><img src="https://files.jpc.io/d/KoX7R-spork-ORDER_UP.png" width="260">           |
+
 ### The three axes, concretely
 
 - **Prompt** (`Answer.promptKind`): `NONE` · `TEXT` (a clue) · `IMAGE` (a media key) · `REGION` (an
@@ -115,13 +130,24 @@ engine; `sequence`/`bucketing`/`elimination` are deliberate engine variants, not
 
 ## Where quizzes come from
 
-Two sources, both feeding the same `Quiz` + `Answer` load path:
+Three sources, all feeding the same `Quiz` + `Answer` load path:
 
 1. **Curated templates** — map quizzes, where the topology _is_ the answer set (reconciled once at
    build time from `world-atlas` + `i18n-iso-countries`, so nothing is hallucinated).
 2. **AI generation** — `generateQuiz(mode, topic)` has Claude author a quiz on demand (tool-forced
    structured output); PICTURE_BOX quizzes also get one Bedrock-drawn image per answer. This is the
    primary way the library grows: type a topic, get a playable quiz.
+3. **Automatic daily puzzles** — a scheduled Lambda (`amplify/dailyingest`, EventBridge "every day")
+   generates one fresh, **PUBLISHED** puzzle per generative game type each day — the five text quiz
+   types plus Steps, Acrostic, Quizzle, and Chess — with zero manual effort. It reuses each game's
+   own prompt → parse → **validate** trio (never trusting the LLM; it retries on a bad candidate) and
+   rotates topics deterministically by day. So the home shelf is never stale.
+
+Every AI path is **independently validated** before anything is stored: the generator proposes, a
+pure validator (the same one its build-time fixtures use) verifies the puzzle is well-formed and
+solvable — a word ladder is a real ladder, an acrostic's initials actually spell the word, a chess
+solution legally captures the king — and rejects + retries otherwise. Nothing unvalidated reaches a
+player.
 
 The same generation runs at **build time** to produce the committed seed fixtures
 (`npm run gen:quiz-fixtures`), so the sandbox always has a consistent, known set of quizzes for
@@ -254,14 +280,17 @@ ships **light, dark, and tinted** variants.
 
 ## Roadmap
 
-| #   | Milestone                                                                                | Status |
-| --- | ---------------------------------------------------------------------------------------- | ------ |
-| 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified)   | ✅     |
-| 2   | Universal 3-axis model + all 9 Sporcle quiz formats (renderer + seed + e2e each)         | ✅     |
-| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                   | ✅     |
-| 4   | Quiz import/scrape pipeline — **paused** (AI generation covers breadth)                  | ⏸️     |
-| 5   | Discovery: browse/search/categories, popularity, per-device history                      | ⬜     |
-| 6   | **New games** (own islands): Steps ✅, then Acrostic, Chess Attack, Quizzle, Live Trivia | 🔨     |
+| #   | Milestone                                                                                         | Status |
+| --- | ------------------------------------------------------------------------------------------------- | ------ |
+| 1   | Platform fork + guest-only Quizzes game + **Map** mode (template-backed, e2e verified)            | ✅     |
+| 2   | Universal 3-axis model + all 9 Sporcle quiz formats (renderer + seed + e2e each)                  | ✅     |
+| 3   | AI generation for typed/MC/picture quizzes (Bedrock generative branch)                            | ✅     |
+| 4   | Quiz import/scrape pipeline — **paused** (AI generation covers breadth)                           | ⏸️     |
+| 5   | Discovery: browse/search/categories, popularity, per-device history                               | ⬜     |
+| 6   | **New games** (own islands): Steps ✅, Acrostic ✅, Chess Attack ✅, Quizzle ✅; Live Trivia next | 🔨     |
+| 7   | Daily model — one puzzle of each type per day, play-once; auto-published nightly                  | ✅     |
+| 8   | iOS TestFlight beta ([join](https://testflight.apple.com/join/b25fhqgK))                          | ✅     |
+| 9   | Daily images for Picture Box / Spot It (Stability + S3 on the schedule)                           | ⬜     |
 
 ---
 
