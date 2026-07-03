@@ -11,7 +11,22 @@ export default defineConfig({
   // so esbuild refuses to transpile it. Target browsers that support BigInt
   // (all evergreen since ~2020) for the modern build; the legacy plugin still
   // emits an ES5 fallback bundle for older ones.
-  build: { target: ['es2020', 'chrome67', 'safari14', 'firefox68', 'edge79'] },
+  build: {
+    target: ['es2020', 'chrome67', 'safari14', 'firefox68', 'edge79'],
+    rollupOptions: {
+      output: {
+        // Split the heavy vendors into their own chunks. They change far less
+        // often than app code, so they stay cached across deploys, and the
+        // browser can parse them in parallel — the ~1.5MB single chunk (369KB
+        // gzip, mostly unused at first paint) was the main drag on FCP/LCP.
+        manualChunks: {
+          amplify: ['aws-amplify'],
+          ionic: ['@ionic/react', '@ionic/react-router', 'ionicons'],
+          query: ['@tanstack/react-query'],
+        },
+      },
+    },
+  },
   plugins: [react(), legacy({ modernTargets: 'chrome>=67, safari>=14, firefox>=68, edge>=79' })],
   test: {
     globals: true,
