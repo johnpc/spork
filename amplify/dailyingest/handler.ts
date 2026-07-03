@@ -11,7 +11,7 @@ import { randomUUID } from 'node:crypto';
 import { invokeText } from '../deckgen/shared/bedrock';
 import { putItem } from '../deckgen/shared/ddb';
 import { batchPut } from '../quizgen/shared/batchWrite';
-import { planFor } from './shared/dailyPlan';
+import { planFor, quizTopicFor } from './shared/dailyPlan';
 import { DAILY_QUIZ_TYPES } from './shared/plan';
 import * as gen from './shared/generators';
 import { quizRows } from './shared/rowBuilders';
@@ -45,10 +45,13 @@ export async function handler(): Promise<void> {
   const id = (g: string) => `daily-${g}-${date}-${randomUUID().slice(0, 8)}`;
   console.log(`daily ingest for ${date}: ${JSON.stringify(plan)}`);
 
-  for (const t of DAILY_QUIZ_TYPES) {
+  // Each quiz type gets its OWN topic (offset per index) so the day's five
+  // quizzes cover five different subjects, not one topic five ways.
+  for (const [i, t] of DAILY_QUIZ_TYPES.entries()) {
     await run(`quiz:${t.mode}`, async () => {
-      const answers = await gen.genQuizAnswers(invokeText, t.mode, plan.quizTopic);
-      const { quiz, answers: rows } = quizRows(t.mode, plan.quizTopic, t.categorySlug, answers, {
+      const topic = quizTopicFor(date, i);
+      const answers = await gen.genQuizAnswers(invokeText, t.mode, topic);
+      const { quiz, answers: rows } = quizRows(t.mode, topic, t.categorySlug, answers, {
         id: id(t.mode.toLowerCase()),
         date,
       });

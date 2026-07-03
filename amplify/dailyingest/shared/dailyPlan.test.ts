@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dayNumber, rotate, planFor, QUIZ_TOPICS } from './dailyPlan';
+import { dayNumber, rotate, planFor, quizTopicFor, QUIZ_TOPICS } from './dailyPlan';
 
 describe('dayNumber', () => {
   it('counts whole UTC days since the epoch', () => {
@@ -34,5 +34,19 @@ describe('planFor', () => {
   });
   it('varies day to day', () => {
     expect(planFor('2026-07-02').quizTopic).not.toBe(planFor('2026-07-03').quizTopic);
+  });
+});
+
+describe('quizTopicFor', () => {
+  it('gives each of the day’s five quiz types a DISTINCT topic', () => {
+    const topics = [0, 1, 2, 3, 4].map((i) => quizTopicFor('2026-07-02', i));
+    expect(new Set(topics).size).toBe(5); // no repeats across the day's quizzes
+    for (const t of topics) expect(QUIZ_TOPICS).toContain(t);
+  });
+  it('is deterministic per (date, index) for idempotent re-runs', () => {
+    expect(quizTopicFor('2026-07-02', 3)).toBe(quizTopicFor('2026-07-02', 3));
+  });
+  it('index 0 matches the plan’s base quizTopic', () => {
+    expect(quizTopicFor('2026-07-02', 0)).toBe(planFor('2026-07-02').quizTopic);
   });
 });

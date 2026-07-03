@@ -20,6 +20,15 @@ export function rotate<T>(pool: readonly T[], day: number): T {
   return pool[((day % pool.length) + pool.length) % pool.length];
 }
 
+/** The topic for the Nth daily quiz type on `date`. Offsetting by the type index
+ * gives each of the day's quizzes a DIFFERENT subject (World Capitals as Classic,
+ * Shakespeare Plays as Multiple Choice, …) instead of five quizzes on one topic —
+ * still deterministic per (date, index) so re-runs stay idempotent. Skips by 3 so
+ * consecutive types don't land on adjacent, related pool entries. */
+export function quizTopicFor(date: string, index: number): string {
+  return rotate(QUIZ_TOPICS, dayNumber(date) + index * 3);
+}
+
 /** Curated topic pools — enough that a topic doesn't repeat for weeks. */
 export const QUIZ_TOPICS = [
   'World Capitals',
