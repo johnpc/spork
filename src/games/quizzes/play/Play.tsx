@@ -11,6 +11,7 @@ import { Redirect, useParams } from 'react-router-dom';
 import { usePlay } from './usePlay';
 import { useBestScore } from './useBestScore';
 import { rendererFor, usesTypedInput } from './renderers';
+import { modeHint } from './modeHint';
 import { PlayHud } from './PlayHud';
 import { PlayControls } from './PlayControls';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
@@ -61,6 +62,11 @@ export function Play() {
           ) : (
             <div className="play">
               <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
+              {p.status !== 'done' && modeHint(p.quiz.mode) && (
+                <p className="sp-muted play__hint" data-testid="play-hint">
+                  {modeHint(p.quiz.mode)}
+                </p>
+              )}
               <Renderer answers={p.answers} found={p.found} attempt={p.attempt} status={p.status} />
               <PlayControls
                 status={p.status}

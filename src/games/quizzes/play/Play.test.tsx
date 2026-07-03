@@ -61,6 +61,8 @@ describe('Play', () => {
     renderPlay();
     expect(screen.getByTestId('play-start')).toBeInTheDocument();
     expect(screen.getByTestId('play-hud')).toBeInTheDocument();
+    // First-timer onboarding: a mode-specific how-to-play hint before the timer.
+    expect(screen.getByTestId('play-hint')).toHaveTextContent('map');
   });
 
   it('shows the input while running and the summary when done', () => {
@@ -85,5 +87,7 @@ describe('Play', () => {
       </MemoryRouter>,
     );
     expect(screen.getByTestId('play-done')).toBeInTheDocument();
+    // The how-to-play hint is gone once the session is over.
+    expect(screen.queryByTestId('play-hint')).not.toBeInTheDocument();
   });
 });
