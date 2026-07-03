@@ -18,7 +18,12 @@ const DEFAULT_BANK = 1000;
  * best final bank per-device. Wholly separate from the Quizzes engine — its
  * state is a bank you bet against, not a found set. */
 export function useQuizzle(id: string | undefined, store: KeyValueStore) {
-  const { data: quizzle, isLoading } = useQuery({
+  const {
+    data: quizzle,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['quizzle', id],
     queryFn: () => fetchQuizzle(id as string),
     enabled: !!id,
@@ -54,6 +59,8 @@ export function useQuizzle(id: string | undefined, store: KeyValueStore) {
   return {
     quizzle: quizzle ?? null,
     isLoading: !!id && isLoading,
+    isError,
+    refetch,
     topic: quizzle?.topic ?? '',
     questions,
     total: questions.length,

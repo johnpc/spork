@@ -15,6 +15,7 @@ import { PlayHud } from './PlayHud';
 import { PlayControls } from './PlayControls';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { dailyKeyForMode } from './dailyKey';
+import { LoadState } from '../../../features/shell/LoadState';
 import './play.css';
 
 /** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
@@ -45,28 +46,28 @@ export function Play() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {p.isLoading ? (
-          <p className="sp-muted">Loading…</p>
-        ) : !p.quiz || !Renderer ? (
-          <p className="sp-muted" data-testid="play-unavailable">
-            This quiz can’t be played yet.
-          </p>
-        ) : (
-          <div className="play">
-            <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
-            <Renderer answers={p.answers} found={p.found} attempt={p.attempt} status={p.status} />
-            <PlayControls
-              status={p.status}
-              typed={typed}
-              best={best}
-              score={p.score}
-              timeSeconds={p.timeSeconds}
-              submit={p.submit}
-              start={p.start}
-              giveUp={p.giveUp}
-            />
-          </div>
-        )}
+        <LoadState isLoading={p.isLoading} isError={p.isError} onRetry={p.refetch}>
+          {!p.quiz || !Renderer ? (
+            <p className="sp-muted" data-testid="play-unavailable">
+              This quiz can’t be played yet.
+            </p>
+          ) : (
+            <div className="play">
+              <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
+              <Renderer answers={p.answers} found={p.found} attempt={p.attempt} status={p.status} />
+              <PlayControls
+                status={p.status}
+                typed={typed}
+                best={best}
+                score={p.score}
+                timeSeconds={p.timeSeconds}
+                submit={p.submit}
+                start={p.start}
+                giveUp={p.giveUp}
+              />
+            </div>
+          )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );

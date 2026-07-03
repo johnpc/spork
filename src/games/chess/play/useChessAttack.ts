@@ -13,7 +13,12 @@ import { pieceAt } from './board';
  * a wrong move sets a "try again" flag. Pure logic lives in chess/chessState.
  */
 export function useChessAttack(id: string | undefined) {
-  const { data: puzzle, isLoading } = useQuery({
+  const {
+    data: puzzle,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['chess', id],
     queryFn: () => fetchPuzzle(id as string),
     enabled: !!id,
@@ -69,6 +74,8 @@ export function useChessAttack(id: string | undefined) {
   return {
     puzzle: puzzle ?? null,
     isLoading: !!id && isLoading,
+    isError,
+    refetch,
     size: position.size,
     goal: position.goal,
     pieces,

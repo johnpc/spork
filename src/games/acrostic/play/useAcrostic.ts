@@ -10,7 +10,12 @@ import { isComplete, matchesAnswer, secretWord, wordSlots } from './acrosticEngi
  * from the quiz engine — its state is a set of solved indices, not a found set.
  */
 export function useAcrostic(id: string | undefined) {
-  const { data: acrostic, isLoading } = useQuery({
+  const {
+    data: acrostic,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['acrostic', id],
     queryFn: () => fetchAcrostic(id as string),
     enabled: !!id,
@@ -51,6 +56,8 @@ export function useAcrostic(id: string | undefined) {
   return {
     acrostic: acrostic ?? null,
     isLoading: !!id && isLoading,
+    isError,
+    refetch,
     clues,
     quote,
     author: acrostic?.author ?? null,

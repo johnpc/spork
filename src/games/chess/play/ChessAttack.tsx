@@ -12,6 +12,7 @@ import { useChessAttack } from './useChessAttack';
 import { ChessBoard } from './ChessBoard';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
+import { LoadState } from '../../../features/shell/LoadState';
 import './chess.css';
 
 /** ChessAttack play screen: solve a mate/capture puzzle on a small board by
@@ -38,41 +39,41 @@ export function ChessAttack() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {c.isLoading ? (
-          <p className="sp-muted">Loading…</p>
-        ) : !c.puzzle ? (
-          <p className="sp-muted" data-testid="chess-unavailable">
-            This puzzle can’t be played yet.
-          </p>
-        ) : (
-          <div className="chess" data-testid="chess">
-            <p className="chess__goal" data-testid="chess-goal">
-              {c.goal}
+        <LoadState isLoading={c.isLoading} isError={c.isError} onRetry={c.refetch}>
+          {!c.puzzle ? (
+            <p className="sp-muted" data-testid="chess-unavailable">
+              This puzzle can’t be played yet.
             </p>
-            <p className="sp-muted chess__meta">
-              {c.moves} / {c.total} moves
-            </p>
-            <ChessBoard size={c.size} pieces={c.pieces} selected={c.selected} onTap={c.tap} />
-            {c.solved ? (
-              <p className="chess__solved" data-testid="chess-solved">
-                Solved in {c.total} moves! 🏆
+          ) : (
+            <div className="chess" data-testid="chess">
+              <p className="chess__goal" data-testid="chess-goal">
+                {c.goal}
               </p>
-            ) : c.wrong ? (
-              <p className="chess__error" data-testid="chess-error">
-                Try again.
+              <p className="sp-muted chess__meta">
+                {c.moves} / {c.total} moves
               </p>
-            ) : (
-              <p className="sp-muted chess__hint" data-testid="chess-hint">
-                Tap your piece, then its destination.
-              </p>
-            )}
-            <div className="chess__actions">
-              <button data-testid="chess-reset" onClick={c.reset} disabled={c.moves === 0}>
-                Reset
-              </button>
+              <ChessBoard size={c.size} pieces={c.pieces} selected={c.selected} onTap={c.tap} />
+              {c.solved ? (
+                <p className="chess__solved" data-testid="chess-solved">
+                  Solved in {c.total} moves! 🏆
+                </p>
+              ) : c.wrong ? (
+                <p className="chess__error" data-testid="chess-error">
+                  Try again.
+                </p>
+              ) : (
+                <p className="sp-muted chess__hint" data-testid="chess-hint">
+                  Tap your piece, then its destination.
+                </p>
+              )}
+              <div className="chess__actions">
+                <button data-testid="chess-reset" onClick={c.reset} disabled={c.moves === 0}>
+                  Reset
+                </button>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );

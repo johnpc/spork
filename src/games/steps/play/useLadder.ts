@@ -10,7 +10,12 @@ import { checkStep, isSolved, parMoves, type StepCheck } from './ladder';
  * from the quiz engine — its state is an ordered path of words, not a found set.
  */
 export function useLadder(id: string | undefined) {
-  const { data: ladder, isLoading } = useQuery({
+  const {
+    data: ladder,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['ladder', id],
     queryFn: () => fetchLadder(id as string),
     enabled: !!id,
@@ -58,6 +63,8 @@ export function useLadder(id: string | undefined) {
   return {
     ladder: ladder ?? null,
     isLoading: !!id && isLoading,
+    isError,
+    refetch,
     start,
     target,
     par,
