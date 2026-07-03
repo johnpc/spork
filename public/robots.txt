@@ -1,0 +1,4 @@
+# Spork — a stack of little brain games
+User-agent: *
+Allow: /
+Sitemap: https://spork.jpc.io/sitemap.xml
