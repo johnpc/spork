@@ -34,5 +34,31 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    {
+      "name": "Worldle — name the countries",
+      "short_name": "Worldle",
+      "url": "/daily/worldle",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Multiple Choice",
+      "short_name": "Multiple Choice",
+      "url": "/daily/multiple-choice",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Chess Attack — mate in a few",
+      "short_name": "Chess Attack",
+      "url": "/daily/chess",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Steps — word ladder",
+      "short_name": "Steps",
+      "url": "/daily/steps",
+      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+    }
   ]
 }
