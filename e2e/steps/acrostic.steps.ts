@@ -16,8 +16,11 @@ When(
   'the player answers clue {int} with {string}',
   async ({ page }, index: number, answer: string) => {
     const box = page.getByTestId(`clue-input-${index}`);
+    // Acrostic matches LIVE: filling a correct answer solves the clue and
+    // unmounts the input immediately (no Enter needed). Press Enter only if the
+    // box is still present (a wrong answer stays put and needs an explicit submit).
     await box.fill(answer);
-    await box.press('Enter');
+    if (await box.count()) await box.press('Enter').catch(() => {});
   },
 );
 

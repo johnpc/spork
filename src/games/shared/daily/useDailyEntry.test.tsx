@@ -25,11 +25,11 @@ describe('useDailyEntry', () => {
       result: null,
       record: vi.fn(),
     });
-    vi.spyOn(DAILY_GAMES.quizzes, 'fetchList').mockResolvedValue([
+    vi.spyOn(DAILY_GAMES.worldle, 'fetchList').mockResolvedValue([
       { id: 'old', puzzleDate: '2026-07-01' },
       { id: 'today', puzzleDate: '2026-07-02' },
     ]);
-    const { result } = renderHook(() => useDailyEntry('quizzes'), { wrapper: wrapper() });
+    const { result } = renderHook(() => useDailyEntry('worldle'), { wrapper: wrapper() });
     await waitFor(() => expect(result.current.playPath).toBe('/quizzes/today/play'));
     expect(result.current.playedToday).toBe(false);
   });

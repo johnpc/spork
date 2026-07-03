@@ -1,5 +1,9 @@
-/** The Home game shelf data — one entry per game island (DATA, not logic).
- * `emoji` + `accent` give each card its identity; `to` routes into the game. */
+/** The Home game shelf data — one card per daily game, derived from the shared
+ * game catalog (each quiz TYPE is its own game + the standalone islands). Cards
+ * route to /daily/<slug> (or a game's own href, e.g. Flashcards → Discover).
+ * DATA, not logic. */
+import { ALL_GAMES } from '../../games/gameCatalog';
+
 export interface GameCard {
   name: string;
   tagline: string;
@@ -9,53 +13,11 @@ export interface GameCard {
   accent: string; // gradient for the card face
 }
 
-export const GAMES: GameCard[] = [
-  {
-    name: 'Quizzes',
-    tagline: 'Name them all before the clock runs out.',
-    to: '/daily/quizzes',
-    testId: 'game-quizzes',
-    emoji: '🗺️',
-    accent: 'linear-gradient(135deg, #5b8def, #4a7fe0)',
-  },
-  {
-    name: 'Steps',
-    tagline: 'Turn one word into another, one letter at a time.',
-    to: '/daily/steps',
-    testId: 'game-steps',
-    emoji: '🪜',
-    accent: 'linear-gradient(135deg, #f6a23c, #ea7d2b)',
-  },
-  {
-    name: 'Acrostic',
-    tagline: 'Solve the clues to reveal a hidden quote.',
-    to: '/daily/acrostic',
-    testId: 'game-acrostic',
-    emoji: '📜',
-    accent: 'linear-gradient(135deg, #a97cf0, #8b5fd6)',
-  },
-  {
-    name: 'Quizzle',
-    tagline: 'Wager your confidence on every answer.',
-    to: '/daily/quizzle',
-    testId: 'game-quizzle',
-    emoji: '🎲',
-    accent: 'linear-gradient(135deg, #ef5b8d, #d64a7f)',
-  },
-  {
-    name: 'Chess Attack',
-    tagline: 'Solve the puzzle — checkmate in a few moves.',
-    to: '/daily/chess',
-    testId: 'game-chess',
-    emoji: '♟️',
-    accent: 'linear-gradient(135deg, #55606e, #3a4450)',
-  },
-  {
-    name: 'Flashcards',
-    tagline: 'Learn anything with spaced repetition.',
-    to: '/discover',
-    testId: 'game-flashcards',
-    emoji: '🃏',
-    accent: 'linear-gradient(135deg, #34c08a, #22a06b)',
-  },
-];
+export const GAMES: GameCard[] = ALL_GAMES.map((g) => ({
+  name: g.name,
+  tagline: g.tagline,
+  to: g.href ?? `/daily/${g.slug}`,
+  testId: `game-${g.slug}`,
+  emoji: g.emoji,
+  accent: g.accent,
+}));

@@ -8,7 +8,9 @@ import { DAILY_GAMES, type DailyGame } from './dailyGames';
  * fetched via react-query; the pick is the pure pickDaily over the day stamp. */
 export function useDailyEntry(gameKey: string) {
   const game: DailyGame | undefined = DAILY_GAMES[gameKey];
-  const { date, playedToday, result } = useDaily(gameKey);
+  // Gate on the game's daily key (quiz types share the quizzes:<MODE> key the
+  // play screen records under), not the route slug.
+  const { date, playedToday, result } = useDaily(game?.dailyKey ?? gameKey);
 
   const { data, isLoading } = useQuery({
     queryKey: ['daily-list', gameKey],

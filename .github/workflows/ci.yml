@@ -133,6 +133,8 @@ jobs:
             paths: .features-gen/e2e/features/quizzle
           - name: chess
             paths: .features-gen/e2e/features/chess
+          - name: daily
+            paths: .features-gen/e2e/features/daily
     steps:
       - uses: actions/checkout@v7
 

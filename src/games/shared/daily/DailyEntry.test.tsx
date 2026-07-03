@@ -29,7 +29,12 @@ beforeEach(() => {
 describe('DailyEntry', () => {
   it('shows the recap when today is already played', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
-      game: { name: 'Quizzes', fetchList: vi.fn(), playPath: (id) => `/quizzes/${id}/play` },
+      game: {
+        name: 'Quizzes',
+        fetchList: vi.fn(),
+        playPath: (id) => `/quizzes/${id}/play`,
+        dailyKey: 'quizzes:MAP',
+      },
       playedToday: true,
       result: { score: 4, total: 6, timeSeconds: 30 },
       isLoading: false,
@@ -41,7 +46,12 @@ describe('DailyEntry', () => {
 
   it('redirects into the play surface when a puzzle resolves', () => {
     vi.spyOn(entry, 'useDailyEntry').mockReturnValue({
-      game: { name: 'Quizzes', fetchList: vi.fn(), playPath: (id) => `/quizzes/${id}/play` },
+      game: {
+        name: 'Quizzes',
+        fetchList: vi.fn(),
+        playPath: (id) => `/quizzes/${id}/play`,
+        dailyKey: 'quizzes:MAP',
+      },
       playedToday: false,
       result: null,
       isLoading: false,

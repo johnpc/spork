@@ -26,8 +26,11 @@ When('the player wagers {string}', async ({ page }, amount: string) => {
 
 When('the player answers {string}', async ({ page }, guess: string) => {
   const box = page.getByTestId('answer-input');
+  // Quizzle auto-submits the instant a CORRECT answer is typed (no button needed);
+  // a wrong/other answer needs the explicit Submit. Click it only if still shown.
   await box.fill(guess);
-  await page.getByTestId('answer-submit').click();
+  const submit = page.getByTestId('answer-submit');
+  if (await submit.count()) await submit.click().catch(() => {});
 });
 
 Then('the answer is marked correct', async ({ page }) => {
