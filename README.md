@@ -11,7 +11,7 @@ by a shared shell and a common feel. Play instantly as a **guest** — no accoun
 
 Shipping today, six games: **Quizzes** (Sporcle-style, across nine interaction formats — each its
 own daily game), **Steps** (word ladder), **Acrostic** (spell a hidden word from clue initials),
-**Quizzle** (wager pub-quiz), **Chess Attack** (5×5 capture puzzle), and **Flashcards** (AI-generated
+**Quizzle** (wager pub-quiz), **Chess Attack** (real mate-in-N puzzles), and **Flashcards** (AI-generated
 decks). **Live Trivia** (real-time multiplayer) is on the roadmap. **One fresh puzzle of each type
 every day**, generated + validated automatically — see [Where quizzes come from](#where-quizzes-come-from).
 
@@ -70,7 +70,7 @@ island under `src/games/<game>/` reusing the shared shell.
 | **Flashcards**   | ✅ shipping | AI-generated decks studied straight through to a score (SM-2 for signed-in players). Folded in from flashstack. |
 | **Acrostic**     | ✅ shipping | A word puzzle: solve clues whose **first letters spell a hidden word**, revealed a letter at a time.            |
 | **Steps**        | ✅ shipping | Word ladder — transform a start word into a target one letter at a time, each step a real word.                 |
-| **Chess Attack** | ✅ shipping | A capture puzzle on a 5×5 board — find the move(s) that take the enemy king.                                    |
+| **Chess Attack** | ✅ shipping | Real mate-in-1/2/3 puzzles on a full board (chess.js) — find the forced checkmate; the defender replies.        |
 | **Quizzle**      | ✅ shipping | A pub-quiz where you **wager** on your confidence per answer — points ride on the bet.                          |
 | **Live Trivia**  | ⬜ planned  | Real-time multiplayer rounds — everyone answers the same question on a shared clock, live leaderboard.          |
 
@@ -133,7 +133,10 @@ engine; `sequence`/`bucketing`/`elimination` are deliberate engine variants, not
 Three sources, all feeding the same `Quiz` + `Answer` load path:
 
 1. **Curated templates** — map quizzes, where the topology _is_ the answer set (reconciled once at
-   build time from `world-atlas` + `i18n-iso-countries`, so nothing is hallucinated).
+   build time from `world-atlas` + `i18n-iso-countries`, so nothing is hallucinated); and **Chess
+   Attack**, whose mate-in-N puzzles come from the **Lichess puzzle DB (CC0)**, each re-verified with
+   chess.js to be a real forced mate. (An LLM can't reliably compose sound forced mates, so chess is
+   template-backed, not generated.)
 2. **AI generation** — `generateQuiz(mode, topic)` has Claude author a quiz on demand (tool-forced
    structured output); PICTURE_BOX quizzes also get one Bedrock-drawn image per answer. This is the
    primary way the library grows: type a topic, get a playable quiz.
@@ -169,6 +172,7 @@ demos and e2e — no live LLM call during `seed`.
 | **Bundler**             | Vite                                                                             |
 | **Backend**             | AWS Amplify Gen2 — Cognito (guest identity) + AppSync (GraphQL) + DynamoDB       |
 | **Maps**                | `react-simple-maps` + `world-atlas` topology + `i18n-iso-countries` (build-time) |
+| **Chess**               | `chess.js` — legal moves, defender replies, checkmate detection (Chess Attack)   |
 | **Testing**             | Vitest + Istanbul coverage (unit) · Playwright + playwright-bdd Gherkin (e2e)    |
 | **AI**                  | Bedrock Claude (tool-forced structured output) for generated quiz content        |
 
