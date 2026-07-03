@@ -1,7 +1,7 @@
 import { Redirect, Route } from 'react-router-dom';
 import { IonRouterOutlet } from '@ionic/react';
 import { Home } from './features/home/Home';
-import { GameRoutes } from './GameRoutes';
+import { gameRoutes } from './GameRoutes';
 import { QuizAdmin } from './games/quizzes/admin/QuizAdmin';
 import { Discover } from './features/discover/Discover';
 import { CategoryDecks } from './features/discover/CategoryDecks';
@@ -25,7 +25,7 @@ export function AppRoutes() {
       <Route exact path="/home">
         <Home />
       </Route>
-      <GameRoutes />
+      {gameRoutes()}
       <Route exact path="/discover">
         <Discover />
       </Route>
