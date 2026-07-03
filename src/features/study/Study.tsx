@@ -72,7 +72,17 @@ export function Study() {
                 {Math.round((s.score.correct / s.score.total) * 100)}%
               </p>
             )}
-            <Link to={`/decks/${id}`} className="empty-state__cta">
+            {s.canReviewAll && (
+              <button
+                type="button"
+                className="empty-state__cta"
+                data-testid="study-review-all"
+                onClick={s.reviewAll}
+              >
+                Review all cards
+              </button>
+            )}
+            <Link to={`/decks/${id}`} className="empty-state__cta study__back-link">
               Back to deck
             </Link>
           </EmptyState>

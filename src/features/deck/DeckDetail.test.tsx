@@ -4,6 +4,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const hook = vi.hoisted(() => ({ value: {} as { data?: unknown; isLoading: boolean } }));
 vi.mock('./useDeckDetail', () => ({ useDeckDetail: () => hook.value }));
+// SaveDeckButton pulls in auth + react-query; it has its own test, so stub it.
+vi.mock('../mydecks/SaveDeckButton', () => ({
+  SaveDeckButton: () => <button data-testid="save-deck">Add to My Decks</button>,
+}));
 
 import { DeckDetail } from './DeckDetail';
 
@@ -44,6 +48,8 @@ describe('DeckDetail', () => {
     expect(study).toHaveTextContent('Study 2 cards');
     expect(study).toHaveAttribute('href', '/decks/d1/study');
     expect(screen.getAllByTestId('card-row')).toHaveLength(2);
+    // The Save-to-My-Decks toggle is present alongside Study.
+    expect(screen.getByTestId('save-deck')).toBeInTheDocument();
   });
 
   it('shows a not-found message when the deck is missing', () => {

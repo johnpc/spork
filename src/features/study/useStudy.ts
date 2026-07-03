@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { fetchStudyData } from './studyApi';
-import { buildStudyQueue } from './buildStudyQueue';
+import { sessionView } from './sessionView';
 import { buildChoices } from './buildChoices';
 import { persistGrade } from './persistGrade';
 import { useRecordOnDone } from './useRecordOnDone';
@@ -20,6 +20,7 @@ export function useStudy(deckId: string | undefined) {
   const [picked, setPicked] = useState<string | null>(null);
   const [score, setScore] = useState({ correct: 0, total: 0 }); // end-of-session tally
   const [direction, setDirection] = useState<'front' | 'back'>('front'); // prompt face
+  const [includeAll, setIncludeAll] = useState(false); // "Review all" round when nothing is due
 
   const { data, isLoading } = useQuery({
     queryKey: ['study', deckId, signedIn],
@@ -27,9 +28,10 @@ export function useStudy(deckId: string | undefined) {
     enabled,
   });
 
-  const queue = useMemo(() => (data ? buildStudyQueue(data.cards, data.reviews, new Date()) : []), [data]); // prettier-ignore
-  const current = queue[index] ?? null;
-  const done = !isLoading && queue.length > 0 && index >= queue.length;
+  const { queue, current, done, canReviewAll } = useMemo(
+    () => sessionView(data, index, includeAll, isLoading, new Date()),
+    [data, index, includeAll, isLoading],
+  );
 
   // Choices are derived per card+direction; memoized so picking doesn't reshuffle.
   const choices = useMemo(() => (current && data ? buildChoices(current.card, data.cards, direction) : null), [current, data, direction]); // prettier-ignore
@@ -72,6 +74,10 @@ export function useStudy(deckId: string | undefined) {
     restart();
   }, [restart]);
 
+  const reviewAll = useCallback(() => {
+    setIncludeAll(true); // include not-yet-due cards, then restart at card 0
+    restart();
+  }, [restart]);
   return {
     isAuthenticated: signedIn,
     isLoading: enabled && isLoading,
@@ -85,6 +91,8 @@ export function useStudy(deckId: string | undefined) {
     score,
     direction,
     toggleDirection,
+    canReviewAll,
+    reviewAll,
     position: { index, total: queue.length },
   };
 }

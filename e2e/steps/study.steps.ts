@@ -27,8 +27,16 @@ Given('a guest opens the app', async ({ page }) => {
   await page.goto('/home');
 });
 
+// Seeded decks live in different Discover categories; map the topic to its
+// category so a scenario can pick either deck (the streak scenario uses a
+// different deck than the single-card one to avoid same-user due-card contention).
+const DECK_CATEGORY: Record<string, string> = {
+  'Top Spanish Phrases': 'languages',
+  'Greek Gods': 'mythology',
+};
+
 When('the user starts studying the {string} deck', async ({ page }, topic: string) => {
-  await page.goto('/discover/languages');
+  await page.goto(`/discover/${DECK_CATEGORY[topic] ?? 'languages'}`);
   await page
     .getByTestId('deck-card')
     .filter({ hasText: new RegExp(topic) })
@@ -75,6 +83,19 @@ Then('the study session advances past the first card', async ({ page }) => {
 });
 
 When('the user answers every card in the session', async ({ page }) => {
+  // Wait for the session to settle into one of its two initial states — a card
+  // to answer, or the "all caught up" screen — so we don't decide before the
+  // study data has loaded.
+  await expect(
+    page.getByTestId('study-opt').first().or(page.getByTestId('study-done')),
+  ).toBeVisible({ timeout: 15_000 });
+  // If nothing is due (e.g. a re-run where SM-2 scheduled the cards forward),
+  // start a "Review all" round so there's always a session to complete.
+  const reviewAll = page.getByTestId('study-review-all');
+  if (await reviewAll.isVisible().catch(() => false)) {
+    await reviewAll.click();
+    await expect(page.getByTestId('study-opt').first()).toBeVisible({ timeout: 15_000 });
+  }
   // Answer-then-Next until the done screen appears (bounded loop).
   for (let i = 0; i < 50; i++) {
     if (await page.getByTestId('study-done').isVisible()) break;

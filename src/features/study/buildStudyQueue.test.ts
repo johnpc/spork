@@ -46,4 +46,15 @@ describe('buildStudyQueue', () => {
     const q = buildStudyQueue([card('a', 0)], [review('a', '2026-07-01T00:00:00.000Z')], NOW);
     expect(q).toEqual([]);
   });
+
+  it('includes not-yet-due cards in a review-all round', () => {
+    const cards = [card('new', 0), card('later', 1)];
+    const reviews = [review('later', '2026-07-01T00:00:00.000Z')]; // future
+    // Default: only the new card. Review-all: both, new-first.
+    expect(buildStudyQueue(cards, reviews, NOW).map((x) => x.card.id)).toEqual(['new']);
+    expect(buildStudyQueue(cards, reviews, NOW, true).map((x) => x.card.id)).toEqual([
+      'new',
+      'later',
+    ]);
+  });
 });

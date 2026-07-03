@@ -16,6 +16,8 @@ const base = () => ({
   score: { correct: 0, total: 0 },
   direction: 'front' as 'front' | 'back',
   toggleDirection: vi.fn(),
+  canReviewAll: false,
+  reviewAll: vi.fn(),
   position: { index: 0, total: 0 },
 });
 const hook = vi.hoisted(() => ({ value: {} as StudyState }));
@@ -76,5 +78,20 @@ describe('Study', () => {
     renderAt();
     expect(screen.getByText('You got 3 of 4 correct.')).toBeInTheDocument();
     expect(screen.getByTestId('study-score')).toHaveTextContent('75%');
+  });
+
+  it('offers "Review all cards" and triggers it when nothing is due', () => {
+    const reviewAll = vi.fn();
+    hook.value = { ...base(), current: null, canReviewAll: true, reviewAll };
+    renderAt();
+    const btn = screen.getByTestId('study-review-all');
+    btn.click();
+    expect(reviewAll).toHaveBeenCalledTimes(1);
+  });
+
+  it('hides "Review all cards" when it is not offered', () => {
+    hook.value = { ...base(), current: null, canReviewAll: false };
+    renderAt();
+    expect(screen.queryByTestId('study-review-all')).not.toBeInTheDocument();
   });
 });

@@ -134,4 +134,24 @@ describe('useStudy', () => {
     expect(result.current.picked).toBeNull();
     expect(result.current.position.index).toBe(0);
   });
+
+  it('offers a Review all round when cards exist but none are due', async () => {
+    // Both cards reviewed and scheduled far into the future → nothing due.
+    const future = '2999-01-01T00:00:00.000Z';
+    api.fetchStudyData.mockResolvedValue({
+      cards: twoNewCards.cards,
+      reviews: [
+        { cardId: 'c1', deckId: 'd1', dueAt: future },
+        { cardId: 'c2', deckId: 'd1', dueAt: future },
+      ],
+    });
+    const { result } = renderHook(() => useStudy('d1'), { wrapper });
+    await waitFor(() => expect(result.current.canReviewAll).toBe(true));
+    expect(result.current.current).toBeNull(); // a dead-end without the fallback
+    act(() => result.current.reviewAll());
+    // Review-all surfaces all cards and clears the offer.
+    await waitFor(() => expect(result.current.current?.card.id).toBe('c1'));
+    expect(result.current.position.total).toBe(2);
+    expect(result.current.canReviewAll).toBe(false);
+  });
 });

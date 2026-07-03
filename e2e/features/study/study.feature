@@ -19,9 +19,13 @@ Feature: Study a deck (authenticated, multiple choice)
     When the user advances to the next card
     Then the study session advances past the first card
 
+  # Uses a DIFFERENT deck than the scenario above: both run as the same test user
+  # under fullyParallel, and SM-2 converts a graded card out of the shared "new"
+  # set — so sharing one deck lets the two sessions steal each other's due cards
+  # ("All caught up!"). Separate decks keep each session's queue independent.
   Scenario: Finishing a session shows a score summary and counts toward the streak
     Given the study test user signs in
-    When the user starts studying the "Top Spanish Phrases" deck
+    When the user starts studying the "Greek Gods" deck
     And the user answers every card in the session
     Then a session score summary is shown
     When the user opens the You tab

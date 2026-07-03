@@ -9,10 +9,12 @@ import {
 } from '@ionic/react';
 import { Link, useParams } from 'react-router-dom';
 import { useDeckDetail } from './useDeckDetail';
+import { SaveDeckButton } from '../mydecks/SaveDeckButton';
 import './deck.css';
 
-/** Deck detail: title, description, a prominent Study CTA, and a card preview.
- * Guest-playable — no save step; clicking Study begins the session immediately. */
+/** Deck detail: title, description, a prominent Study CTA, a Save-to-My-Decks
+ * toggle (a guest who taps it is routed to sign-in), and a card preview. Study
+ * itself is guest-playable and begins the session immediately. */
 export function DeckDetail() {
   const { id } = useParams<{ id: string }>();
   const { data, isLoading } = useDeckDetail(id);
@@ -40,6 +42,15 @@ export function DeckDetail() {
               <Link to={`/decks/${deck.id}/study`} className="deck__study" data-testid="study-link">
                 Study {deck.cardCount ?? 0} cards
               </Link>
+              <SaveDeckButton
+                deck={{
+                  deckId: deck.id,
+                  topic: deck.topic,
+                  categorySlug: deck.categorySlug,
+                  cardCount: deck.cardCount,
+                  coverImagePath: deck.coverImagePath,
+                }}
+              />
             </div>
             <ul className="deck__cards" aria-label="Cards">
               {(data?.cards ?? []).map((card) => (
