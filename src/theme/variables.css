@@ -63,6 +63,16 @@ body {
   font-family: var(--sp-font-sans);
 }
 
+/* Safe-area: keep the top toolbar clear of the notch / Dynamic Island / status
+ * bar. Ionic wires --ion-safe-area-top from env(safe-area-inset-top); we harden
+ * it so the first toolbar always reserves at least the inset (max() prevents
+ * double-padding when Ionic already applied it). Needs viewport-fit=cover (set
+ * in index.html). The content scroll area also insets its top so nothing tucks
+ * under a transparent header. */
+ion-header ion-toolbar:first-of-type {
+  padding-top: max(var(--ion-safe-area-top, 0px), env(safe-area-inset-top, 0px));
+}
+
 /* Role classes */
 .sp-heading {
   font-family: var(--sp-font-sans);
