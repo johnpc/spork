@@ -75,7 +75,12 @@ for (const root of ROOTS) {
 if (offenders.length > 0) {
   console.error(`\n✖ Source files exceeding ${MAX_LINES} lines:`);
   for (const o of offenders) console.error(`    ${o.file} — ${o.lines} lines`);
-  console.error(`\n  Extract logic into a smaller helper or split the file.\n`);
+  console.error(
+    `\n  Fix by EXTRACTING a function/component into its own file to genuinely` +
+      `\n  simplify this one — that's the whole point of the limit.` +
+      `\n  Do NOT game it by deleting comments or blank lines: that keeps the` +
+      `\n  complexity and just makes the file denser and harder to read.\n`,
+  );
   process.exit(1);
 }
 

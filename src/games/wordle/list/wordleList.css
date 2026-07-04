@@ -1,0 +1,35 @@
+/* Wordle list screen. --sp-* tokens only. */
+.wordle-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.wordle-list__item {
+  border-radius: var(--sp-radius);
+  overflow: hidden;
+}
+
+.wordle-list__link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--sp-accent-soft);
+  color: var(--sp-text);
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.wordle-list__link:hover {
+  background: var(--sp-accent);
+  color: var(--sp-accent-contrast);
+}
+
+.wordle-list__date {
+  font-weight: 600;
+  font-size: 1rem;
+}

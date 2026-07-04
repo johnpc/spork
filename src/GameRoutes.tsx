@@ -9,6 +9,12 @@ import { Acrostic } from './games/acrostic/play/Acrostic';
 import { QuizzleList } from './games/quizzle/list/QuizzleList';
 import { Quizzle } from './games/quizzle/play/Quizzle';
 import { ChessList } from './games/chess/list/ChessList';
+import { WordleList } from './games/wordle/list/WordleList';
+import { Wordle } from './games/wordle/play/Wordle';
+import { ConnectionsList } from './games/connections/list/ConnectionsList';
+import { Connections } from './games/connections/play/Connections';
+import { BeeList } from './games/spellingbee/list/BeeList';
+import { SpellingBee } from './games/spellingbee/play/SpellingBee';
 import { DailyEntry } from './games/shared/daily/DailyEntry';
 import { LazyRoute } from './features/shell/LazyRoute';
 
@@ -61,6 +67,24 @@ export function gameRoutes() {
       <LazyRoute>
         <ChessAttack />
       </LazyRoute>
+    </Route>,
+    <Route exact path="/wordle" key="wordle">
+      <WordleList />
+    </Route>,
+    <Route exact path="/wordle/:id" key="wordle-play">
+      <Wordle />
+    </Route>,
+    <Route exact path="/connections" key="connections">
+      <ConnectionsList />
+    </Route>,
+    <Route exact path="/connections/:id" key="connections-play">
+      <Connections />
+    </Route>,
+    <Route exact path="/spellingbee" key="spellingbee">
+      <BeeList />
+    </Route>,
+    <Route exact path="/spellingbee/:id" key="spellingbee-play">
+      <SpellingBee />
     </Route>,
   ];
 }

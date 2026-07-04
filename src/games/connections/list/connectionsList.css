@@ -1,0 +1,29 @@
+/* Connections list surface. --sp-* tokens only. */
+.connections-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.connections-list__item {
+  margin: 0;
+}
+
+.connections-list__link {
+  display: block;
+  padding: 1rem;
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-surface);
+  color: var(--sp-text);
+  text-decoration: none;
+  border: 1px solid var(--sp-border);
+  transition: all 0.15s;
+}
+
+.connections-list__link:hover {
+  background: var(--sp-accent-soft);
+  border-color: var(--sp-accent);
+}

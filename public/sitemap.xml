@@ -72,4 +72,16 @@
     <loc>https://spork.jpc.io/daily/chess</loc>
     <changefreq>daily</changefreq>
   </url>
+  <url>
+    <loc>https://spork.jpc.io/daily/wordle</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://spork.jpc.io/daily/connections</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://spork.jpc.io/daily/spellingbee</loc>
+    <changefreq>daily</changefreq>
+  </url>
 </urlset>

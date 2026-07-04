@@ -15,6 +15,9 @@ import { seedDeckData } from './seedDecks';
 import { seedQuizData } from './seedQuizzes';
 import { seedLadderData } from './seedLadders';
 import { seedAcrosticData, seedQuizzleData, seedChessData } from './seedNewGames';
+import { seedWordleData } from './seedWordle';
+import { seedConnectionsData } from './seedConnections';
+import { seedSpellingBeeData } from './seedSpellingBee';
 
 async function main() {
   const username = process.env.TEST_USERNAME;
@@ -37,6 +40,9 @@ async function main() {
   await seedAcrosticData();
   await seedQuizzleData();
   await seedChessData();
+  await seedWordleData();
+  await seedConnectionsData();
+  await seedSpellingBeeData();
 
   await signOut().catch(() => {});
   console.log('Seed complete.');

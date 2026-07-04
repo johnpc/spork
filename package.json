@@ -37,7 +37,9 @@
     "gen:ladder-fixtures": "tsx scripts/genLadderFixtures.ts",
     "gen:acrostic-fixtures": "tsx scripts/genAcrosticFixtures.ts",
     "gen:quizzle-fixtures": "tsx scripts/genQuizzleFixtures.ts",
-    "gen:chess-fixtures": "tsx scripts/genChessAttackFixtures.ts"
+    "gen:chess-fixtures": "tsx scripts/genChessAttackFixtures.ts",
+    "gen:wordle-fixtures": "tsx scripts/genWordleFixtures.ts",
+    "gen:spellingbee-fixtures": "tsx scripts/genSpellingBeeFixtures.ts"
   },
   "lint-staged": {
     "*.{ts,tsx}": [
@@ -111,6 +113,7 @@
     "@vitejs/plugin-legacy": "^5.0.0",
     "@vitejs/plugin-react": "^4.0.1",
     "@vitest/coverage-istanbul": "^0.34.6",
+    "an-array-of-english-words": "^2.0.0",
     "aws-cdk-lib": "^2.244.0",
     "constructs": "^10.6.0",
     "esbuild": "^0.28.1",

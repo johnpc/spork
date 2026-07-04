@@ -36,3 +36,6 @@ export type WordLadderRecord = Schema['WordLadder']['type'];
 export type AcrosticRecord = Schema['Acrostic']['type'];
 export type QuizzleRecord = Schema['Quizzle']['type'];
 export type ChessAttackRecord = Schema['ChessAttack']['type'];
+export type SpellingBeePuzzleRecord = Schema['SpellingBeePuzzle']['type'];
+export type WordlePuzzleRecord = Schema['WordlePuzzle']['type'];
+export type ConnectionsPuzzleRecord = Schema['ConnectionsPuzzle']['type'];
