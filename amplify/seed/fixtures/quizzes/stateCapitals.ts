@@ -1,0 +1,76 @@
+/** Hand-authored US State Capitals quiz (static, well-known data — no AI). A
+ * SLIDESHOW: each slide's prompt is a state, the answer is its capital. DATA
+ * (gate-exempt). Keyed by the topic "US State Capitals" so the State Capitals
+ * game picks it (see gameCatalog topicFilter). */
+import type { QuizFixture, AnswerFixture } from './types';
+
+const CAPITALS: [state: string, capital: string, alt?: string[]][] = [
+  ['Alabama', 'Montgomery'],
+  ['Alaska', 'Juneau'],
+  ['Arizona', 'Phoenix'],
+  ['Arkansas', 'Little Rock'],
+  ['California', 'Sacramento'],
+  ['Colorado', 'Denver'],
+  ['Connecticut', 'Hartford'],
+  ['Delaware', 'Dover'],
+  ['Florida', 'Tallahassee'],
+  ['Georgia', 'Atlanta'],
+  ['Hawaii', 'Honolulu'],
+  ['Idaho', 'Boise'],
+  ['Illinois', 'Springfield'],
+  ['Indiana', 'Indianapolis'],
+  ['Iowa', 'Des Moines'],
+  ['Kansas', 'Topeka'],
+  ['Kentucky', 'Frankfort'],
+  ['Louisiana', 'Baton Rouge'],
+  ['Maine', 'Augusta'],
+  ['Maryland', 'Annapolis'],
+  ['Massachusetts', 'Boston'],
+  ['Michigan', 'Lansing'],
+  ['Minnesota', 'Saint Paul', ['St. Paul', 'St Paul']],
+  ['Mississippi', 'Jackson'],
+  ['Missouri', 'Jefferson City'],
+  ['Montana', 'Helena'],
+  ['Nebraska', 'Lincoln'],
+  ['Nevada', 'Carson City'],
+  ['New Hampshire', 'Concord'],
+  ['New Jersey', 'Trenton'],
+  ['New Mexico', 'Santa Fe'],
+  ['New York', 'Albany'],
+  ['North Carolina', 'Raleigh'],
+  ['North Dakota', 'Bismarck'],
+  ['Ohio', 'Columbus'],
+  ['Oklahoma', 'Oklahoma City'],
+  ['Oregon', 'Salem'],
+  ['Pennsylvania', 'Harrisburg'],
+  ['Rhode Island', 'Providence'],
+  ['South Carolina', 'Columbia'],
+  ['South Dakota', 'Pierre'],
+  ['Tennessee', 'Nashville'],
+  ['Texas', 'Austin'],
+  ['Utah', 'Salt Lake City'],
+  ['Vermont', 'Montpelier'],
+  ['Virginia', 'Richmond'],
+  ['Washington', 'Olympia'],
+  ['West Virginia', 'Charleston'],
+  ['Wisconsin', 'Madison'],
+  ['Wyoming', 'Cheyenne'],
+];
+
+const answers: AnswerFixture[] = CAPITALS.map(([state, capital, alt = []]) => ({
+  display: capital,
+  accepted: [capital, ...alt],
+  promptKind: 'TEXT',
+  promptValue: state,
+}));
+
+export const stateCapitalsQuiz: QuizFixture = {
+  topic: 'US State Capitals',
+  categorySlug: 'geography',
+  description: 'Name the capital of each US state.',
+  mode: 'SLIDESHOW',
+  inputMode: 'TYPE',
+  scoringMode: 'MEMBERSHIP',
+  timeLimitSeconds: 300,
+  answers,
+};

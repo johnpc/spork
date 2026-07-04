@@ -17,6 +17,10 @@ export interface GameDef {
   accent: string; // gradient for the Home card face
   /** Quiz mode this game draws from (quiz-type games only). */
   quizMode?: string;
+  /** Restrict this game to published quizzes whose topic matches (exact). Lets
+   * several games share one quiz MODE but stay distinct — e.g. World Capitals and
+   * US State Capitals are both SLIDESHOW but pick different quizzes by topic. */
+  topicFilter?: string;
   /** Non-daily destination override (Flashcards browses decks in Discover). */
   href?: string;
 }
@@ -104,6 +108,24 @@ export const QUIZ_TYPE_GAMES: GameDef[] = [
     accent: BLUE,
     quizMode: 'ORDER_UP',
   },
+  {
+    slug: 'world-capitals',
+    name: 'World Capitals',
+    tagline: 'Name the capital of each country.',
+    emoji: '🏛️',
+    accent: TEAL,
+    quizMode: 'SLIDESHOW',
+    topicFilter: 'World Capitals',
+  },
+  {
+    slug: 'state-capitals',
+    name: 'State Capitals',
+    tagline: 'Name the capital of each US state.',
+    emoji: '🦅',
+    accent: INDIGO,
+    quizMode: 'SLIDESHOW',
+    topicFilter: 'US State Capitals',
+  },
 ];
 
 /** The standalone game islands + Flashcards. */
@@ -150,12 +172,18 @@ export const OTHER_GAMES: GameDef[] = [
 export const ALL_GAMES: GameDef[] = [...QUIZ_TYPE_GAMES, ...OTHER_GAMES];
 
 /** The /daily/:slug recap route for a daily key (the localStorage key a play
- * screen records under). Quiz keys are "quizzes:<MODE>"; islands are the slug
- * itself. Used by the daily guard to send a finished player back to the recap. */
+ * screen records under). Quiz keys are "quizzes:<MODE>" or, for topic-filtered
+ * games, "quizzes:<MODE>:<topic>"; islands are the slug itself. Used by the daily
+ * guard to send a finished player back to the recap. */
 export function dailyPathForKey(dailyKey: string): string {
-  const mode = dailyKey.startsWith('quizzes:') ? dailyKey.slice('quizzes:'.length) : null;
-  const g = mode
-    ? QUIZ_TYPE_GAMES.find((q) => q.quizMode === mode)
-    : OTHER_GAMES.find((o) => o.slug === dailyKey);
+  if (dailyKey.startsWith('quizzes:')) {
+    const rest = dailyKey.slice('quizzes:'.length);
+    const sep = rest.indexOf(':');
+    const [mode, topic] =
+      sep === -1 ? [rest, undefined] : [rest.slice(0, sep), rest.slice(sep + 1)];
+    const g = QUIZ_TYPE_GAMES.find((q) => q.quizMode === mode && q.topicFilter === topic);
+    return g ? `/daily/${g.slug}` : '/home';
+  }
+  const g = OTHER_GAMES.find((o) => o.slug === dailyKey);
   return g ? `/daily/${g.slug}` : '/home';
 }

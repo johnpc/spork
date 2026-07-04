@@ -17,10 +17,18 @@ describe('DAILY_GAMES', () => {
     expect(DAILY_GAMES.chess.dailyKey).toBe('chess');
   });
 
-  it('names each game for the recap and covers 9 quiz types + 4 islands', () => {
+  it('names each game for the recap and covers 11 quiz types + 4 islands', () => {
     expect(DAILY_GAMES.chess.name).toBe('Chess Attack');
     expect(DAILY_GAMES.worldle.name).toBe('Worldle');
-    // 9 quiz types + steps/acrostic/quizzle/chess (Flashcards isn't daily-gated).
-    expect(Object.keys(DAILY_GAMES)).toHaveLength(13);
+    expect(DAILY_GAMES['state-capitals'].name).toBe('State Capitals');
+    // 11 quiz types (incl. World/State Capitals) + steps/acrostic/quizzle/chess
+    // (Flashcards isn't daily-gated).
+    expect(Object.keys(DAILY_GAMES)).toHaveLength(15);
+  });
+
+  it('gives topic-filtered games a topic-scoped daily key (distinct from plain Slideshow)', () => {
+    expect(DAILY_GAMES.slideshow.dailyKey).toBe('quizzes:SLIDESHOW');
+    expect(DAILY_GAMES['world-capitals'].dailyKey).toBe('quizzes:SLIDESHOW:World Capitals');
+    expect(DAILY_GAMES['state-capitals'].dailyKey).toBe('quizzes:SLIDESHOW:US State Capitals');
   });
 });

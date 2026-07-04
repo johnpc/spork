@@ -19,13 +19,28 @@ export interface DailyGame {
   dailyKey: string;
 }
 
-/** Quiz-type games: fetch published quizzes of this mode only. */
-function quizTypeEntry(quizMode: string): Omit<DailyGame, 'name'> {
+type Quiz = { mode?: string; topic?: string };
+
+/** Every topic reserved by a topic-filtered game — so the generic game of the
+ * same MODE (e.g. plain Slideshow) excludes them and never grabs a capitals quiz. */
+const RESERVED_TOPICS = new Set(
+  QUIZ_TYPE_GAMES.map((g) => g.topicFilter).filter((t): t is string => !!t),
+);
+
+/** Quiz-type games: published quizzes of this mode. When the game pins a
+ * `topicFilter`, keep only that topic (and key play-once per topic); otherwise
+ * keep the mode's quizzes MINUS any reserved-topic ones (which belong to a
+ * sibling topic-filtered game). */
+function quizTypeEntry(quizMode: string, topicFilter?: string): Omit<DailyGame, 'name'> {
   return {
-    fetchList: async () =>
-      (await fetchPublishedQuizzes()).filter((q) => (q as { mode?: string }).mode === quizMode),
+    fetchList: async () => {
+      const ofMode = (await fetchPublishedQuizzes()).filter((q) => (q as Quiz).mode === quizMode);
+      return topicFilter
+        ? ofMode.filter((q) => (q as Quiz).topic === topicFilter)
+        : ofMode.filter((q) => !RESERVED_TOPICS.has((q as Quiz).topic ?? ''));
+    },
     playPath: (id) => `/quizzes/${id}/play`,
-    dailyKey: `quizzes:${quizMode}`,
+    dailyKey: topicFilter ? `quizzes:${quizMode}:${topicFilter}` : `quizzes:${quizMode}`,
   };
 }
 
@@ -42,7 +57,7 @@ const STANDALONE: Record<string, Omit<DailyGame, 'name'>> = {
 
 export const DAILY_GAMES: Record<string, DailyGame> = {};
 for (const g of QUIZ_TYPE_GAMES) {
-  DAILY_GAMES[g.slug] = { name: g.name, ...quizTypeEntry(g.quizMode as string) };
+  DAILY_GAMES[g.slug] = { name: g.name, ...quizTypeEntry(g.quizMode as string, g.topicFilter) };
 }
 for (const g of OTHER_GAMES) {
   if (STANDALONE[g.slug]) DAILY_GAMES[g.slug] = { name: g.name, ...STANDALONE[g.slug] };

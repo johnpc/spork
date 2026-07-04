@@ -18,9 +18,20 @@ describe('dailyPathForKey', () => {
     expect(dailyPathForKey('mystery')).toBe('/home');
   });
 
+  it('maps a topic-filtered key (MODE:topic) to its /daily slug', () => {
+    expect(dailyPathForKey('quizzes:SLIDESHOW:World Capitals')).toBe('/daily/world-capitals');
+    expect(dailyPathForKey('quizzes:SLIDESHOW:US State Capitals')).toBe('/daily/state-capitals');
+    // plain SLIDESHOW (no topic) still resolves to the generic Slideshow game.
+    expect(dailyPathForKey('quizzes:SLIDESHOW')).toBe('/daily/slideshow');
+  });
+
   it('every quiz-type key resolves to a real catalog slug', () => {
     for (const g of ALL_GAMES.filter((x) => x.quizMode)) {
-      expect(dailyPathForKey(`quizzes:${g.quizMode}`)).toBe(`/daily/${g.slug}`);
+      // Build the key exactly as dailyGames does: mode, plus topic when filtered.
+      const key = g.topicFilter
+        ? `quizzes:${g.quizMode}:${g.topicFilter}`
+        : `quizzes:${g.quizMode}`;
+      expect(dailyPathForKey(key)).toBe(`/daily/${g.slug}`);
     }
   });
 });

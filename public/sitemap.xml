@@ -45,6 +45,14 @@
     <changefreq>daily</changefreq>
   </url>
   <url>
+    <loc>https://spork.jpc.io/daily/world-capitals</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
+    <loc>https://spork.jpc.io/daily/state-capitals</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
     <loc>https://spork.jpc.io/daily/steps</loc>
     <changefreq>daily</changefreq>
   </url>

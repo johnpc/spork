@@ -7,7 +7,8 @@ describe('DAILY_REFS', () => {
     expect(slugs).toContain('worldle');
     expect(slugs).toContain('chess');
     expect(slugs).not.toContain('flashcards'); // browses Discover, not a daily
-    expect(DAILY_REFS.length).toBe(13); // 9 quiz types + 4 islands
+    expect(slugs).toContain('world-capitals');
+    expect(DAILY_REFS.length).toBe(15); // 11 quiz types + 4 islands
   });
 });
 

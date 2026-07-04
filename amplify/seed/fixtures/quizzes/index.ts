@@ -11,6 +11,8 @@ import { pictureClickQuiz } from './pictureClick';
 import { slideshowQuiz } from './slideshow';
 import { sortableQuiz } from './sortable';
 import { orderUpQuiz } from './orderUp';
+import { stateCapitalsQuiz } from './stateCapitals';
+import { worldCapitalsQuiz } from './worldCapitals';
 
 export const SEED_QUIZZES: QuizFixture[] = [
   worldCountriesQuiz,
@@ -22,4 +24,6 @@ export const SEED_QUIZZES: QuizFixture[] = [
   slideshowQuiz,
   sortableQuiz,
   orderUpQuiz,
+  stateCapitalsQuiz,
+  worldCapitalsQuiz,
 ];

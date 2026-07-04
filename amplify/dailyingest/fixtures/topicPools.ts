@@ -9,7 +9,10 @@
  * words of a clue-able length; Quizzle topics are broad trivia categories.
  */
 export const QUIZ_TOPICS = [
-  'World Capitals',
+  // NB: avoid the exact topics reserved by topic-filtered games ("World Capitals",
+  // "US State Capitals" — see gameCatalog topicFilter), or a daily-generated quiz
+  // would be picked up by those games instead of their curated fixture.
+  'World Landmarks',
   'Elements of the Periodic Table',
   'Shakespeare Plays',
   'Planets and Moons of the Solar System',
