@@ -20,7 +20,10 @@ import { promisify } from 'node:util';
 
 const run = promisify(execFile);
 
-const APP_ID = 'd1ws6pg5gd10zx';
+// The prod Amplify app that serves spork.jpc.io (hosting + backend). The old
+// id here (d1ws6pg5gd10zx) was stale — it pulled an outdated schema missing the
+// Quiz/Answer/game models. Verified against `aws amplify list-apps`.
+const APP_ID = 'd1s1t7ajahnjkc';
 const BRANCH = 'main';
 const REGION = 'us-west-2';
 const PROFILE = 'personal';
