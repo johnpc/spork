@@ -37,4 +37,18 @@ describe('OrderUp', () => {
     expect(placed).toHaveTextContent('1'); // orderIndex 0 → rank 1
     expect(screen.getAllByTestId('order-up-item')).toHaveLength(2);
   });
+
+  it('reveals all items in correct order when status is done', () => {
+    render(
+      <OrderUp answers={answers} found={new Set(['a1', 'a3'])} attempt={vi.fn()} status="done" />,
+    );
+    const reveal = screen.getByTestId('orderup-reveal');
+    expect(reveal).toBeInTheDocument();
+    const items = reveal.querySelectorAll('li');
+    expect(items).toHaveLength(3);
+    // Order by orderIndex: First (0), Second (1), Third (2)
+    expect(items[0]).toHaveTextContent('First');
+    expect(items[1]).toHaveTextContent('Second');
+    expect(items[2]).toHaveTextContent('Third');
+  });
 });

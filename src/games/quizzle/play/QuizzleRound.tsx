@@ -33,14 +33,20 @@ export function QuizzleRound(p: RoundProps) {
       )}
       {resolved && (
         <div className="quizzle__result">
-          <p
-            className={p.lastCorrect ? 'quizzle__result--correct' : 'quizzle__result--wrong'}
-            data-testid="quizzle-result"
-          >
-            {p.lastCorrect
-              ? `Correct! +${p.wagerAmount}`
-              : `Wrong — ${p.lastAnswer} · -${p.wagerAmount}`}
-          </p>
+          {p.lastCorrect ? (
+            <p className="quizzle__result--correct" data-testid="quizzle-result">
+              Correct! +{p.wagerAmount}
+            </p>
+          ) : (
+            <div data-testid="quizzle-result">
+              <p className="quizzle__result--wrong">
+                Wrong — the answer was <strong>{p.question.answer}</strong>
+              </p>
+              <p className="sp-muted" data-testid="quizzle-answer-reveal">
+                You answered: {p.lastAnswer} · -{p.wagerAmount}
+              </p>
+            </div>
+          )}
           <button className="quizzle__btn" data-testid="quizzle-next" onClick={p.onAdvance}>
             Next
           </button>

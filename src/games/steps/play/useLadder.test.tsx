@@ -65,4 +65,20 @@ describe('useLadder', () => {
     act(() => result.current.undo());
     expect(result.current.path).toEqual(['cat']);
   });
+
+  it('giveUp sets gaveUp and blocks further input', async () => {
+    const { result } = renderHook(() => useLadder('l1'), { wrapper });
+    await waitFor(() => expect(result.current.start).toBe('cat'));
+    expect(result.current.gaveUp).toBe(false);
+    act(() => result.current.giveUp());
+    expect(result.current.gaveUp).toBe(true);
+    const ok = result.current.submit('cot');
+    expect(ok).toBe(false);
+    expect(result.current.path).toEqual(['cat']);
+  });
+
+  it('exposes the parPath for solution display', async () => {
+    const { result } = renderHook(() => useLadder('l1'), { wrapper });
+    await waitFor(() => expect(result.current.parPath).toEqual(['cat', 'cot', 'cog', 'dog']));
+  });
 });

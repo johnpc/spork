@@ -1,6 +1,9 @@
 /** The Connections footer: win/loss banners, the "one away" hint, and (while the
  * game is live) the Deselect All / Submit controls. Split from the play screen to
  * keep each file single-purpose. */
+import type { Group } from './grouping';
+import { ConnectionsReveal } from './ConnectionsReveal';
+
 interface ConnectionsFooterProps {
   won: boolean;
   lost: boolean;
@@ -10,6 +13,8 @@ interface ConnectionsFooterProps {
   canSubmit: boolean;
   onDeselectAll: () => void;
   onSubmit: () => void;
+  groups: readonly Group[];
+  solvedIndices: ReadonlySet<number>;
 }
 
 export function ConnectionsFooter(p: ConnectionsFooterProps) {
@@ -20,11 +25,7 @@ export function ConnectionsFooter(p: ConnectionsFooterProps) {
           All groups found!
         </p>
       )}
-      {p.lost && (
-        <p className="connections__lost" data-testid="connections-lost" role="status">
-          Game over! Better luck next time.
-        </p>
-      )}
+      {p.lost && <ConnectionsReveal groups={p.groups} solvedIndices={p.solvedIndices} />}
       {!p.done && (
         <>
           {p.oneAway && (

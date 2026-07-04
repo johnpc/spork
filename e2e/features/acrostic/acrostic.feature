@@ -25,3 +25,12 @@ Feature: Acrostic — spell the hidden word
     Given the player opens the "The Deep Blue" acrostic
     When the player answers clue 0 with "zzz"
     Then the acrostic is not solved
+
+  Scenario: A guest gives up and sees all answers revealed
+    Given the player opens the "The Deep Blue" acrostic
+    When the player gives up the acrostic
+    Then the acrostic reveal is shown
+    And the revealed secret word is "OCEAN"
+    And the revealed answer "ORANGE" is shown
+    And the revealed answer "CALF" is shown
+    And the revealed quote contains "The sea"

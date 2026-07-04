@@ -30,3 +30,12 @@ Then('a try-again message is shown', async ({ page }) => {
 Then('the puzzle is not solved', async ({ page }) => {
   await expect(page.getByTestId('chess-solved')).toHaveCount(0);
 });
+
+When('the player gives up the chess puzzle', async ({ page }) => {
+  await page.getByTestId('chess-give-up').click();
+});
+
+Then('the solution is shown with move {string}', async ({ page }, move: string) => {
+  await expect(page.getByTestId('chess-solution')).toBeVisible({ timeout: 10_000 });
+  await expect(page.getByTestId('chess-solution')).toContainText(move);
+});

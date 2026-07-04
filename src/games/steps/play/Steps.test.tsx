@@ -20,13 +20,16 @@ const base = {
   start: 'cat',
   target: 'dog',
   par: 3,
+  parPath: ['cat', 'cot', 'cog', 'dog'],
   path: ['cat'],
   current: 'cat',
   moves: 0,
+  gaveUp: false,
   lastError: null,
   submit: vi.fn(),
   undo: vi.fn(),
   reset: vi.fn(),
+  giveUp: vi.fn(),
 };
 
 describe('Steps', () => {
@@ -69,5 +72,24 @@ describe('Steps', () => {
     hook.state = { ...base, ladder: null, solved: false };
     renderSteps();
     expect(screen.getByTestId('steps-unavailable')).toBeInTheDocument();
+  });
+
+  it('shows the give-up button while playing', () => {
+    hook.state = { ...base, solved: false, gaveUp: false };
+    renderSteps();
+    expect(screen.getByTestId('steps-giveup')).toBeInTheDocument();
+  });
+
+  it('reveals the solution and hides input after give-up', () => {
+    hook.state = { ...base, solved: false, gaveUp: true };
+    renderSteps();
+    expect(screen.getByTestId('steps-solution')).toBeInTheDocument();
+    expect(screen.queryByTestId('step-input')).not.toBeInTheDocument();
+    // The solution contains all par-path words in order.
+    const solution = screen.getByTestId('steps-solution');
+    expect(solution).toHaveTextContent('CAT');
+    expect(solution).toHaveTextContent('COT');
+    expect(solution).toHaveTextContent('COG');
+    expect(solution).toHaveTextContent('DOG');
   });
 });

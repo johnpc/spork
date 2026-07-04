@@ -83,4 +83,38 @@ describe('useAcrostic', () => {
     expect(result.current.solvedCount).toBe(0);
     expect(result.current.lastWrong).toBeNull();
   });
+
+  it('starts with gaveUp=false', async () => {
+    const { result } = renderHook(() => useAcrostic('a1'), { wrapper });
+    await waitFor(() => expect(result.current.total).toBe(2));
+    expect(result.current.gaveUp).toBe(false);
+  });
+
+  it('giveUp sets gaveUp to true', async () => {
+    const { result } = renderHook(() => useAcrostic('a1'), { wrapper });
+    await waitFor(() => expect(result.current.total).toBe(2));
+    act(() => result.current.giveUp());
+    expect(result.current.gaveUp).toBe(true);
+  });
+
+  it('blocks guesses after giving up', async () => {
+    const { result } = renderHook(() => useAcrostic('a1'), { wrapper });
+    await waitFor(() => expect(result.current.total).toBe(2));
+    act(() => result.current.giveUp());
+    let ok = true;
+    act(() => {
+      ok = result.current.guess(0, 'cat');
+    });
+    expect(ok).toBe(false);
+    expect(result.current.solvedCount).toBe(0);
+  });
+
+  it('reset clears gaveUp state', async () => {
+    const { result } = renderHook(() => useAcrostic('a1'), { wrapper });
+    await waitFor(() => expect(result.current.total).toBe(2));
+    act(() => result.current.giveUp());
+    expect(result.current.gaveUp).toBe(true);
+    act(() => result.current.reset());
+    expect(result.current.gaveUp).toBe(false);
+  });
 });

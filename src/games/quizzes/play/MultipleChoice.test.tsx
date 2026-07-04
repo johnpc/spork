@@ -64,4 +64,22 @@ describe('MultipleChoice', () => {
     render(<MultipleChoice answers={noPrompt} found={new Set()} attempt={() => true} />);
     expect(screen.getByTestId('mc-question')).toHaveTextContent('Solo');
   });
+
+  it('reveals all questions with correct answers when status is done', () => {
+    render(
+      <MultipleChoice
+        answers={answers}
+        found={new Set(['a1'])}
+        attempt={() => true}
+        status="done"
+      />,
+    );
+    const reveal = screen.getByTestId('mc-reveal');
+    expect(reveal).toBeInTheDocument();
+    // Both questions shown — one found, one missed.
+    expect(reveal).toHaveTextContent('Capital of France?');
+    expect(reveal).toHaveTextContent('Paris');
+    expect(reveal).toHaveTextContent('Capital of Japan?');
+    expect(reveal).toHaveTextContent('Tokyo');
+  });
 });

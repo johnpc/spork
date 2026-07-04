@@ -39,3 +39,23 @@ Then('the acrostic is not solved', async ({ page }) => {
 Then('the acrostic quote is attributed to {string}', async ({ page }, author: string) => {
   await expect(page.getByTestId('quote-author')).toContainText(author, { timeout: 10_000 });
 });
+
+When('the player gives up the acrostic', async ({ page }) => {
+  await page.getByTestId('acrostic-give-up').click();
+});
+
+Then('the acrostic reveal is shown', async ({ page }) => {
+  await expect(page.getByTestId('acrostic-reveal')).toBeVisible({ timeout: 10_000 });
+});
+
+Then('the revealed secret word is {string}', async ({ page }, word: string) => {
+  await expect(page.getByTestId('acrostic-reveal')).toContainText(word, { timeout: 10_000 });
+});
+
+Then('the revealed answer {string} is shown', async ({ page }, answer: string) => {
+  await expect(page.getByTestId('acrostic-reveal')).toContainText(answer, { timeout: 10_000 });
+});
+
+Then('the revealed quote contains {string}', async ({ page }, text: string) => {
+  await expect(page.getByTestId('reveal-quote')).toContainText(text, { timeout: 10_000 });
+});

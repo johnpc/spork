@@ -74,3 +74,11 @@ Then('a saved best score of at least {int} is shown', async ({ page }, min: numb
   const found = Number(text.match(/(\d+)\s*\//)?.[1] ?? '0');
   expect(found).toBeGreaterThanOrEqual(min);
 });
+
+Then('the correct answer {string} is revealed', async ({ page }, answer: string) => {
+  // Assert on the REAL rendered reveal — the mc-reveal element shows all
+  // correct answers after give-up/time-up. Honest e2e — not just a counter.
+  const reveal = page.getByTestId('mc-reveal');
+  await expect(reveal).toBeVisible({ timeout: 10_000 });
+  await expect(reveal).toContainText(answer);
+});

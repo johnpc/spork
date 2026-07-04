@@ -34,3 +34,19 @@ export function orderItems(answers: AnswerRecord[]): OrderItem[] {
 export function placedLabel(placed: number, total: number): string {
   return `${placed} of ${total} placed`;
 }
+
+/** Reveal list: all items in their CORRECT order (sorted by orderIndex), flagged
+ * found/missed. Used when the game ends to show the right sequence. */
+export function revealItems(
+  answers: AnswerRecord[],
+  found: ReadonlySet<string>,
+): Array<OrderItem & { found: boolean }> {
+  return answers
+    .map((a) => ({
+      id: a.id,
+      display: a.display,
+      orderIndex: a.orderIndex ?? -1,
+      found: found.has(a.id),
+    }))
+    .sort((x, y) => x.orderIndex - y.orderIndex);
+}

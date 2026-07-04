@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { RendererProps } from './renderers';
-import { orderItems, placedLabel } from './orderUpItems';
+import { orderItems, placedLabel, revealItems } from './orderUpItems';
 import './orderUp.css';
 
 /**
@@ -11,8 +11,36 @@ import './orderUp.css';
  * and a correct one flips the button to its "placed" role. It consumes the shared
  * { answers, found, attempt } contract — the engine stays mode-agnostic.
  */
-export function OrderUp({ answers, found, attempt }: RendererProps) {
+export function OrderUp({ answers, found, attempt, status }: RendererProps) {
   const items = useMemo(() => orderItems(answers), [answers]);
+  const done = status === 'done';
+  const revealList = useMemo(() => revealItems(answers, found), [answers, found]);
+
+  if (done) {
+    return (
+      <div className="order-up" data-testid="order-up">
+        <p className="sp-muted order-up__progress" data-testid="order-up-progress">
+          Correct order:
+        </p>
+        <ol className="order-up__reveal" data-testid="orderup-reveal">
+          {revealList.map((item, idx) => (
+            <li
+              key={item.id}
+              className={
+                item.found
+                  ? 'order-up__reveal-item'
+                  : 'order-up__reveal-item order-up__reveal-item--missed'
+              }
+            >
+              <span className="order-up__rank">{idx + 1}</span>
+              <span className="order-up__label">{item.display}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+    );
+  }
+
   return (
     <div className="order-up" data-testid="order-up">
       <p className="sp-muted order-up__progress" data-testid="order-up-progress">

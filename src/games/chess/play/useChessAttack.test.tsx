@@ -85,4 +85,24 @@ describe('useChessAttack', () => {
     expect(result.current.moves).toBe(0);
     expect(result.current.pieces.length).toBe(before);
   });
+
+  it('giveUp reveals the solution', async () => {
+    const { result } = await ready();
+    expect(result.current.gaveUp).toBe(false);
+    act(() => result.current.giveUp());
+    expect(result.current.gaveUp).toBe(true);
+  });
+
+  it('reset clears gaveUp state', async () => {
+    const { result } = await ready();
+    act(() => result.current.giveUp());
+    expect(result.current.gaveUp).toBe(true);
+    act(() => result.current.reset());
+    expect(result.current.gaveUp).toBe(false);
+  });
+
+  it('exposes the solution line', async () => {
+    const { result } = await ready();
+    expect(result.current.line).toEqual(['e8e1', 'g1f2', 'e1f1']);
+  });
 });

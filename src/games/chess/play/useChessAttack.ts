@@ -4,6 +4,7 @@ import { fetchPuzzle } from './chessApi';
 import { parseFen, parseSolution } from './parseChess';
 import { boardFromFen, legalTargets, playSolverMove, turnOf } from './chess';
 import { tapAction } from './tapAction';
+import { initialState } from './resetPuzzle';
 
 /**
  * ChessAttack play engine (real chess via chess.js). Load the puzzle (FEN + a
@@ -29,21 +30,14 @@ export function useChessAttack(id: string | undefined) {
   const total = puzzle?.movesToWin ?? Math.ceil(line.length / 2);
   const solverSide = turnOf(startFen);
 
-  const [fen, setFen] = useState(startFen);
-  const [ply, setPly] = useState(0); // index into `line` (solver plies are even)
-  const [selected, setSelected] = useState<string | null>(null);
-  const [wrong, setWrong] = useState(false);
-  const [solved, setSolved] = useState(false);
+  const [state, setState] = useState(() => initialState(startFen));
+  const { fen, ply, selected, wrong, solved, gaveUp } = state;
 
   // Re-sync when the loaded puzzle changes (query resolves after first render).
   const [loadedId, setLoadedId] = useState<string | null>(null);
   if (puzzle && puzzle.id !== loadedId) {
     setLoadedId(puzzle.id);
-    setFen(startFen);
-    setPly(0);
-    setSelected(null);
-    setWrong(false);
-    setSolved(false);
+    setState(initialState(startFen));
   }
 
   const pieces = useMemo(() => boardFromFen(fen), [fen]);
@@ -54,28 +48,21 @@ export function useChessAttack(id: string | undefined) {
       if (solved) return;
       const ownHere = pieces.some((p) => p.sq === sq && p.color === solverSide);
       const action = tapAction(sq, selected, ownHere);
-      if (action.kind === 'select') return setSelected(action.sq);
-      if (action.kind === 'deselect') return setSelected(null);
+      if (action.kind === 'select') return setState((s) => ({ ...s, selected: action.sq }));
+      if (action.kind === 'deselect') return setState((s) => ({ ...s, selected: null }));
       if (action.kind === 'ignore') return;
       const r = playSolverMove(fen, line, ply, action.from, action.to);
-      if (r.ok) {
-        setFen(r.fen);
-        setPly((n) => n + 2); // advance past solver + defender ply
-        setSolved(r.solved);
-        setWrong(false);
-      } else setWrong(true);
-      setSelected(null);
+      setState((s) =>
+        r.ok
+          ? { ...s, fen: r.fen, ply: s.ply + 2, solved: r.solved, wrong: false, selected: null }
+          : { ...s, wrong: true, selected: null },
+      );
     },
     [solved, pieces, selected, solverSide, fen, line, ply],
   );
 
-  const reset = useCallback(() => {
-    setFen(startFen);
-    setPly(0);
-    setSelected(null);
-    setWrong(false);
-    setSolved(false);
-  }, [startFen]);
+  const reset = useCallback(() => setState(initialState(startFen)), [startFen]);
+  const giveUp = useCallback(() => setState((s) => ({ ...s, gaveUp: true })), []);
 
   return {
     puzzle: puzzle ?? null,
@@ -89,9 +76,12 @@ export function useChessAttack(id: string | undefined) {
     solverSide,
     wrong,
     solved,
+    gaveUp,
+    line,
     moves: Math.floor(ply / 2),
     total,
     tap,
     reset,
+    giveUp,
   };
 }

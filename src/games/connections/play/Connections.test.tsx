@@ -39,6 +39,7 @@ const base = {
   tiles: ['apple', 'banana', 'cherry', 'date'],
   selected: [],
   solvedGroups: [],
+  solvedIndices: new Set<number>(),
   mistakes: 0,
   maxMistakes: 4,
   lastOneAway: false,
@@ -83,7 +84,7 @@ describe('Connections', () => {
     expect(screen.queryByTestId('connections-submit')).not.toBeInTheDocument();
   });
 
-  it('shows lost banner and hides actions when lost', () => {
+  it('shows reveal with all groups and hides actions when lost', () => {
     hook.state = {
       ...base,
       mistakes: 4,
@@ -91,8 +92,10 @@ describe('Connections', () => {
       done: true,
     };
     renderConnections();
-    expect(screen.getByTestId('connections-lost')).toHaveTextContent('Game over!');
-    expect(screen.getByTestId('connections-lost')).toHaveAttribute('role', 'status');
+    expect(screen.getByTestId('connections-reveal')).toBeInTheDocument();
+    expect(screen.getByTestId('connections-reveal')).toHaveAttribute('role', 'status');
+    expect(screen.getByText('The groups were:')).toBeInTheDocument();
+    expect(screen.getByText('Fruits')).toBeInTheDocument();
     expect(screen.queryByTestId('connections-submit')).not.toBeInTheDocument();
   });
 

@@ -19,6 +19,10 @@ const base = {
   isLoading: false,
   topic: 'Capitals',
   total: 2,
+  questions: [
+    { question: 'Capital of France?', answer: 'Paris' },
+    { question: 'Capital of Spain?', answer: 'Madrid' },
+  ],
   question: { question: 'Capital of France?', answer: 'Paris' },
   bank: 1000,
   startingBank: 1000,

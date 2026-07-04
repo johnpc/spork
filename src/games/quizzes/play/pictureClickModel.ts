@@ -41,3 +41,15 @@ export function hotspotRole(
 export function hotspotClass(role: HotspotRole): string {
   return `pc-hotspot pc-hotspot--${role}`;
 }
+
+/** When the game ends, reveal all hotspots with their correct labels (no longer
+ * hiding unfound ones). The reveal role shows found vs. missed styling. */
+export type RevealRole = 'found' | 'missed';
+
+export function revealRole(answer: AnswerRecord, found: ReadonlySet<string>): RevealRole {
+  return found.has(answer.id) ? 'found' : 'missed';
+}
+
+export function revealClass(role: RevealRole): string {
+  return `pc-hotspot pc-hotspot--reveal pc-hotspot--reveal-${role}`;
+}

@@ -34,3 +34,18 @@ Then('the score increases', async ({ page }) => {
 Then('an error is shown', async ({ page }) => {
   await expect(page.getByTestId('bee-error')).toBeVisible({ timeout: 10_000 });
 });
+
+When('the player gives up the bee', async ({ page }) => {
+  await page.getByTestId('bee-giveup').click();
+});
+
+Then('the reveal shows missed words including {string}', async ({ page }, word: string) => {
+  const reveal = page.getByTestId('bee-reveal');
+  await expect(reveal).toBeVisible({ timeout: 10_000 });
+  await expect(reveal).toContainText(word);
+});
+
+Then('the reveal shows the count of found words', async ({ page }) => {
+  const reveal = page.getByTestId('bee-reveal');
+  await expect(reveal).toContainText(/You found \d+ of \d+ words/);
+});

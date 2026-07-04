@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { orderItems, placedLabel } from './orderUpItems';
+import { orderItems, placedLabel, revealItems } from './orderUpItems';
 import type { AnswerRecord } from '../../../lib/dataClient';
 
 const mk = (id: string, display: string, orderIndex: number) =>
@@ -40,5 +40,21 @@ describe('orderItems', () => {
 describe('placedLabel', () => {
   it('renders placed-of-total progress', () => {
     expect(placedLabel(2, 5)).toBe('2 of 5 placed');
+  });
+});
+
+describe('revealItems', () => {
+  it('orders items by their correct orderIndex and flags found/missed', () => {
+    const answers = [mk('c', 'Third', 2), mk('a', 'First', 0), mk('b', 'Second', 1)];
+    const items = revealItems(answers, new Set(['a', 'c']));
+    expect(items.map((i) => i.display)).toEqual(['First', 'Second', 'Third']);
+    expect(items[0].found).toBe(true); // First (a) was found
+    expect(items[1].found).toBe(false); // Second (b) missed
+    expect(items[2].found).toBe(true); // Third (c) was found
+  });
+
+  it('defaults missing orderIndex to -1', () => {
+    const items = revealItems([{ id: 'x', display: 'X' } as AnswerRecord], new Set());
+    expect(items[0].orderIndex).toBe(-1);
   });
 });

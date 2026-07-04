@@ -21,3 +21,11 @@ Feature: Play a multiple-choice quiz (pick the correct answer)
     When the player starts the quiz
     And the player picks the option "Sydney"
     Then the score shows "0"
+
+  Scenario: Giving up reveals all correct answers
+    Given the player opens the "Capital Cities" multiple-choice quiz
+    When the player starts the quiz
+    And the player picks the option "Canberra"
+    And the player gives up
+    Then a quiz score summary is shown
+    And the correct answer "Tokyo" is revealed

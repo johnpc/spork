@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import userEvent from '@testing-library/user-event';
 
 const hook = vi.hoisted(() => ({ state: {} as Record<string, unknown> }));
 vi.mock('./useAcrostic', () => ({ useAcrostic: () => hook.state }));
@@ -33,7 +34,9 @@ const base = {
   total: 2,
   complete: false,
   lastWrong: null,
+  gaveUp: false,
   guess: vi.fn(),
+  giveUp: vi.fn(),
   reset: vi.fn(),
 };
 
@@ -63,10 +66,11 @@ describe('Acrostic', () => {
       complete: true,
     };
     renderAcrostic();
-    expect(screen.getByTestId('acrostic-solved')).toHaveTextContent('CI');
-    expect(screen.getByTestId('acrostic-solved')).toHaveAttribute('role', 'status');
-    expect(screen.getByTestId('secret-quote')).toBeInTheDocument();
-    expect(screen.getByTestId('quote-author')).toHaveTextContent('Yoda');
+    expect(screen.getByTestId('acrostic-reveal')).toHaveTextContent('Solved! 🏆');
+    expect(screen.getByTestId('acrostic-reveal')).toHaveTextContent('CI');
+    expect(screen.getByTestId('acrostic-reveal')).toHaveAttribute('role', 'status');
+    expect(screen.getByTestId('reveal-quote')).toBeInTheDocument();
+    expect(screen.getByTestId('reveal-author')).toHaveTextContent('Yoda');
     expect(screen.queryByTestId('clue-list')).not.toBeInTheDocument();
   });
 
@@ -80,5 +84,42 @@ describe('Acrostic', () => {
     hook.state = { ...base, isLoading: true };
     renderAcrostic();
     expect(screen.queryByTestId('acrostic')).not.toBeInTheDocument();
+  });
+
+  it('shows a give-up button when not complete or gave up', () => {
+    hook.state = base;
+    renderAcrostic();
+    expect(screen.getByTestId('acrostic-give-up')).toBeInTheDocument();
+  });
+
+  it('hides the give-up button when complete', () => {
+    hook.state = { ...base, complete: true };
+    renderAcrostic();
+    expect(screen.queryByTestId('acrostic-give-up')).not.toBeInTheDocument();
+  });
+
+  it('calls giveUp when give-up button is clicked', async () => {
+    const user = userEvent.setup();
+    hook.state = base;
+    renderAcrostic();
+    const btn = screen.getByTestId('acrostic-give-up');
+    await user.click(btn);
+    expect(base.giveUp).toHaveBeenCalledOnce();
+  });
+
+  it('shows the reveal screen when gaveUp is true', () => {
+    hook.state = { ...base, gaveUp: true };
+    renderAcrostic();
+    expect(screen.getByTestId('acrostic-reveal')).toBeInTheDocument();
+    expect(screen.queryByTestId('clue-list')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('acrostic-give-up')).not.toBeInTheDocument();
+  });
+
+  it('reveal screen shows all clue answers when gaveUp', () => {
+    hook.state = { ...base, gaveUp: true };
+    renderAcrostic();
+    expect(screen.getByText('CAT')).toBeInTheDocument();
+    expect(screen.getByText('ICE')).toBeInTheDocument();
+    expect(screen.getByTestId('reveal-quote')).toHaveTextContent('Do or do not');
   });
 });

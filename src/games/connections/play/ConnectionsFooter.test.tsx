@@ -1,6 +1,14 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { ConnectionsFooter } from './ConnectionsFooter';
+import type { Group } from './grouping';
+
+const groups: Group[] = [
+  { theme: 'Types of Fruit', words: ['apple', 'banana', 'cherry', 'grape'], level: 0 },
+  { theme: 'Bodies of Water', words: ['ocean', 'lake', 'river', 'sea'], level: 1 },
+  { theme: 'Precious Metals', words: ['gold', 'silver', 'platinum', 'copper'], level: 2 },
+  { theme: 'Card Suits', words: ['hearts', 'diamonds', 'clubs', 'spades'], level: 3 },
+];
 
 const base = {
   won: false,
@@ -11,6 +19,8 @@ const base = {
   canSubmit: false,
   onDeselectAll: vi.fn(),
   onSubmit: vi.fn(),
+  groups,
+  solvedIndices: new Set<number>(),
 };
 
 describe('ConnectionsFooter', () => {
@@ -19,9 +29,23 @@ describe('ConnectionsFooter', () => {
     expect(screen.getByTestId('connections-won')).toBeInTheDocument();
   });
 
-  it('shows the loss banner when lost', () => {
+  it('shows the reveal with all 4 groups when lost', () => {
     render(<ConnectionsFooter {...base} lost done />);
-    expect(screen.getByTestId('connections-lost')).toBeInTheDocument();
+    expect(screen.getByTestId('connections-reveal')).toBeInTheDocument();
+    expect(screen.getByText('Types of Fruit')).toBeInTheDocument();
+    expect(screen.getByText('Bodies of Water')).toBeInTheDocument();
+    expect(screen.getByText('Precious Metals')).toBeInTheDocument();
+    expect(screen.getByText('Card Suits')).toBeInTheDocument();
+  });
+
+  it('does not show the reveal while playing', () => {
+    render(<ConnectionsFooter {...base} />);
+    expect(screen.queryByTestId('connections-reveal')).not.toBeInTheDocument();
+  });
+
+  it('does not show the reveal on win', () => {
+    render(<ConnectionsFooter {...base} won done />);
+    expect(screen.queryByTestId('connections-reveal')).not.toBeInTheDocument();
   });
 
   it('shows the one-away hint and controls while playing', () => {
