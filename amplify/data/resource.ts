@@ -330,6 +330,76 @@ const schema = a.schema({
       allow.group('editors').to(['create', 'update', 'delete']),
     ]),
 
+  // ─── Wordle game ─────────────────────────────────────────────────────────
+  // Guess a hidden N-letter word in `maxGuesses` tries; each guess is scored
+  // per-letter green/yellow/gray. A DISTINCT game, not a quiz mode. The row
+  // carries only the `answer` (lowercase) + board config — the allowed-guess
+  // dictionary is a client-bundled fixture (the same ~thousands of words every
+  // day), so rows stay tiny and daily selection is a deterministic word pick
+  // (no LLM). Guest-only, same read/editor authz as other published content.
+  WordlePuzzle: a
+    .model({
+      answer: a.string().required(), // the solution, normalized lowercase
+      wordLength: a.integer().default(5),
+      maxGuesses: a.integer().default(6),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily word
+    })
+    .secondaryIndexes((index) => [index('puzzleDate')])
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
+  // ─── Connections game ────────────────────────────────────────────────────
+  // Sort 16 words into 4 hidden themed groups of 4; a wrong group of 4 costs a
+  // mistake, 4 mistakes ends it. LLM-generated (like Acrostic/Quizzle): `groups`
+  // is JSON [{ theme, words:[4], level:0-3 }] (level 0=easiest .. 3=trickiest);
+  // the 16 tiles are the flattened, shuffled words. Its own grouping engine — no
+  // quiz machinery. Guest-only, same read/editor authz.
+  ConnectionsPuzzle: a
+    .model({
+      groups: a.string().required(), // JSON [{theme, words:[4], level}] — 4 groups of 4
+      maxMistakes: a.integer().default(4),
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily connections
+    })
+    .secondaryIndexes((index) => [index('puzzleDate')])
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
+  // ─── Spelling Bee game ───────────────────────────────────────────────────
+  // Make as many words (≥4 letters) as you can from 7 letters, each word must
+  // use the required `centerLetter`; a word using all 7 is a pangram. A DISTINCT
+  // game, not a quiz mode. The full valid-word set (`answers`) is computed once
+  // at generation/seed time from the bundled dictionary (no per-guess network),
+  // so the client scores locally. Guest-only, same read/editor authz.
+  SpellingBeePuzzle: a
+    .model({
+      letters: a.string().required(), // the 7 usable letters (normalized lowercase, no order)
+      centerLetter: a.string().required(), // the one letter every word must use
+      answers: a.string().required(), // JSON string[] — every valid word for this board
+      pangrams: a.string(), // JSON string[] — the subset using all 7 letters
+      status: a.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']),
+      publishedAt: a.datetime(),
+      puzzleDate: a.string(), // YYYY-MM-DD — the day this is the daily bee
+    })
+    .secondaryIndexes((index) => [index('puzzleDate')])
+    .authorization((allow) => [
+      allow.guest().to(['read']),
+      allow.authenticated('identityPool').to(['read']),
+      allow.authenticated().to(['read']),
+      allow.group('editors').to(['create', 'update', 'delete']),
+    ]),
+
   // One generation run — the admin dashboard reads these (stoop's SyncRun
   // analogue). Serves every game: `game` says which island, `mode` distinguishes
   // template-backed (e.g. MAP quizzes — synchronous, no LLM) from generative

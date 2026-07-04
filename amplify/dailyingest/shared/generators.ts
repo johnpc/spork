@@ -17,6 +17,9 @@ import { validateAcrostic } from '../../acrosticgen/shared/validateAcrostic';
 import { buildQuizzleRequest } from '../../quizzlegen/shared/quizzlePrompt';
 import { parseQuizzleGen } from '../../quizzlegen/shared/parseQuizzleGen';
 import { validateQuizzle } from '../../quizzlegen/shared/validateQuizzle';
+import { buildConnectionsRequest } from '../../connectionsgen/shared/connectionsPrompt';
+import { parseConnectionsGen } from '../../connectionsgen/shared/parseConnectionsGen';
+import { validateConnections } from '../../connectionsgen/shared/validateConnections';
 
 // Chess is NOT daily-generated: mate puzzles come from the curated Lichess set
 // (chess.js-verified at build time), like the template-backed map — an LLM can't
@@ -62,5 +65,17 @@ export function genQuizzle(invoke: Invoke, topic: string) {
     const body = (await invoke(buildQuizzleRequest({ topic }))) as Body;
     const v = validateQuizzle(parseQuizzleGen(body as Parameters<typeof parseQuizzleGen>[0]));
     return { ok: v.ok, reason: v.reason, value: v.quizzle };
+  });
+}
+
+/** Connections: 16 words in 4 themed groups of 4 (LLM-generated; the validator
+ * verifies 4×4, 16 distinct words, and levels 0–3 before we ever persist it). */
+export function genConnections(invoke: Invoke, topic?: string) {
+  return retryGen('connections', ATTEMPTS, async () => {
+    const body = (await invoke(buildConnectionsRequest({ topic }))) as Body;
+    const v = validateConnections(
+      parseConnectionsGen(body as Parameters<typeof parseConnectionsGen>[0]),
+    );
+    return { ok: v.ok, reason: v.reason, value: v.connections };
   });
 }

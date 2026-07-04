@@ -134,6 +134,9 @@ const ingestTables: Record<string, string> = {
   WORD_LADDER_TABLE: 'WordLadder',
   ACROSTIC_TABLE: 'Acrostic',
   QUIZZLE_TABLE: 'Quizzle',
+  WORDLE_TABLE: 'WordlePuzzle',
+  CONNECTIONS_TABLE: 'ConnectionsPuzzle',
+  SPELLING_BEE_TABLE: 'SpellingBeePuzzle',
   // Chess is not daily-generated (curated Lichess set) — no write grant needed.
 };
 for (const [envName, model] of Object.entries(ingestTables)) {

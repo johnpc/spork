@@ -1,0 +1,39 @@
+.bee-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.bee-list__item {
+  border-radius: var(--sp-radius);
+  overflow: hidden;
+}
+
+.bee-list__link {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  text-decoration: none;
+  color: var(--sp-text);
+  transition: box-shadow 0.2s;
+}
+
+.bee-list__link:hover {
+  box-shadow: var(--sp-shadow-hover);
+}
+
+.bee-list__letters {
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.bee-list__meta {
+  font-size: 0.9rem;
+}

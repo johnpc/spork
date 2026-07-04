@@ -133,6 +133,12 @@ jobs:
             paths: .features-gen/e2e/features/quizzle
           - name: chess
             paths: .features-gen/e2e/features/chess
+          - name: wordle
+            paths: .features-gen/e2e/features/wordle
+          - name: connections
+            paths: .features-gen/e2e/features/connections
+          - name: spellingbee
+            paths: .features-gen/e2e/features/spellingbee
           - name: daily
             paths: .features-gen/e2e/features/daily
           - name: shell

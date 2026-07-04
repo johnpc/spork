@@ -7,6 +7,7 @@ const e = vi.hoisted(() => ({
   genLadder: vi.fn(),
   genAcrostic: vi.fn(),
   genQuizzle: vi.fn(),
+  genConnections: vi.fn(),
 }));
 vi.mock('../deckgen/shared/bedrock', () => ({ invokeText: vi.fn() }));
 vi.mock('../deckgen/shared/ddb', () => ({ putItem: e.putItem }));
@@ -16,6 +17,7 @@ vi.mock('./shared/generators', () => ({
   genLadder: e.genLadder,
   genAcrostic: e.genAcrostic,
   genQuizzle: e.genQuizzle,
+  genConnections: e.genConnections,
 }));
 
 import { handler, summarize } from './handler';
@@ -29,6 +31,9 @@ describe('daily ingest handler', () => {
       'WORD_LADDER_TABLE',
       'ACROSTIC_TABLE',
       'QUIZZLE_TABLE',
+      'CONNECTIONS_TABLE',
+      'WORDLE_TABLE',
+      'SPELLING_BEE_TABLE',
     ])
       process.env[t] = t.toLowerCase();
     e.genQuizAnswers.mockResolvedValue([
@@ -47,6 +52,14 @@ describe('daily ingest handler', () => {
       clues: [{ clue: 'c', answer: 'o' }],
     });
     e.genQuizzle.mockResolvedValue({ topic: 'Geo', questions: [{ q: 1 }] });
+    e.genConnections.mockResolvedValue({
+      groups: [
+        { theme: 't0', words: ['a', 'b', 'c', 'd'], level: 0 },
+        { theme: 't1', words: ['e', 'f', 'g', 'h'], level: 1 },
+        { theme: 't2', words: ['i', 'j', 'k', 'l'], level: 2 },
+        { theme: 't3', words: ['m', 'n', 'o', 'p'], level: 3 },
+      ],
+    });
   });
 
   it('publishes a puzzle for every generative quiz type + each island', async () => {
@@ -54,9 +67,10 @@ describe('daily ingest handler', () => {
     // 5 generative quiz types each write a Quiz row + a batch of Answers.
     expect(e.genQuizAnswers).toHaveBeenCalledTimes(5);
     expect(e.batchPut).toHaveBeenCalledTimes(5);
-    // 5 quiz-row puts + 3 island puts (steps/acrostic/quizzle) = 8 putItem calls
-    // (chess is the curated Lichess set, not daily-generated).
-    expect(e.putItem).toHaveBeenCalledTimes(8);
+    // 5 quiz-row puts + 6 island puts (steps/acrostic/quizzle/connections/wordle/
+    // spellingbee) = 11 putItem calls. Wordle + Spelling Bee rotate a seed pool
+    // (no LLM); chess is the curated Lichess set, not daily-generated.
+    expect(e.putItem).toHaveBeenCalledTimes(11);
     // Everything written is PUBLISHED and stamped with a puzzleDate.
     for (const [, item] of e.putItem.mock.calls) {
       expect(item.status).toBe('PUBLISHED');
@@ -67,8 +81,8 @@ describe('daily ingest handler', () => {
   it('tolerates one game type failing without aborting the rest', async () => {
     e.genQuizzle.mockRejectedValue(new Error('bedrock hiccup'));
     await handler();
-    // Quizzle is skipped (its put never happens) but the other 7 still land.
-    expect(e.putItem).toHaveBeenCalledTimes(7);
+    // Quizzle is skipped (its put never happens) but the other 10 still land.
+    expect(e.putItem).toHaveBeenCalledTimes(10);
     const quizzleWritten = e.putItem.mock.calls.some(([, i]) => i.__typename === 'Quizzle');
     expect(quizzleWritten).toBe(false);
   });
@@ -79,8 +93,11 @@ describe('daily ingest handler', () => {
     e.genLadder.mockRejectedValue(boom);
     e.genAcrostic.mockRejectedValue(boom);
     e.genQuizzle.mockRejectedValue(boom);
+    e.genConnections.mockRejectedValue(boom);
+    // Wordle + Spelling Bee don't call a generator (deterministic seed pool) —
+    // the only way they fail is the write itself, so fail every putItem too.
+    e.putItem.mockRejectedValue(boom);
     await expect(handler()).rejects.toThrow(/produced NOTHING/);
-    expect(e.putItem).not.toHaveBeenCalled();
   });
 });
 

@@ -15,7 +15,7 @@ import { planFor, quizTopicFor } from './shared/dailyPlan';
 import { DAILY_QUIZ_TYPES } from './shared/plan';
 import * as gen from './shared/generators';
 import { quizRows } from './shared/rowBuilders';
-import { wordLadderRow, acrosticRow, quizzleRow } from './shared/islandRows';
+import { runIslands } from './shared/runIslands';
 
 const env = (n: string): string => {
   const v = process.env[n];
@@ -75,19 +75,9 @@ export async function handler(): Promise<void> {
     });
   }
 
-  await run(results, 'steps', async () => {
-    const l = await gen.genLadder(invokeText, plan.ladderLength, plan.difficulty);
-    await putItem(env('WORD_LADDER_TABLE'), wordLadderRow(l, plan.difficulty, { id: id('steps'), date })); // prettier-ignore
-  });
-  await run(results, 'acrostic', async () => {
-    const a = await gen.genAcrostic(invokeText, plan.acrosticWord);
-    await putItem(env('ACROSTIC_TABLE'), acrosticRow(a, plan.difficulty, { id: id('acrostic'), date })); // prettier-ignore
-  });
-  await run(results, 'quizzle', async () => {
-    const q = await gen.genQuizzle(invokeText, plan.quizzleTopic);
-    await putItem(env('QUIZZLE_TABLE'), quizzleRow(q, 1000, { id: id('quizzle'), date }));
-  });
-  // Chess is not daily-generated — it's the curated Lichess mate set (template-
-  // backed, chess.js-verified), so nothing to generate here.
+  // The standalone islands (Steps/Acrostic/Quizzle/Connections + the dictionary-
+  // derived Wordle/Spelling Bee). Chess is not daily-generated — it's the curated
+  // Lichess mate set (template-backed, chess.js-verified).
+  await runIslands((step, fn) => run(results, step, fn), env, id, plan);
   summarize(results, date);
 }

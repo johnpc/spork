@@ -168,6 +168,27 @@ export const OTHER_GAMES: GameDef[] = [
     accent: SLATE,
   },
   {
+    slug: 'wordle',
+    name: 'Wordle',
+    tagline: 'Guess the hidden five-letter word in six tries.',
+    emoji: '🟩',
+    accent: GREEN,
+  },
+  {
+    slug: 'connections',
+    name: 'Connections',
+    tagline: 'Sort sixteen words into four hidden groups.',
+    emoji: '🔗',
+    accent: VIOLET,
+  },
+  {
+    slug: 'spellingbee',
+    name: 'Spelling Bee',
+    tagline: 'Make as many words as you can from seven letters.',
+    emoji: '🐝',
+    accent: AMBER,
+  },
+  {
     slug: 'flashcards',
     name: 'Flashcards',
     tagline: 'Learn anything with a quick study session.',

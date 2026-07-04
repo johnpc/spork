@@ -9,6 +9,9 @@ import { fetchLadders } from '../../steps/play/ladderApi';
 import { fetchAcrostics } from '../../acrostic/play/acrosticApi';
 import { fetchQuizzles } from '../../quizzle/play/quizzleApi';
 import { fetchPuzzles } from '../../chess/play/chessApi';
+import { fetchWordles } from '../../wordle/play/wordleApi';
+import { fetchConnectionsList } from '../../connections/play/connectionsApi';
+import { fetchBees } from '../../spellingbee/play/beeApi';
 import { QUIZ_TYPE_GAMES, OTHER_GAMES } from '../../gameCatalog';
 
 export interface DailyGame {
@@ -53,6 +56,17 @@ const STANDALONE: Record<string, Omit<DailyGame, 'name'>> = {
   },
   quizzle: { fetchList: fetchQuizzles, playPath: (id) => `/quizzle/${id}`, dailyKey: 'quizzle' },
   chess: { fetchList: fetchPuzzles, playPath: (id) => `/chess/${id}`, dailyKey: 'chess' },
+  wordle: { fetchList: fetchWordles, playPath: (id) => `/wordle/${id}`, dailyKey: 'wordle' },
+  connections: {
+    fetchList: fetchConnectionsList,
+    playPath: (id) => `/connections/${id}`,
+    dailyKey: 'connections',
+  },
+  spellingbee: {
+    fetchList: fetchBees,
+    playPath: (id) => `/spellingbee/${id}`,
+    dailyKey: 'spellingbee',
+  },
 };
 
 export const DAILY_GAMES: Record<string, DailyGame> = {};
