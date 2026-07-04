@@ -16,11 +16,13 @@ export interface Slide {
 }
 
 export interface DeckState {
-  /** The current slide to answer (first unfound), or null when the deck is done. */
+  /** The current slide to answer, or null when every slide is found. */
   current: Slide | null;
   /** 1-based position of the current slide within the ordered deck (0 when done). */
   position: number;
   total: number;
+  /** How many slides remain unfound — the modulus a Skip cursor cycles through. */
+  remaining: number;
 }
 
 /** Order the deck stably: by orderIndex when present, then display label. */
@@ -35,12 +37,27 @@ export function orderedSlides(answers: AnswerRecord[]): Slide[] {
     }));
 }
 
-/** Derive the current slide (first unfound) + progress from the found set. */
-export function deckState(answers: AnswerRecord[], found: ReadonlySet<string>): DeckState {
+/** Derive the current slide + progress from the found set and a Skip `cursor`.
+ * The cursor selects WHICH unfound slide to show (cursor mod unfound-count), so
+ * Skip can move past a prompt the player doesn't know WITHOUT scoring it — the
+ * skipped slide stays in the deck and comes around again. Answering removes a
+ * slide from the unfound list, shrinking the ring. */
+export function deckState(
+  answers: AnswerRecord[],
+  found: ReadonlySet<string>,
+  cursor = 0,
+): DeckState {
   const slides = orderedSlides(answers);
-  const idx = slides.findIndex((s) => !found.has(s.id));
-  const current = idx === -1 ? null : slides[idx];
-  return { current, position: idx === -1 ? 0 : idx + 1, total: slides.length };
+  const unfound = slides.filter((s) => !found.has(s.id));
+  if (unfound.length === 0)
+    return { current: null, position: 0, total: slides.length, remaining: 0 };
+  const pick = unfound[((cursor % unfound.length) + unfound.length) % unfound.length];
+  return {
+    current: pick,
+    position: slides.indexOf(pick) + 1,
+    total: slides.length,
+    remaining: unfound.length,
+  };
 }
 
 function sortKey(a: AnswerRecord): string {

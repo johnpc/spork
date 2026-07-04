@@ -21,3 +21,11 @@ Feature: Capitals games (World / US State) via the daily entry
     When the player starts the quiz
     And the player answers the capital prompt correctly
     Then the score shows "1"
+
+  Scenario: Skipping a capital moves to the next prompt without scoring
+    Given a visitor opens the "world-capitals" daily game
+    Then a slideshow quiz is shown
+    When the player starts the quiz
+    And the player skips the current prompt
+    Then a different prompt is shown
+    And the score shows "0"

@@ -42,3 +42,15 @@
 .slideshow__cleared {
   color: var(--sp-correct);
 }
+
+/* Skip: move past a prompt you don't know without scoring it — the slide comes
+   around again. Understated, matching the Give-up affordance. */
+.slideshow__skip {
+  align-self: center;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  color: var(--sp-text-muted);
+  background: transparent;
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+}
