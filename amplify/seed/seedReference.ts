@@ -16,6 +16,9 @@ export async function clearAll(): Promise<void> {
   await clearOneModel(client.models.Acrostic);
   await clearOneModel(client.models.Quizzle);
   await clearOneModel(client.models.ChessAttack);
+  await clearOneModel(client.models.WordlePuzzle);
+  await clearOneModel(client.models.ConnectionsPuzzle);
+  await clearOneModel(client.models.SpellingBeePuzzle);
   await clearOneModel(client.models.Category);
 }
 
