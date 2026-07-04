@@ -17,13 +17,13 @@ describe('DAILY_GAMES', () => {
     expect(DAILY_GAMES.chess.dailyKey).toBe('chess');
   });
 
-  it('names each game for the recap and covers 11 quiz types + 4 islands', () => {
+  it('names each game for the recap and covers 12 quiz types + 4 islands', () => {
     expect(DAILY_GAMES.chess.name).toBe('Chess Attack');
     expect(DAILY_GAMES.worldle.name).toBe('Worldle');
     expect(DAILY_GAMES['state-capitals'].name).toBe('State Capitals');
-    // 11 quiz types (incl. World/State Capitals) + steps/acrostic/quizzle/chess
+    // 12 quiz types (incl. capitals + find-the-state) + steps/acrostic/quizzle/chess
     // (Flashcards isn't daily-gated).
-    expect(Object.keys(DAILY_GAMES)).toHaveLength(15);
+    expect(Object.keys(DAILY_GAMES)).toHaveLength(16);
   });
 
   it('gives topic-filtered games a topic-scoped daily key (distinct from plain Slideshow)', () => {

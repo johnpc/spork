@@ -6,6 +6,7 @@ import { matchAnswer } from './matchAnswer';
 import { useCountdown } from './useCountdown';
 import { applyAttempt, type ScoringMode } from './scoringModes';
 import { dailyRegionAnswers, dailyRegionLabel } from './dailyRegion';
+import { parseRenderConfig } from './mapTopology';
 import { useRecordBestScore } from './useRecordBestScore';
 
 type Status = 'idle' | 'running' | 'done';
@@ -27,6 +28,8 @@ export function usePlay(quizId: string | undefined) {
   const allAnswers = useMemo(() => data?.answers ?? [], [data]);
   const answers = useMemo(() => dailyRegionAnswers(quiz?.mode, allAnswers, new Date()), [quiz?.mode, allAnswers]); // prettier-ignore
   const regionLabel = useMemo(() => dailyRegionLabel(quiz?.mode, new Date()), [quiz?.mode]);
+  // Map view config (topology/projection) is stored as a JSON string on the quiz.
+  const renderConfig = useMemo(() => parseRenderConfig(quiz?.renderConfig), [quiz?.renderConfig]);
   const total = answers.length;
   const limit = quiz?.timeLimitSeconds ?? 300;
   const scoring = (quiz?.scoringMode ?? 'MEMBERSHIP') as ScoringMode;
@@ -75,6 +78,7 @@ export function usePlay(quizId: string | undefined) {
     refetch,
     status,
     regionLabel,
+    renderConfig,
     found,
     submit,
     attempt,

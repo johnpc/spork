@@ -13,6 +13,7 @@ import { sortableQuiz } from './sortable';
 import { orderUpQuiz } from './orderUp';
 import { stateCapitalsQuiz } from './stateCapitals';
 import { worldCapitalsQuiz } from './worldCapitals';
+import { findStateQuiz } from './findState';
 
 export const SEED_QUIZZES: QuizFixture[] = [
   worldCountriesQuiz,
@@ -26,4 +27,5 @@ export const SEED_QUIZZES: QuizFixture[] = [
   orderUpQuiz,
   stateCapitalsQuiz,
   worldCapitalsQuiz,
+  findStateQuiz,
 ];

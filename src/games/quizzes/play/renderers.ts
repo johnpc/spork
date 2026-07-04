@@ -34,6 +34,9 @@ export interface RendererProps {
   /** 'idle' | 'running' | 'done' — renderers reveal all answers when 'done'.
    * Optional so simple renderers + tests can omit it (defaults to 'running'). */
   status?: 'idle' | 'running' | 'done';
+  /** Map renderers read `{ topology, projection }` from here to pick which atlas
+   * to draw (world countries vs. US states). Optional; defaults to the world. */
+  renderConfig?: { topology?: string; projection?: string } | null;
 }
 
 export type QuizMode =

@@ -26,8 +26,8 @@ describe('Home', () => {
       </MemoryRouter>,
     );
     expect(screen.getByTestId('home-games')).toBeInTheDocument();
-    // One card per catalog entry (11 quiz types incl. World/State Capitals + 5 islands = 16).
-    expect(ALL_GAMES.length).toBe(16);
+    // One card per catalog entry (12 quiz types + 5 islands = 17).
+    expect(ALL_GAMES.length).toBe(17);
     // Quiz types route to their /daily/<slug>; each is its own daily game.
     expect(screen.getByTestId('game-worldle')).toHaveAttribute('href', '/daily/worldle');
     expect(screen.getByTestId('game-in-order')).toHaveAttribute('href', '/daily/in-order');
@@ -40,8 +40,8 @@ describe('Home', () => {
 
   it('shows a fresh-day progress tally with nothing done', () => {
     renderHome();
-    // 11 quiz types + 4 daily islands (Flashcards is non-daily) = 15 daily games.
-    expect(screen.getByTestId('home-progress')).toHaveTextContent('Today: 0/15 done');
+    // 12 quiz types + 4 daily islands (Flashcards is non-daily) = 16 daily games.
+    expect(screen.getByTestId('home-progress')).toHaveTextContent('Today: 0/16 done');
   });
 
   it('badges a finished game and counts it in the tally', () => {
@@ -49,7 +49,7 @@ describe('Home', () => {
     window.localStorage.setItem(key, JSON.stringify({ score: 4, total: 6 }));
     renderHome();
     expect(screen.getByTestId('game-worldle-done')).toHaveTextContent('✅ 4/6');
-    expect(screen.getByTestId('home-progress')).toHaveTextContent('Today: 1/15 done');
+    expect(screen.getByTestId('home-progress')).toHaveTextContent('Today: 1/16 done');
     // A game not yet played shows no badge.
     expect(screen.queryByTestId('game-steps-done')).not.toBeInTheDocument();
   });

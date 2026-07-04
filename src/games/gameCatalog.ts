@@ -126,6 +126,15 @@ export const QUIZ_TYPE_GAMES: GameDef[] = [
     quizMode: 'SLIDESHOW',
     topicFilter: 'US State Capitals',
   },
+  {
+    slug: 'find-the-state',
+    name: 'Find the State',
+    tagline: 'Click each US state on the map.',
+    emoji: '🇺🇸',
+    accent: ROSE,
+    quizMode: 'CLICKABLE',
+    topicFilter: 'Find the US State',
+  },
 ];
 
 /** The standalone game islands + Flashcards. */

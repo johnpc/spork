@@ -53,6 +53,10 @@
     <changefreq>daily</changefreq>
   </url>
   <url>
+    <loc>https://spork.jpc.io/daily/find-the-state</loc>
+    <changefreq>daily</changefreq>
+  </url>
+  <url>
     <loc>https://spork.jpc.io/daily/steps</loc>
     <changefreq>daily</changefreq>
   </url>

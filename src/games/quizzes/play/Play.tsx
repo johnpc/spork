@@ -21,9 +21,8 @@ import { dailyKeyForMode } from './dailyKey';
 import { LoadState } from '../../../features/shell/LoadState';
 import './play.css';
 
-/** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
- * (timer + found set + score), shows the mode-shared HUD, and keys the daily
- * result per mode. Typed modes use PlayInput; others answer via `attempt`. */
+/** Quiz play screen: picks the renderer by quiz.mode, runs the shared engine
+ * (timer/found/score), shows the HUD, keys the daily result per mode. */
 export function Play() {
   const { id } = useParams<{ id: string }>();
   const p = usePlay(id);
@@ -78,6 +77,7 @@ export function Play() {
                   found={p.found}
                   attempt={p.attempt}
                   status={p.status}
+                  renderConfig={p.renderConfig}
                 />
               </Suspense>
               <PlayControls

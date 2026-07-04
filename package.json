@@ -12,6 +12,7 @@
     "e2e-config": "ampx generate outputs --stack amplify-spork-xss-sandbox-08f8a387ed --profile personal",
     "gen:map-template": "tsx scripts/genMapTemplate.ts",
     "gen:continents": "tsx scripts/genContinents.ts",
+    "gen:state-map": "tsx scripts/genStateMap.ts",
     "gen:quiz-fixtures": "tsx scripts/genQuizFixtures.ts",
     "gen:icons": "node scripts/gen-app-icons.mjs",
     "gen:sitemap": "node scripts/gen-sitemap.mjs",
@@ -77,6 +78,7 @@
     "react-router-dom": "^5.3.4",
     "react-simple-maps": "^3.0.0",
     "sharp": "^0.33.5",
+    "us-atlas": "^3.0.1",
     "world-atlas": "^2.0.2"
   },
   "overrides": {

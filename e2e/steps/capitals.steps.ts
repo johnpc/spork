@@ -35,6 +35,15 @@ Then('a slideshow quiz is shown', async ({ page }) => {
   await expect(page.getByTestId('slideshow')).toBeVisible({ timeout: 15_000 });
 });
 
+Then('the clickable US map is shown', async ({ page }) => {
+  await expect(page).toHaveURL(/\/quizzes\/[^/]+\/play$/, { timeout: 15_000 });
+  await expect(page.getByTestId('clickable-grid')).toBeVisible({ timeout: 15_000 });
+  // The US map (states-10m) has ~56 region paths — enough to confirm it drew.
+  await expect
+    .poll(async () => page.locator('.clickable-map__map path').count(), { timeout: 10_000 })
+    .toBeGreaterThan(40);
+});
+
 /** Read the current slide's prompt (a state or country), look up its capital,
  * and type it — asserting on REAL seeded data, not a hardcoded answer. */
 When('the player answers the capital prompt correctly', async ({ page }) => {
