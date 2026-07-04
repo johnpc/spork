@@ -10,6 +10,7 @@ import {
 import { Redirect, useParams } from 'react-router-dom';
 import { useChessAttack } from './useChessAttack';
 import { ChessBoard } from './ChessBoard';
+import { ChessSolution } from './ChessSolution';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
 import { useDailyGuard } from '../../shared/daily/useDailyGuard';
@@ -75,10 +76,14 @@ export function ChessAttack() {
                   Tap your piece, then its destination.
                 </p>
               )}
-              {!c.solved && (
+              <ChessSolution line={c.line} gaveUp={c.gaveUp} />
+              {!c.solved && !c.gaveUp && (
                 <div className="chess__actions">
                   <button data-testid="chess-reset" onClick={c.reset} disabled={c.moves === 0}>
                     Reset
+                  </button>
+                  <button data-testid="chess-give-up" onClick={c.giveUp}>
+                    Give up
                   </button>
                 </div>
               )}

@@ -37,3 +37,36 @@ Then('the mistakes count increases', async ({ page }) => {
 Then('no solved group is shown', async ({ page }) => {
   await expect(page.getByTestId('connections-solved')).toHaveCount(0);
 });
+
+When('the player makes 4 wrong guesses', async ({ page }) => {
+  // Make 4 mistakes by selecting 4 words that span different groups (guaranteed wrong).
+  // We know the seeded puzzle has fruit/water/metals/suits groups.
+  const wrongSets = [
+    ['apple', 'ocean', 'gold', 'hearts'],
+    ['banana', 'lake', 'silver', 'diamonds'],
+    ['cherry', 'river', 'platinum', 'clubs'],
+    ['grape', 'sea', 'copper', 'spades'],
+  ];
+  for (const words of wrongSets) {
+    for (const word of words) {
+      await page.getByTestId('connections-tile').filter({ hasText: word }).click();
+    }
+    await page.getByTestId('connections-submit').click();
+    await page.waitForTimeout(300); // brief pause between submissions
+  }
+});
+
+Then('the reveal shows all 4 groups', async ({ page }) => {
+  const reveal = page.getByTestId('connections-reveal');
+  await expect(reveal).toBeVisible({ timeout: 10_000 });
+  // The reveal should show all 4 solved group blocks (one per group)
+  await expect(reveal.locator('.connections-grid__solved')).toHaveCount(4);
+});
+
+Then('the reveal includes the theme {string}', async ({ page }, theme: string) => {
+  await expect(page.getByTestId('connections-reveal').getByText(theme)).toBeVisible();
+});
+
+Then('the reveal includes the words {string}', async ({ page }, words: string) => {
+  await expect(page.getByTestId('connections-reveal').getByText(words)).toBeVisible();
+});

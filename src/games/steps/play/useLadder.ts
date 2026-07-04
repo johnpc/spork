@@ -25,6 +25,7 @@ export function useLadder(id: string | undefined) {
   const start = (ladder?.start ?? '').toLowerCase();
   const target = (ladder?.target ?? '').toLowerCase();
   const par = useMemo(() => parMoves(parseWordList(ladder?.parPath)), [ladder]);
+  const parPath = useMemo(() => parseWordList(ladder?.parPath), [ladder]);
 
   const [path, setPath] = useState<string[]>([]);
   // The ladder always begins at `start`; the path holds the words added since.
@@ -34,10 +35,11 @@ export function useLadder(id: string | undefined) {
   const solved = !!target && isSolved(current, target);
 
   const [lastError, setLastError] = useState<StepCheck['reason'] | null>(null);
+  const [gaveUp, setGaveUp] = useState(false);
 
   const submit = useCallback(
     (word: string): boolean => {
-      if (solved) return false;
+      if (solved || gaveUp) return false;
       const next = word.trim().toLowerCase();
       const check = checkStep(current, next, dictionary, used);
       if (!check.ok) {
@@ -48,7 +50,7 @@ export function useLadder(id: string | undefined) {
       setPath((p) => [...p, next]);
       return true;
     },
-    [solved, current, dictionary, used],
+    [solved, gaveUp, current, dictionary, used],
   );
 
   const undo = useCallback(() => {
@@ -59,6 +61,10 @@ export function useLadder(id: string | undefined) {
     setLastError(null);
     setPath([]);
   }, []);
+  const giveUp = useCallback(() => {
+    setGaveUp(true);
+    setLastError(null);
+  }, []);
 
   return {
     ladder: ladder ?? null,
@@ -68,13 +74,16 @@ export function useLadder(id: string | undefined) {
     start,
     target,
     par,
+    parPath,
     path: full,
     current,
     moves: path.length,
     solved,
+    gaveUp,
     lastError,
     submit,
     undo,
     reset,
+    giveUp,
   };
 }

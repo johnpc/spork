@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import type { RendererProps } from './renderers';
 import { parseOptions, currentQuestion } from './mcQuestion';
 import { useMcPick } from './useMcPick';
+import { mcRevealQuestions } from './mcReveal';
 import './mcQuestion.css';
 
 /**
@@ -10,17 +11,34 @@ import './mcQuestion.css';
  * green (correct) or red (wrong, try again); a correct pick scores via
  * attempt(id) and advances. The first click auto-starts the game (usePlay).
  */
-export function MultipleChoice({ answers, found, attempt }: RendererProps) {
+export function MultipleChoice({ answers, found, attempt, status }: RendererProps) {
   const question = useMemo(() => currentQuestion(answers, found), [answers, found]);
   const options = useMemo(() => (question ? parseOptions(question.options) : []), [question]);
   const { picked, choose, optionState } = useMcPick(question, attempt);
+  const done = status === 'done';
+  const revealQuestions = useMemo(() => mcRevealQuestions(answers, found), [answers, found]);
 
-  if (!question) {
+  if (!question || done) {
     return (
       <div className="mc" data-testid="multiple-choice">
-        <p className="sp-muted" data-testid="mc-complete">
-          All questions answered!
-        </p>
+        {done && (
+          <div className="mc__reveal" data-testid="mc-reveal">
+            {revealQuestions.map((q) => (
+              <div
+                key={q.id}
+                className={q.found ? 'mc__reveal-item' : 'mc__reveal-item mc__reveal-item--missed'}
+              >
+                <p className="mc__reveal-prompt">{q.promptValue}</p>
+                <p className="mc__reveal-answer">{q.correctAnswer}</p>
+              </div>
+            ))}
+          </div>
+        )}
+        {!done && (
+          <p className="sp-muted" data-testid="mc-complete">
+            All questions answered!
+          </p>
+        )}
       </div>
     );
   }

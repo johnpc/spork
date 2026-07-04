@@ -20,3 +20,10 @@ Feature: Steps — word ladder
     When the player enters the word "dog"
     Then a step error is shown
     And the ladder is not solved
+
+  Scenario: A guest gives up and sees the solution
+    Given the player opens the "CAT → DOG" ladder
+    When the player gives up the ladder
+    Then the solution is shown
+    And the solution includes "COT"
+    And further input is blocked

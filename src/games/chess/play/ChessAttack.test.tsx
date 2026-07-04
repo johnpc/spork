@@ -28,8 +28,11 @@ const base = {
   wrong: false,
   moves: 0,
   total: 2,
+  gaveUp: false,
+  line: ['a1a8', 'g8h7', 'a8h8'],
   tap: vi.fn(),
   reset: vi.fn(),
+  giveUp: vi.fn(),
 };
 
 describe('ChessAttack', () => {
@@ -71,5 +74,35 @@ describe('ChessAttack', () => {
     hook.state = { ...base, isLoading: true, solved: false };
     renderPage();
     expect(screen.getByTestId('load-loading')).toBeInTheDocument();
+  });
+
+  it('shows the give-up button while unsolved', () => {
+    hook.state = { ...base, solved: false };
+    renderPage();
+    expect(screen.getByTestId('chess-give-up')).toBeInTheDocument();
+  });
+
+  it('hides the give-up button when solved', () => {
+    hook.state = { ...base, solved: true };
+    renderPage();
+    expect(screen.queryByTestId('chess-give-up')).not.toBeInTheDocument();
+  });
+
+  it('hides the give-up button after giving up', () => {
+    hook.state = { ...base, solved: false, gaveUp: true };
+    renderPage();
+    expect(screen.queryByTestId('chess-give-up')).not.toBeInTheDocument();
+  });
+
+  it('shows the solution when gave up', () => {
+    hook.state = { ...base, solved: false, gaveUp: true };
+    renderPage();
+    expect(screen.getByTestId('chess-solution')).toBeInTheDocument();
+  });
+
+  it('does not show the solution before giving up', () => {
+    hook.state = { ...base, solved: false, gaveUp: false };
+    renderPage();
+    expect(screen.queryByTestId('chess-solution')).not.toBeInTheDocument();
   });
 });

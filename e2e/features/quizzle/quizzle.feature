@@ -15,3 +15,11 @@ Feature: Quizzle — wager pub-quiz
     And the player answers "Nile"
     Then the answer is marked correct
     And the bank shows "1500"
+
+  Scenario: A wrong answer reveals the correct answer
+    Given the player opens the "World Geography" quizzle
+    When the player starts the quizzle
+    And the player wagers "100"
+    And the player answers "Amazon"
+    Then the quizzle reveals the answer "Nile"
+    And the bank shows "900"

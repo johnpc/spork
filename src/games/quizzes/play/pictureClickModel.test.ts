@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { currentTarget, promptText, hotspotRole, hotspotClass } from './pictureClickModel';
+import {
+  currentTarget,
+  promptText,
+  hotspotRole,
+  hotspotClass,
+  revealRole,
+  revealClass,
+} from './pictureClickModel';
 import type { AnswerRecord } from '../../../lib/dataClient';
 
 const mk = (id: string, over: Partial<AnswerRecord> = {}): AnswerRecord =>
@@ -63,5 +70,19 @@ describe('hotspotClass', () => {
     expect(hotspotClass('found')).toBe('pc-hotspot pc-hotspot--found');
     expect(hotspotClass('target')).toBe('pc-hotspot pc-hotspot--target');
     expect(hotspotClass('idle')).toBe('pc-hotspot pc-hotspot--idle');
+  });
+});
+
+describe('revealRole', () => {
+  it('flags a hotspot as found or missed', () => {
+    expect(revealRole(mk('nw'), new Set(['nw']))).toBe('found');
+    expect(revealRole(mk('ne'), new Set(['nw']))).toBe('missed');
+  });
+});
+
+describe('revealClass', () => {
+  it('composes the reveal class with found/missed modifier', () => {
+    expect(revealClass('found')).toBe('pc-hotspot pc-hotspot--reveal pc-hotspot--reveal-found');
+    expect(revealClass('missed')).toBe('pc-hotspot pc-hotspot--reveal pc-hotspot--reveal-missed');
   });
 });

@@ -77,4 +77,25 @@ describe('PictureClick', () => {
     );
     expect(screen.getByTestId('pc-prompt')).toHaveTextContent('All regions found!');
   });
+
+  it('reveals all hotspot labels when status is done', () => {
+    render(
+      <PictureClick
+        answers={answers}
+        found={new Set(['nw', 'sw'])}
+        attempt={() => false}
+        status="done"
+      />,
+    );
+    expect(screen.getByTestId('pictureclick-reveal')).toBeInTheDocument();
+    expect(screen.getByTestId('pc-prompt')).toHaveTextContent('All regions:');
+    // All labels shown (found + missed).
+    expect(screen.getByText('NW')).toBeInTheDocument();
+    expect(screen.getByText('NE')).toBeInTheDocument();
+    expect(screen.getByText('SW')).toBeInTheDocument();
+    expect(screen.getByText('SE')).toBeInTheDocument();
+    // Found hotspots keep pc-found testid; missed get pc-revealed.
+    expect(screen.getAllByTestId('pc-found')).toHaveLength(2);
+    expect(screen.getAllByTestId('pc-revealed')).toHaveLength(2);
+  });
 });

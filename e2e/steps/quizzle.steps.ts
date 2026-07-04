@@ -40,3 +40,9 @@ Then('the answer is marked correct', async ({ page }) => {
 Then('the bank shows {string}', async ({ page }, amount: string) => {
   await expect(page.getByTestId('quizzle-bank')).toContainText(amount, { timeout: 10_000 });
 });
+
+Then('the quizzle reveals the answer {string}', async ({ page }, answer: string) => {
+  await expect(page.getByTestId('quizzle-result')).toContainText(`the answer was ${answer}`, {
+    timeout: 10_000,
+  });
+});

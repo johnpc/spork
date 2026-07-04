@@ -21,12 +21,18 @@ export function SpellingBee() {
   const { id } = useParams<{ id: string }>();
   const b = useSpellingBee(id);
   const [lastResult, setLastResult] = React.useState<{ ok: boolean; reason: string } | null>(null);
-  useRecordDailyOnDone('spellingbee', b.done, { score: b.score, total: b.answers.length });
+  const [gaveUp, setGaveUp] = React.useState(false);
+  const done = b.done || gaveUp;
+  useRecordDailyOnDone('spellingbee', done, { score: b.score, total: b.answers.length });
   const recap = useDailyGuard('spellingbee');
-  if (b.bee && recap && !b.done) return <Redirect to={recap} />;
+  if (b.bee && recap && !done) return <Redirect to={recap} />;
 
   const handleSubmit = () => {
     setLastResult(b.submit());
+  };
+
+  const handleGiveUp = () => {
+    setGaveUp(true);
   };
 
   return (
@@ -54,11 +60,13 @@ export function SpellingBee() {
               centerLetter={b.centerLetter}
               outerOrder={b.outerOrder}
               pangrams={b.pangrams}
+              answers={b.answers}
               lastResult={lastResult}
               onType={b.type}
               onBackspace={b.backspace}
               onShuffle={b.shuffleOuter}
               onSubmit={handleSubmit}
+              onGiveUp={handleGiveUp}
             />
           )}
         </LoadState>

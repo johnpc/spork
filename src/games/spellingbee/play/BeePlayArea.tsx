@@ -1,5 +1,7 @@
 /** Play area sub-component: input, feedback, hive, actions, found list. */
+import { useState } from 'react';
 import { Hive } from './Hive';
+import { BeeReveal } from './BeeReveal';
 
 const ERRORS: Record<string, string> = {
   'too-short': 'Too short (need 4+ letters).',
@@ -17,14 +19,23 @@ interface BeePlayAreaProps {
   centerLetter: string;
   outerOrder: string[];
   pangrams: string[];
+  answers: string[];
   lastResult: { ok: boolean; reason: string } | null;
   onType: (letter: string) => void;
   onBackspace: () => void;
   onShuffle: () => void;
   onSubmit: () => void;
+  onGiveUp: () => void;
 }
 
 export function BeePlayArea(p: BeePlayAreaProps) {
+  const [revealed, setRevealed] = useState(false);
+
+  const handleGiveUp = () => {
+    setRevealed(true);
+    p.onGiveUp();
+  };
+
   return (
     <div className="spelling-bee" data-testid="spelling-bee">
       <div className="spelling-bee__header">
@@ -35,31 +46,43 @@ export function BeePlayArea(p: BeePlayAreaProps) {
           Score: {p.score}
         </p>
       </div>
-      <div className="spelling-bee__input-display" data-testid="bee-input">
-        {p.current.toUpperCase() || ' '}
-      </div>
-      {p.lastResult && !p.lastResult.ok && (
-        <p className="spelling-bee__error" data-testid="bee-error" role="alert">
-          {ERRORS[p.lastResult.reason] ?? 'Invalid.'}
-        </p>
+      {!revealed && (
+        <>
+          <div className="spelling-bee__input-display" data-testid="bee-input">
+            {p.current.toUpperCase() || ' '}
+          </div>
+          {p.lastResult && !p.lastResult.ok && (
+            <p className="spelling-bee__error" data-testid="bee-error" role="alert">
+              {ERRORS[p.lastResult.reason] ?? 'Invalid.'}
+            </p>
+          )}
+          {p.lastResult && p.lastResult.ok && (
+            <p className="spelling-bee__success" data-testid="bee-success" role="status">
+              Nice!
+            </p>
+          )}
+          <Hive
+            centerLetter={p.centerLetter}
+            outerLetters={p.outerOrder}
+            onLetterClick={p.onType}
+          />
+          <div className="spelling-bee__actions">
+            <button data-testid="bee-delete" onClick={p.onBackspace} disabled={!p.current}>
+              Delete
+            </button>
+            <button data-testid="bee-shuffle" onClick={p.onShuffle}>
+              Shuffle
+            </button>
+            <button data-testid="bee-enter" onClick={p.onSubmit} disabled={!p.current}>
+              Enter
+            </button>
+            <button data-testid="bee-giveup" onClick={handleGiveUp}>
+              Give up
+            </button>
+          </div>
+        </>
       )}
-      {p.lastResult && p.lastResult.ok && (
-        <p className="spelling-bee__success" data-testid="bee-success" role="status">
-          Nice!
-        </p>
-      )}
-      <Hive centerLetter={p.centerLetter} outerLetters={p.outerOrder} onLetterClick={p.onType} />
-      <div className="spelling-bee__actions">
-        <button data-testid="bee-delete" onClick={p.onBackspace} disabled={!p.current}>
-          Delete
-        </button>
-        <button data-testid="bee-shuffle" onClick={p.onShuffle}>
-          Shuffle
-        </button>
-        <button data-testid="bee-enter" onClick={p.onSubmit} disabled={!p.current}>
-          Enter
-        </button>
-      </div>
+      {revealed && <BeeReveal answers={p.answers} found={p.found} pangrams={p.pangrams} />}
       <ul className="spelling-bee__found" data-testid="bee-found-list">
         {p.found.map((w, i) => (
           <li key={i} data-testid="bee-found-word">

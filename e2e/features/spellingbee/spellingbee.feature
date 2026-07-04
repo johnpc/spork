@@ -19,3 +19,11 @@ Feature: Spelling Bee — word puzzle
     When the player types the word "bad"
     And the player submits the word
     Then an error is shown
+
+  Scenario: Giving up reveals missed words
+    Given the player opens the first Spelling Bee puzzle
+    When the player types the word "abode"
+    And the player submits the word
+    And the player gives up the bee
+    Then the reveal shows missed words including "ABODED"
+    And the reveal shows the count of found words

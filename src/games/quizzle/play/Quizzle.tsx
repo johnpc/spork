@@ -11,6 +11,7 @@ import { Redirect, useParams } from 'react-router-dom';
 import { useQuizzle } from './useQuizzle';
 import { QuizzleRound } from './QuizzleRound';
 import { QuizzleDone } from './QuizzleDone';
+import { QuizzleLobby } from './QuizzleLobby';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
 import { useDailyGuard } from '../../shared/daily/useDailyGuard';
@@ -54,23 +55,19 @@ export function Quizzle() {
                 Bank: <strong>{q.bank}</strong>
               </p>
               {!q.started ? (
-                <div className="quizzle__lobby">
-                  <p className="quizzle__how">
-                    Wager part of your bank on each of {q.total} questions. Answer right and your
-                    stake is <strong>added</strong>; wrong and it&rsquo;s <strong>lost</strong>. Bet
-                    big when you&rsquo;re sure.
-                  </p>
-                  {q.best != null && (
-                    <p className="sp-muted" data-testid="quizzle-best">
-                      Your best bank: {q.best}
-                    </p>
-                  )}
-                  <button className="quizzle__btn" data-testid="quizzle-start" onClick={q.start}>
-                    Start · bank {q.startingBank}
-                  </button>
-                </div>
+                <QuizzleLobby
+                  total={q.total}
+                  startingBank={q.startingBank}
+                  best={q.best}
+                  onStart={q.start}
+                />
               ) : q.done ? (
-                <QuizzleDone bank={q.bank} startingBank={q.startingBank} best={q.best} />
+                <QuizzleDone
+                  bank={q.bank}
+                  startingBank={q.startingBank}
+                  best={q.best}
+                  questions={q.questions}
+                />
               ) : q.question ? (
                 <>
                   <p className="sp-muted quizzle__progress">

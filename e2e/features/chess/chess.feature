@@ -21,3 +21,8 @@ Feature: Chess Attack — mate-in-N puzzle
     And the player taps square "d4"
     Then a try-again message is shown
     And the puzzle is not solved
+
+  Scenario: A guest gives up and the solution is revealed
+    Given the player opens the "Forced Mate (mate in 1)" puzzle
+    When the player gives up the chess puzzle
+    Then the solution is shown with move "d6-h2"

@@ -26,6 +26,7 @@ export function useAcrostic(id: string | undefined) {
 
   const [solved, setSolved] = useState<ReadonlySet<number>>(new Set());
   const [lastWrong, setLastWrong] = useState<number | null>(null);
+  const [gaveUp, setGaveUp] = useState(false);
 
   const complete = isComplete(solved, clues.length);
   const slots = useMemo(() => wordSlots(clues, solved), [clues, solved]);
@@ -33,6 +34,7 @@ export function useAcrostic(id: string | undefined) {
 
   const guess = useCallback(
     (index: number, text: string, flagWrong = true): boolean => {
+      if (gaveUp) return false;
       const answer = clues[index]?.answer;
       if (answer === undefined || solved.has(index)) return false;
       if (!matchesAnswer(text, answer)) {
@@ -45,12 +47,15 @@ export function useAcrostic(id: string | undefined) {
       setSolved((s) => new Set(s).add(index));
       return true;
     },
-    [clues, solved],
+    [clues, solved, gaveUp],
   );
+
+  const giveUp = useCallback(() => setGaveUp(true), []);
 
   const reset = useCallback(() => {
     setLastWrong(null);
     setSolved(new Set());
+    setGaveUp(false);
   }, []);
 
   return {
@@ -68,7 +73,9 @@ export function useAcrostic(id: string | undefined) {
     total: clues.length,
     complete,
     lastWrong,
+    gaveUp,
     guess,
+    giveUp,
     reset,
   };
 }

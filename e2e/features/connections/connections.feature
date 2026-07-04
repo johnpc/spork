@@ -19,3 +19,10 @@ Feature: Connections — group words by theme
     And the player submits the selection
     Then the mistakes count increases
     And no solved group is shown
+
+  Scenario: Losing the game reveals all 4 groups
+    Given the player opens a Connections puzzle
+    When the player makes 4 wrong guesses
+    Then the reveal shows all 4 groups
+    And the reveal includes the theme "Types of Fruit"
+    And the reveal includes the words "apple, banana, cherry, grape"

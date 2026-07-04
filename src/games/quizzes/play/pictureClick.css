@@ -54,3 +54,26 @@
 .pc-hotspot__label {
   font-size: 0.95rem;
 }
+
+/* Reveal mode: show all hotspot labels when the game ends. */
+.pc-hotspot--reveal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  font-weight: 600;
+}
+
+.pc-hotspot--reveal-found {
+  border-color: var(--sp-correct);
+  background: var(--sp-correct);
+  color: var(--sp-accent-contrast);
+}
+
+.pc-hotspot--reveal-missed {
+  border-color: var(--sp-muted);
+  background: var(--sp-accent-soft);
+  color: var(--sp-muted);
+  opacity: 0.7;
+}

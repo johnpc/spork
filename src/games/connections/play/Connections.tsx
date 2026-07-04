@@ -70,6 +70,8 @@ export function Connections() {
                 canSubmit={c.selected.length === 4}
                 onDeselectAll={c.deselectAll}
                 onSubmit={c.submit}
+                groups={c.groups}
+                solvedIndices={c.solvedIndices}
               />
             </div>
           )}

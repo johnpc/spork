@@ -165,3 +165,87 @@
   font-size: 1.15rem;
   text-align: center;
 }
+
+/* Reveal screen — give-up or solved. Calm, informative presentation. */
+.acrostic-reveal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-gap);
+}
+
+.acrostic-reveal__header {
+  color: var(--sp-text-muted);
+  font-size: 1.15rem;
+  text-align: center;
+}
+
+.acrostic-reveal__answers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.acrostic-reveal__heading {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--sp-text);
+}
+
+.acrostic-reveal__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.acrostic-reveal__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0.9rem;
+  border-radius: var(--sp-radius-sm);
+  background: var(--sp-surface);
+  border: 1px solid var(--sp-border);
+  gap: 1rem;
+}
+
+.acrostic-reveal__item--solved {
+  border-color: var(--sp-correct);
+  background: color-mix(in srgb, var(--sp-correct) 5%, var(--sp-surface));
+}
+
+.acrostic-reveal__clue {
+  flex: 1;
+  font-size: 0.95rem;
+  color: var(--sp-text);
+}
+
+.acrostic-reveal__answer {
+  flex: 0 0 auto;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--sp-correct);
+}
+
+.acrostic__give-up-btn {
+  align-self: center;
+  padding: 0.7rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--sp-text-muted);
+  background: var(--sp-surface);
+  border: 2px solid var(--sp-border);
+  border-radius: var(--sp-radius);
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.acrostic__give-up-btn:hover {
+  background: var(--sp-bg);
+  border-color: var(--sp-text-muted);
+}

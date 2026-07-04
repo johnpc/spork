@@ -1,13 +1,17 @@
+import type { QuizzleQuestion } from './quizzleEngine';
+
 /** End-of-session screen: final bank vs the starting bank, plus the best bank
- * saved on this device. Purely presentational. */
+ * saved on this device. Shows a review of all questions + correct answers. */
 export function QuizzleDone({
   bank,
   startingBank,
   best,
+  questions,
 }: {
   bank: number;
   startingBank: number;
   best: number | null;
+  questions: QuizzleQuestion[];
 }) {
   const delta = bank - startingBank;
   const verdict =
@@ -30,6 +34,21 @@ export function QuizzleDone({
         <p className="sp-muted" data-testid="quizzle-best">
           Best on this device: {best}
         </p>
+      )}
+      {questions.length > 0 && (
+        <div className="quizzle__review" data-testid="quizzle-review" role="status">
+          <h3 className="sp-heading">Review</h3>
+          <ol className="quizzle__review-list">
+            {questions.map((q, i) => (
+              <li key={i} className="quizzle__review-item">
+                <p className="quizzle__review-question">{q.question}</p>
+                <p className="sp-muted quizzle__review-answer">
+                  Answer: <strong>{q.answer}</strong>
+                </p>
+              </li>
+            ))}
+          </ol>
+        </div>
       )}
     </div>
   );

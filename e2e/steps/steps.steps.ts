@@ -35,3 +35,20 @@ Then('a step error is shown', async ({ page }) => {
 Then('the ladder is not solved', async ({ page }) => {
   await expect(page.getByTestId('steps-solved')).toHaveCount(0);
 });
+
+When('the player gives up the ladder', async ({ page }) => {
+  await page.getByTestId('steps-giveup').click();
+});
+
+Then('the solution is shown', async ({ page }) => {
+  await expect(page.getByTestId('steps-solution')).toBeVisible({ timeout: 10_000 });
+});
+
+Then('the solution includes {string}', async ({ page }, word: string) => {
+  const solution = page.getByTestId('steps-solution');
+  await expect(solution).toContainText(word);
+});
+
+Then('further input is blocked', async ({ page }) => {
+  await expect(page.getByTestId('step-input')).toHaveCount(0);
+});

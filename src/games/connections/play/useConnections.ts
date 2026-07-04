@@ -81,6 +81,7 @@ export function useConnections(id: string | undefined) {
     tiles,
     selected,
     solvedGroups,
+    solvedIndices,
     mistakes,
     maxMistakes,
     lastOneAway,

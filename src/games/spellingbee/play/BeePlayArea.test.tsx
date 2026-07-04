@@ -11,11 +11,13 @@ describe('BeePlayArea', () => {
     centerLetter: 'a',
     outerOrder: ['b', 'c', 'd', 'e', 'f', 'g'],
     pangrams: [],
+    answers: ['abc', 'def', 'ghi', 'jkl', 'mno', 'pqr', 'stu', 'vwx', 'yz', 'pangram'],
     lastResult: null,
     onType: vi.fn(),
     onBackspace: vi.fn(),
     onShuffle: vi.fn(),
     onSubmit: vi.fn(),
+    onGiveUp: vi.fn(),
   };
 
   it('displays the current input', () => {
@@ -94,5 +96,35 @@ describe('BeePlayArea', () => {
     expect(words[0]).toHaveTextContent('ABC');
     expect(words[0]).not.toHaveTextContent('🎉');
     expect(words[1]).toHaveTextContent('PANGRAM 🎉');
+  });
+
+  it('shows give-up button before reveal', () => {
+    render(<BeePlayArea {...base} />);
+    expect(screen.getByTestId('bee-giveup')).toBeInTheDocument();
+    expect(screen.queryByTestId('bee-reveal')).not.toBeInTheDocument();
+  });
+
+  it('calls onGiveUp and shows reveal when give-up is clicked', () => {
+    const onGiveUp = vi.fn();
+    render(
+      <BeePlayArea
+        {...base}
+        answers={['abc', 'def', 'ghi']}
+        found={['abc']}
+        pangrams={[]}
+        onGiveUp={onGiveUp}
+      />,
+    );
+    fireEvent.click(screen.getByTestId('bee-giveup'));
+    expect(onGiveUp).toHaveBeenCalled();
+    expect(screen.getByTestId('bee-reveal')).toBeInTheDocument();
+    expect(screen.queryByTestId('bee-giveup')).not.toBeInTheDocument();
+  });
+
+  it('hides input area after reveal', () => {
+    render(<BeePlayArea {...base} answers={['abc', 'def']} found={['abc']} pangrams={[]} />);
+    fireEvent.click(screen.getByTestId('bee-giveup'));
+    expect(screen.queryByTestId('bee-input')).not.toBeInTheDocument();
+    expect(screen.queryByTestId('bee-delete')).not.toBeInTheDocument();
   });
 });

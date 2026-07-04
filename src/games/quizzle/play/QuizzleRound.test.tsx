@@ -36,8 +36,11 @@ describe('QuizzleRound', () => {
     expect(screen.getByTestId('quizzle-next')).toBeInTheDocument();
   });
 
-  it('shows a wrong result with the answer revealed', () => {
-    render(<QuizzleRound {...base} stage="answer" lastCorrect={false} lastAnswer="Paris" />);
-    expect(screen.getByTestId('quizzle-result')).toHaveTextContent('Wrong — Paris');
+  it('shows a wrong result with the correct answer revealed', () => {
+    render(<QuizzleRound {...base} stage="answer" lastCorrect={false} lastAnswer="London" />);
+    const result = screen.getByTestId('quizzle-result');
+    expect(result).toHaveTextContent('Wrong — the answer was Paris');
+    expect(screen.getByTestId('quizzle-answer-reveal')).toHaveTextContent('You answered: London');
+    expect(screen.getByTestId('quizzle-answer-reveal')).toHaveTextContent('-500');
   });
 });

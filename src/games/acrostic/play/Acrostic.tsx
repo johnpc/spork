@@ -9,8 +9,9 @@ import {
 } from '@ionic/react';
 import { Redirect, useParams } from 'react-router-dom';
 import { useAcrostic } from './useAcrostic';
-import { ClueInput } from './ClueInput';
 import { SecretWord } from './SecretWord';
+import { AcrosticReveal } from './AcrosticReveal';
+import { AcrosticClues } from './AcrosticClues';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useElapsed } from '../../shared/daily/useElapsed';
 import { useDailyGuard } from '../../shared/daily/useDailyGuard';
@@ -62,24 +63,23 @@ export function Acrostic() {
               >
                 {a.solvedCount} / {a.total} solved
               </p>
-              {a.complete ? (
-                <p className="acrostic__solved" data-testid="acrostic-solved" role="status">
-                  Solved! 🏆 The word was <strong>{a.secret}</strong>.
-                </p>
+              {a.complete || a.gaveUp ? (
+                <AcrosticReveal
+                  clues={a.clues}
+                  solved={a.solved}
+                  secret={a.secret}
+                  quote={a.quote}
+                  author={a.author}
+                  complete={a.complete}
+                />
               ) : (
-                <ol className="clue-list" data-testid="clue-list">
-                  {a.clues.map((c, i) => (
-                    <ClueInput
-                      key={`${c.clue}-${i}`}
-                      index={i}
-                      clue={c.clue}
-                      answer={c.answer}
-                      solved={a.solved.has(i)}
-                      wrong={a.lastWrong === i}
-                      onGuess={a.guess}
-                    />
-                  ))}
-                </ol>
+                <AcrosticClues
+                  clues={a.clues}
+                  solved={a.solved}
+                  lastWrong={a.lastWrong}
+                  onGuess={a.guess}
+                  onGiveUp={a.giveUp}
+                />
               )}
             </div>
           )}
