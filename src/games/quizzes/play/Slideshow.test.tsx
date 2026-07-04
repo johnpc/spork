@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import { Slideshow } from './Slideshow';
 import type { AnswerRecord } from '../../../lib/dataClient';
@@ -29,5 +29,22 @@ describe('Slideshow', () => {
     render(<Slideshow answers={answers} found={new Set(['a', 'b'])} attempt={() => false} />);
     expect(screen.getByTestId('slideshow-cleared')).toBeInTheDocument();
     expect(screen.queryByTestId('slideshow-slide')).not.toBeInTheDocument();
+  });
+
+  it('Skip advances to the next unfound slide without scoring, and cycles back', () => {
+    render(<Slideshow answers={answers} found={new Set()} attempt={() => false} />);
+    expect(screen.getByText('First clue')).toBeInTheDocument();
+    // Skip → the second slide (unscored: found is unchanged, driven by cursor only).
+    fireEvent.click(screen.getByTestId('slideshow-skip'));
+    expect(screen.getByRole('img')).toHaveAttribute('src', 'img/b.png');
+    expect(screen.getByTestId('slideshow-progress')).toHaveTextContent('2 / 2');
+    // Skip again → wraps back to the first slide (nothing was marked found).
+    fireEvent.click(screen.getByTestId('slideshow-skip'));
+    expect(screen.getByText('First clue')).toBeInTheDocument();
+  });
+
+  it('hides Skip when only one slide remains (nothing to skip to)', () => {
+    render(<Slideshow answers={answers} found={new Set(['a'])} attempt={() => false} />);
+    expect(screen.queryByTestId('slideshow-skip')).not.toBeInTheDocument();
   });
 });

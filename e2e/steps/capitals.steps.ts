@@ -54,3 +54,18 @@ When('the player answers the capital prompt correctly', async ({ page }) => {
   await input.fill(CAPITALS[key as string]);
   await input.press('Enter');
 });
+
+// Remember the prompt before skipping so the next step can assert it changed —
+// proving Skip moved on without the player needing to know the answer.
+let promptBeforeSkip = '';
+
+When('the player skips the current prompt', async ({ page }) => {
+  promptBeforeSkip = (await page.getByTestId('slideshow-prompt').textContent())?.trim() ?? '';
+  await page.getByTestId('slideshow-skip').click();
+});
+
+Then('a different prompt is shown', async ({ page }) => {
+  await expect(page.getByTestId('slideshow-prompt')).not.toHaveText(promptBeforeSkip, {
+    timeout: 10_000,
+  });
+});
