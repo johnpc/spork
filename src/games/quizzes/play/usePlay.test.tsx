@@ -14,19 +14,20 @@ function wrapper({ children }: { children: ReactNode }) {
   return <QueryClientProvider client={client}>{children}</QueryClientProvider>;
 }
 
+// A plain typed quiz (promptKind NONE) so these ENGINE tests aren't affected by
+// the map region rotation (which only narrows REGION answers) — that rotation has
+// its own tests in dailyRegion.test.ts.
 const quizData = {
-  quiz: { id: 'q1', mode: 'MAP', scoringMode: 'MEMBERSHIP', timeLimitSeconds: 300 },
+  quiz: { id: 'q1', mode: 'CLASSIC', scoringMode: 'MEMBERSHIP', timeLimitSeconds: 300 },
   answers: [
     {
       id: 'a1',
-      promptKind: 'REGION',
-      promptValue: '076',
+      promptKind: 'NONE',
       accepted: JSON.stringify(['Brazil', 'BR']),
     },
     {
       id: 'a2',
-      promptKind: 'REGION',
-      promptValue: '840',
+      promptKind: 'NONE',
       accepted: JSON.stringify(['United States', 'USA']),
     },
   ],

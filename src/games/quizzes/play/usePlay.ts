@@ -5,6 +5,7 @@ import { buildAliasIndex } from './buildAliasIndex';
 import { matchAnswer } from './matchAnswer';
 import { useCountdown } from './useCountdown';
 import { applyAttempt, type ScoringMode } from './scoringModes';
+import { dailyRegionAnswers, dailyRegionLabel } from './dailyRegion';
 import { useRecordBestScore } from './useRecordBestScore';
 
 type Status = 'idle' | 'running' | 'done';
@@ -20,7 +21,12 @@ export function usePlay(quizId: string | undefined) {
   });
 
   const quiz = data?.quiz ?? null;
-  const answers = useMemo(() => data?.answers ?? [], [data]);
+  // Map games rotate through one continent per day (World on the weekly finale);
+  // dailyRegionAnswers is a no-op for every non-map quiz. Region label surfaces
+  // in the HUD ("· Africa").
+  const allAnswers = useMemo(() => data?.answers ?? [], [data]);
+  const answers = useMemo(() => dailyRegionAnswers(quiz?.mode, allAnswers, new Date()), [quiz?.mode, allAnswers]); // prettier-ignore
+  const regionLabel = useMemo(() => dailyRegionLabel(quiz?.mode, new Date()), [quiz?.mode]);
   const total = answers.length;
   const limit = quiz?.timeLimitSeconds ?? 300;
   const scoring = (quiz?.scoringMode ?? 'MEMBERSHIP') as ScoringMode;
@@ -68,6 +74,7 @@ export function usePlay(quizId: string | undefined) {
     isError,
     refetch,
     status,
+    regionLabel,
     found,
     submit,
     attempt,

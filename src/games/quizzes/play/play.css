@@ -35,6 +35,16 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* The day's map region (e.g. "Africa") — a small pill between clock and score. */
+.play-hud__region {
+  padding: 0.15rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--sp-accent-contrast);
+  background: var(--sp-accent);
+}
+
 .play-hud__clock {
   font-size: 1.5rem;
   font-weight: 700;

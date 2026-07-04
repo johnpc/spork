@@ -39,7 +39,7 @@ export const QUIZ_TYPE_GAMES: GameDef[] = [
   {
     slug: 'worldle',
     name: 'Worldle',
-    tagline: 'Name every country before the clock runs out.',
+    tagline: 'Name the countries of today’s region against the clock.',
     emoji: '🗺️',
     accent: BLUE,
     quizMode: 'MAP',

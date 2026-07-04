@@ -22,16 +22,15 @@ import { LoadState } from '../../../features/shell/LoadState';
 import './play.css';
 
 /** Quiz play screen. Picks the renderer by quiz.mode, runs the shared engine
- * (timer + found set + score), and shows the mode-shared HUD. Typed-input modes
- * get the shared PlayInput; click/pick/arrange modes answer inside the renderer
- * via `attempt`. Each quiz TYPE is its own daily puzzle, so the daily result is
- * keyed + timed per mode. */
+ * (timer + found set + score), shows the mode-shared HUD, and keys the daily
+ * result per mode. Typed modes use PlayInput; others answer via `attempt`. */
 export function Play() {
   const { id } = useParams<{ id: string }>();
   const p = usePlay(id);
   const { best } = useBestScore(id);
   const Renderer = rendererFor(p.quiz?.mode);
   const typed = usesTypedInput(p.quiz?.mode);
+  const hint = p.status !== 'done' ? modeHint(p.quiz?.mode) : '';
   const dailyKey = dailyKeyForMode(p.quiz?.mode);
   useRecordDailyOnDone(dailyKey, p.status === 'done', {
     score: p.score.found,
@@ -62,10 +61,15 @@ export function Play() {
             </p>
           ) : (
             <div className="play">
-              <PlayHud remaining={p.remaining} found={p.score.found} total={p.score.total} />
-              {p.status !== 'done' && modeHint(p.quiz.mode) && (
+              <PlayHud
+                remaining={p.remaining}
+                found={p.score.found}
+                total={p.score.total}
+                region={p.regionLabel}
+              />
+              {hint && (
                 <p className="sp-muted play__hint" data-testid="play-hint">
-                  {modeHint(p.quiz.mode)}
+                  {hint}
                 </p>
               )}
               <Suspense fallback={<p className="sp-muted">Loading…</p>}>

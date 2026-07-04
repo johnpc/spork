@@ -64,6 +64,8 @@ export default defineConfig({
         // templates like the reconciled world-countries map answer set.
         'amplify/quizgen/fixtures/**',
         'amplify/dailyingest/fixtures/**',
+        // GENERATED continent→ISO grouping (scripts/genContinents.ts) — DATA.
+        'src/games/quizzes/play/continents.ts',
         // Seed/maintenance runner entrypoints: side-effecting main() scripts
         // (sign in, mutate, exit) with no unit-testable surface — their logic
         // lives in tested helpers (seedReference, resizeImage). Run manually.

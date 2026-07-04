@@ -3,6 +3,14 @@ import { createBdd } from 'playwright-bdd';
 
 const { Given, When, Then } = createBdd();
 
+/** Pin the clock to a "World" finale day (dayNumber % 7 === 0) so the map games'
+ * regional rotation exposes ALL countries — otherwise the day's continent varies
+ * and hardcoded answers (Brazil, USA…) would only score on their region's day.
+ * Must run before navigation so usePlay reads the fixed date. */
+Given('the map shows the whole world today', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-01-08T12:00:00Z'));
+});
+
 /** Open the named quiz from the Quizzes list (shared by "opens"/"reopens"). */
 async function openQuiz(page: import('@playwright/test').Page, topic: string) {
   await page.goto('/quizzes');

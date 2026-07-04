@@ -9,6 +9,12 @@ Feature: Play a map quiz (name the countries)
   # The Quizzes game is GUEST-ONLY: no account to play or to save a score. Best
   # scores persist per-device (localStorage), so the persistence scenario just
   # reopens the quiz as the same guest and re-reads the saved best.
+  #
+  # Worldle rotates through continents daily; pin the clock to a full-world day so
+  # any country is playable (the rotation itself is covered in dailyRegion tests).
+
+  Background:
+    Given the map shows the whole world today
 
   Scenario: A guest plays the world map quiz and scores correct answers
     Given the player opens the "World Countries" map quiz
