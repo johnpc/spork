@@ -4,7 +4,11 @@
 import type { QuizFixture } from './types';
 
 export const multipleChoiceQuiz: QuizFixture = {
-  topic: 'World Capitals',
+  // "Capital Cities" (not "World Capitals") to stay distinct from the featured
+  // World Capitals SLIDESHOW game — two identically-named quizzes would make the
+  // /quizzes list ambiguous. If regenerating via gen:quiz-fixtures, keep a
+  // distinct topic here.
+  topic: 'Capital Cities',
   categorySlug: 'geography',
   description: 'An AI-generated multiple choice quiz.',
   mode: 'MULTIPLE_CHOICE',
