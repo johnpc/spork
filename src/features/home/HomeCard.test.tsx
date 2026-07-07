@@ -14,10 +14,10 @@ const game: GameCard = {
   dailyKey: 'quizzes:MAP',
 };
 
-function renderCard(result: Parameters<typeof HomeCard>[0]['result']) {
+function renderCard(result: Parameters<typeof HomeCard>[0]['result'], date?: string) {
   return render(
     <MemoryRouter>
-      <HomeCard game={game} result={result} />
+      <HomeCard game={game} result={result} date={date} />
     </MemoryRouter>,
   );
 }
@@ -33,5 +33,15 @@ describe('HomeCard', () => {
     renderCard(null);
     expect(screen.queryByTestId('game-worldle-done')).not.toBeInTheDocument();
     expect(screen.getByTestId('game-worldle')).not.toHaveClass('home-card--done');
+  });
+
+  it('links to today’s bare route when no date is given', () => {
+    renderCard(null);
+    expect(screen.getByTestId('game-worldle')).toHaveAttribute('href', '/daily/worldle');
+  });
+
+  it('links to the dated route when browsing a past day', () => {
+    renderCard({ score: 2, total: 8 }, '2026-06-20');
+    expect(screen.getByTestId('game-worldle')).toHaveAttribute('href', '/daily/worldle/2026-06-20');
   });
 });

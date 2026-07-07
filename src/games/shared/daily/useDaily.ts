@@ -17,12 +17,19 @@ function deviceStore(): KeyValueStore | null {
 }
 
 /**
- * Daily play-once gate for a game. Reports whether today's puzzle for `game` was
- * already finished on this device (with the recap result) and exposes `record`
- * to save the result when a session ends. `now`/`store` are injectable for tests.
+ * Daily play-once gate for a game on a given day (defaults to today). Reports
+ * whether that day's puzzle for `game` was already finished on this device (with
+ * the recap result) and exposes `record` to save the result when a session ends.
+ * `day` lets a caller gate a PAST day (browse mode); `now`/`store` are injectable
+ * for tests.
  */
-export function useDaily(game: string, now: Date = new Date(), store = deviceStore()) {
-  const date = dayStamp(now);
+export function useDaily(
+  game: string,
+  day?: string,
+  now: Date = new Date(),
+  store = deviceStore(),
+) {
+  const date = day ?? dayStamp(now);
   const read = useCallback(
     () => (store ? readDailyResult(store, game, date) : null),
     [store, game, date],

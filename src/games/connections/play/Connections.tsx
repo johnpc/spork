@@ -22,12 +22,15 @@ export function Connections() {
   const { id } = useParams<{ id: string }>();
   const c = useConnections(id);
   const elapsed = useElapsed(c.done);
-  useRecordDailyOnDone('connections', c.done, {
-    score: c.solvedGroups.length,
-    total: 4,
-    timeSeconds: elapsed,
-  });
-  const recap = useDailyGuard('connections');
+  // Record + gate against the puzzle's OWN date (undefined → today).
+  const day = c.puzzle?.puzzleDate ?? undefined;
+  useRecordDailyOnDone(
+    'connections',
+    c.done,
+    { score: c.solvedGroups.length, total: 4, timeSeconds: elapsed },
+    day,
+  );
+  const recap = useDailyGuard('connections', day);
   if (c.puzzle && recap && !c.done && c.mistakes === 0) return <Redirect to={recap} />;
 
   return (

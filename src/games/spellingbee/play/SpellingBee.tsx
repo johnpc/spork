@@ -23,8 +23,10 @@ export function SpellingBee() {
   const [lastResult, setLastResult] = React.useState<{ ok: boolean; reason: string } | null>(null);
   const [gaveUp, setGaveUp] = React.useState(false);
   const done = b.done || gaveUp;
-  useRecordDailyOnDone('spellingbee', done, { score: b.score, total: b.answers.length });
-  const recap = useDailyGuard('spellingbee');
+  // Record + gate against the puzzle's OWN date (undefined → today).
+  const day = b.bee?.puzzleDate ?? undefined;
+  useRecordDailyOnDone('spellingbee', done, { score: b.score, total: b.answers.length }, day);
+  const recap = useDailyGuard('spellingbee', day);
   if (b.bee && recap && !done) return <Redirect to={recap} />;
 
   const handleSubmit = () => {

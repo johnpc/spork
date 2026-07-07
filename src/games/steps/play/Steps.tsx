@@ -22,13 +22,16 @@ export function Steps() {
   const { id } = useParams<{ id: string }>();
   const l = useLadder(id);
   const elapsed = useElapsed(l.solved);
-  useRecordDailyOnDone('steps', l.solved, {
-    score: l.moves,
-    total: l.par ?? l.moves,
-    timeSeconds: elapsed,
-  });
-  // One-per-day: a fresh entry after today's is done → recap.
-  const recap = useDailyGuard('steps');
+  // Record + gate against the puzzle's OWN date (undefined → today).
+  const day = l.ladder?.puzzleDate ?? undefined;
+  useRecordDailyOnDone(
+    'steps',
+    l.solved,
+    { score: l.moves, total: l.par ?? l.moves, timeSeconds: elapsed },
+    day,
+  );
+  // One-per-day: a fresh entry after that day's is done → recap.
+  const recap = useDailyGuard('steps', day);
   if (l.ladder && recap && !l.solved && l.moves === 0) return <Redirect to={recap} />;
 
   return (

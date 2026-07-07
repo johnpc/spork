@@ -36,6 +36,9 @@ export function gameRoutes() {
     <Route exact path="/daily/:game" key="daily">
       <DailyEntry />
     </Route>,
+    <Route exact path="/daily/:game/:date" key="daily-date">
+      <DailyEntry />
+    </Route>,
     <Route exact path="/quizzes" key="quizzes">
       <QuizList />
     </Route>,

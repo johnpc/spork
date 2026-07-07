@@ -24,13 +24,11 @@ export function ChessAttack() {
   const { id } = useParams<{ id: string }>();
   const c = useChessAttack(id);
   const elapsed = useElapsed(c.solved);
-  useRecordDailyOnDone('chess', c.solved, {
-    score: c.total,
-    total: c.total,
-    timeSeconds: elapsed,
-  });
-  // One-per-day: a fresh entry after today's is done → recap (not mid/just-solved).
-  const recap = useDailyGuard('chess');
+  // Record + gate against the puzzle's OWN date (undefined → today).
+  const day = c.puzzle?.puzzleDate ?? undefined;
+  useRecordDailyOnDone('chess', c.solved, { score: c.total, total: c.total, timeSeconds: elapsed }, day); // prettier-ignore
+  // One-per-day: a fresh entry after that day's is done → recap (not mid/just-solved).
+  const recap = useDailyGuard('chess', day);
   if (c.puzzle && recap && !c.solved && c.moves === 0) return <Redirect to={recap} />;
 
   return (

@@ -19,3 +19,10 @@ export function pickDaily<T extends Dated>(items: readonly T[], today: string): 
 
   return items[0];
 }
+
+/** Strict match for BROWSING a specific day: only the item stamped exactly with
+ * `date`, or null. Unlike pickDaily there's NO fallback — a null means that day
+ * genuinely has no puzzle yet (so the entry screen can offer to generate it). */
+export function pickForDate<T extends Dated>(items: readonly T[], date: string): T | null {
+  return items.find((i) => i.puzzleDate === date) ?? null;
+}
