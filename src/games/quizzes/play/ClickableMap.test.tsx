@@ -3,12 +3,17 @@ import { describe, it, expect, vi } from 'vitest';
 import type { ReactNode } from 'react';
 
 vi.mock('world-atlas/countries-110m.json', () => ({ default: { type: 'Topology' } }));
-// Skip topology parsing — the fit only needs some centroids for the mocked ids.
-vi.mock('./mapClickCentroids', () => ({ centroidsFor: () => [[10, 10]] }));
+// Skip topology parsing — the fit only needs some centroids for the mocked ids;
+// smallRegions dots Egypt (818) so we can assert the dot carries its region role.
+vi.mock('./mapClickCentroids', () => ({
+  centroidsFor: () => [[10, 10]],
+  smallRegions: () => [{ id: '818', coordinates: [30, 26] }],
+}));
 
 vi.mock('react-simple-maps', () => ({
   ComposableMap: ({ children }: { children: ReactNode }) => <svg>{children}</svg>,
   ZoomableGroup: ({ children }: { children: ReactNode }) => <g>{children}</g>,
+  Marker: ({ children }: { children: ReactNode }) => <g>{children}</g>,
   Geographies: ({ children }: { children: (a: { geographies: unknown[] }) => ReactNode }) =>
     children({
       geographies: [
@@ -64,5 +69,17 @@ describe('ClickableMap', () => {
     );
     expect(byRegion(container, '566')?.getAttribute('class')).toContain('sp-region--found');
     expect(byRegion(container, '999')?.getAttribute('class')).toContain('sp-region--inert');
+  });
+
+  it('renders a clickable locator dot for a tiny target country', () => {
+    const attempt = vi.fn(() => true);
+    const { container } = render(
+      // Egypt is the small-region dot; make it the current target (Nigeria found).
+      <ClickableMap answers={answers} found={new Set(['a1'])} attempt={attempt} />,
+    );
+    const dot = container.querySelector('[data-region-dot="818"]');
+    expect(dot).toBeTruthy();
+    fireEvent.click(dot as Element);
+    expect(attempt).toHaveBeenCalledWith('a2');
   });
 });

@@ -5,7 +5,7 @@ import { buildAliasIndex } from './buildAliasIndex';
 import { matchAnswer } from './matchAnswer';
 import { useCountdown } from './useCountdown';
 import { applyAttempt, type ScoringMode } from './scoringModes';
-import { dailyRegionAnswers, dailyRegionLabel } from './dailyRegion';
+import { dailyRegionAnswers, dailyRegionLabel, dailyMapMode } from './dailyRegion';
 import { parseRenderConfig } from './mapTopology';
 import { useRecordBestScore } from './useRecordBestScore';
 
@@ -28,6 +28,9 @@ export function usePlay(quizId: string | undefined) {
   const allAnswers = useMemo(() => data?.answers ?? [], [data]);
   const answers = useMemo(() => dailyRegionAnswers(quiz?.mode, allAnswers, new Date()), [quiz?.mode, allAnswers]); // prettier-ignore
   const regionLabel = useMemo(() => dailyRegionLabel(quiz?.mode, new Date()), [quiz?.mode]);
+  // Worldle alternates typed (MAP) vs. click (CLICKABLE) day to day; other quizzes
+  // just play their stored mode. Picks the renderer/input Play uses today.
+  const effectiveMode = useMemo(() => dailyMapMode(quiz?.mode, new Date()), [quiz?.mode]);
   // Map view config (topology/projection) is stored as a JSON string on the quiz.
   const renderConfig = useMemo(() => parseRenderConfig(quiz?.renderConfig), [quiz?.renderConfig]);
   const total = answers.length;
@@ -72,6 +75,7 @@ export function usePlay(quizId: string | undefined) {
 
   return {
     quiz,
+    effectiveMode,
     answers,
     isLoading: !!quizId && isLoading,
     isError,

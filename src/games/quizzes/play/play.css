@@ -120,8 +120,11 @@
 
 .sp-region {
   outline: none;
-  stroke: var(--sp-border);
-  stroke-width: 0.3;
+  stroke: var(--sp-region-line);
+  /* non-scaling-stroke keeps outlines crisp when the map crops/zooms to a
+     continent — otherwise the border thins to nothing at high zoom. */
+  stroke-width: 0.75;
+  vector-effect: non-scaling-stroke;
   transition: fill 0.25s ease;
 }
 
@@ -139,11 +142,51 @@
   opacity: 0.55;
 }
 
+/* Non-answer regions (neighbors that bleed into the cropped frame) recede toward
+   the surface with a faint outline, so the day's continent stays the focus. */
 .sp-region--inert {
-  fill: var(--sp-border);
+  fill: var(--sp-surface);
+  opacity: 0.5;
 }
 
 /* Wrong click in CLICKABLE (find-it-on-the-map) — brief red flash. */
 .sp-region--wrong {
   fill: var(--sp-incorrect);
+}
+
+/* --- Locator dots for micro-nations (RegionDots) --- */
+/* Countries too small to see/click as a shape get a centroid dot that mirrors
+   the region's role. Outlined so it stands out over any fill. */
+.sp-dot {
+  stroke: var(--sp-surface);
+  stroke-width: 1;
+  transition: fill 0.25s ease;
+}
+
+.sp-dot--blank {
+  fill: var(--sp-accent);
+}
+
+.sp-dot--found {
+  fill: var(--sp-correct);
+}
+
+.sp-dot--revealed {
+  fill: var(--sp-incorrect);
+}
+
+.sp-dot--wrong {
+  fill: var(--sp-incorrect);
+}
+
+/* Dots for countries not in the quiz shouldn't draw the eye. */
+.sp-dot--inert {
+  fill: var(--sp-border);
+  opacity: 0.4;
+}
+
+/* Clickable dots (CLICKABLE mode) invite a tap. */
+.clickable-map .sp-dot--blank,
+.clickable-map .sp-dot--wrong {
+  cursor: pointer;
 }

@@ -16,6 +16,6 @@ const HINTS: Record<QuizMode, string> = {
   ORDER_UP: 'Tap the items in the correct order.',
 };
 
-export function modeHint(mode: QuizMode | null | undefined): string {
-  return mode ? (HINTS[mode] ?? '') : '';
+export function modeHint(mode: string | null | undefined): string {
+  return mode ? (HINTS[mode as QuizMode] ?? '') : '';
 }

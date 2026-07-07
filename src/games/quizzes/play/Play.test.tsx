@@ -38,6 +38,7 @@ describe('Play', () => {
     play.state = {
       isLoading: false,
       quiz: { mode: 'ORDERED', topic: 'X' },
+      effectiveMode: 'ORDERED',
       answers: [],
       found: new Set(),
       score: { found: 0, total: 0 },
@@ -51,6 +52,7 @@ describe('Play', () => {
     play.state = {
       isLoading: false,
       quiz: { mode: 'MAP', topic: 'Countries' },
+      effectiveMode: 'MAP',
       answers: [],
       found: new Set(),
       status: 'idle',
@@ -69,6 +71,7 @@ describe('Play', () => {
     const base = {
       isLoading: false,
       quiz: { mode: 'MAP', topic: 'Countries' },
+      effectiveMode: 'MAP',
       answers: [],
       found: new Set(),
       remaining: 120,
