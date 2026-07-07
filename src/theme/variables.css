@@ -22,6 +22,10 @@
   --sp-accent-gradient: linear-gradient(135deg, #6f9bf5 0%, #4f7ce8 100%);
   --sp-correct: #2e9e6b;
   --sp-incorrect: #d9534f;
+  /* "Right letter, wrong place" (Wordle) — a Wordle-style amber. Pairs with dark
+     text (--sp-present-contrast) since white on yellow fails WCAG contrast. */
+  --sp-present: #d9a520;
+  --sp-present-contrast: #1b1d22;
 
   --sp-bg: #f4f6fb;
   --sp-surface: #ffffff;
