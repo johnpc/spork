@@ -31,7 +31,7 @@ describe('Play', () => {
   it('shows loading while fetching', () => {
     play.state = { isLoading: true, score: { found: 0, total: 0 }, found: new Set() };
     renderPlay();
-    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(screen.getByTestId('load-loading')).toBeInTheDocument();
   });
 
   it('shows an unavailable message for an unbuilt mode', () => {

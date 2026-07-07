@@ -5,6 +5,7 @@ import { useMyDecks } from './useMyDecks';
 import { DueTodayPanel } from './DueTodayPanel';
 import { TabBar } from '../shell/TabBar';
 import { EmptyState } from '../shell/EmptyState';
+import { SkeletonRows } from '../shell/SkeletonRows';
 import './mydecks.css';
 
 /** "My Decks" — the signed-in user's saved decks. Renders only. */
@@ -30,7 +31,7 @@ export function MyDecks() {
             </Link>
           </EmptyState>
         ) : isLoading ? (
-          <p className="sp-muted">Loading your decks…</p>
+          <SkeletonRows label="Loading your decks" />
         ) : decks.length === 0 ? (
           <EmptyState
             icon={compassOutline}

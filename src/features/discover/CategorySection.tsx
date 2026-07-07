@@ -4,6 +4,7 @@ import { chevronDown, chevronForward } from 'ionicons/icons';
 import { Link } from 'react-router-dom';
 import { useDecks } from './useDecks';
 import { DeckCard } from './DeckCard';
+import { Skeleton } from '../shell/Skeleton';
 import type { Shelf } from './composeShelves';
 
 /** A collapsible Discover section: a category header that, when open, previews
@@ -40,7 +41,13 @@ export function CategorySection({
       {open && (
         <div className="cat-section__body">
           {isLoading ? (
-            <p className="sp-muted cat-section__hint">Loading decks…</p>
+            <div className="cat-section__rail" aria-busy="true" aria-label="Loading decks">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="cat-section__item">
+                  <Skeleton height="7.5rem" radius="var(--sp-radius)" />
+                </div>
+              ))}
+            </div>
           ) : decks && decks.length > 0 ? (
             <>
               <div className="cat-section__rail">

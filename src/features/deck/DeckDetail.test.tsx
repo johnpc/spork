@@ -28,7 +28,7 @@ describe('DeckDetail', () => {
 
   it('shows a loading state', () => {
     renderAt();
-    expect(screen.getByText(/loading deck/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/loading deck/i)).toBeInTheDocument();
   });
 
   it('renders the deck title, a Study CTA, and card rows', () => {

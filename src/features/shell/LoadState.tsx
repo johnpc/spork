@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react';
 import { alertCircleOutline, fileTrayOutline } from 'ionicons/icons';
 import { EmptyState } from './EmptyState';
+import { SkeletonRows } from './SkeletonRows';
 
 interface LoadStateProps {
   isLoading: boolean;
@@ -12,13 +13,16 @@ interface LoadStateProps {
   emptyMessage?: string;
   /** Retry the failed fetch (react-query refetch). */
   onRetry?: () => void;
+  /** Content-shaped loading placeholder. Defaults to card-row skeletons; pass a
+   * bespoke skeleton (e.g. a play board) for non-list screens. */
+  skeleton?: ReactNode;
   children: ReactNode;
 }
 
-/** Uniform loading / error / empty gate for a data screen. Renders a spinner
- * while loading, a retryable error state on failure, an empty state when there's
- * nothing, and otherwise the children. Stops screens from hanging on a spinner
- * or silently blanking when a fetch fails. */
+/** Uniform loading / error / empty gate for a data screen. Renders content-shaped
+ * skeletons while loading, a retryable error state on failure, an empty state when
+ * there's nothing, and otherwise the children. Stops screens from hanging on a
+ * spinner or silently blanking when a fetch fails. */
 export function LoadState({
   isLoading,
   isError,
@@ -26,14 +30,11 @@ export function LoadState({
   emptyTitle = 'Nothing here yet',
   emptyMessage,
   onRetry,
+  skeleton,
   children,
 }: LoadStateProps) {
   if (isLoading) {
-    return (
-      <p className="sp-muted" data-testid="load-loading">
-        Loading…
-      </p>
-    );
+    return <div data-testid="load-loading">{skeleton ?? <SkeletonRows />}</div>;
   }
   if (isError) {
     return (

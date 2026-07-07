@@ -39,9 +39,9 @@ describe('ChessList', () => {
     expect(screen.getByTestId('load-empty')).toBeInTheDocument();
   });
 
-  it('shows a loading message while loading', () => {
+  it('shows skeleton placeholders while loading', () => {
     hook.state = { isLoading: true, puzzles: [] };
     renderList();
-    expect(screen.getByText('Loading…')).toBeInTheDocument();
+    expect(screen.getByTestId('skeleton-rows')).toBeInTheDocument();
   });
 });

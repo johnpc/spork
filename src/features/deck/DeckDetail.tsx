@@ -10,6 +10,7 @@ import {
 import { Link, useParams } from 'react-router-dom';
 import { useDeckDetail } from './useDeckDetail';
 import { SaveDeckButton } from '../mydecks/SaveDeckButton';
+import { SkeletonRows } from '../shell/SkeletonRows';
 import './deck.css';
 
 /** Deck detail: title, description, a prominent Study CTA, a Save-to-My-Decks
@@ -30,8 +31,10 @@ export function DeckDetail() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {isLoading || !deck ? (
-          <p className="sp-muted">{isLoading ? 'Loading deck…' : 'Deck not found.'}</p>
+        {isLoading ? (
+          <SkeletonRows count={3} label="Loading deck" />
+        ) : !deck ? (
+          <p className="sp-muted">Deck not found.</p>
         ) : (
           <div className="deck">
             <h1 className="sp-heading deck__title" data-testid="deck-title">

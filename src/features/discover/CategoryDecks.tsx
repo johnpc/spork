@@ -10,6 +10,7 @@ import {
 import { useParams } from 'react-router-dom';
 import { useDecks } from './useDecks';
 import { DeckCard } from './DeckCard';
+import { SkeletonRows } from '../shell/SkeletonRows';
 import './discover.css';
 
 /** A category's published decks, in a grid. Renders only. */
@@ -28,7 +29,7 @@ export function CategoryDecks() {
       </IonHeader>
       <IonContent className="ion-padding">
         {isLoading ? (
-          <p className="sp-muted">Loading decks…</p>
+          <SkeletonRows label="Loading decks" />
         ) : decks && decks.length > 0 ? (
           <div className="deck-grid">
             {decks.map((deck) => (
