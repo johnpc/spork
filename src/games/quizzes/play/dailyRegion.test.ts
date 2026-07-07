@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dailyRegionLabel, dailyRegionAnswers } from './dailyRegion';
+import { dailyRegionLabel, dailyRegionAnswers, dailyMapMode } from './dailyRegion';
 import { CONTINENT_REGIONS } from './continents';
 
 const REGION_ANSWERS = [
@@ -27,6 +27,34 @@ describe('dailyRegionLabel', () => {
   it('day-number % 7 === 0 is the World finale', () => {
     // 1970-01-01 (day 0) is a finale.
     expect(dailyRegionLabel('MAP', new Date(Date.UTC(1970, 0, 1, 12)))).toBe('World');
+  });
+});
+
+describe('dailyMapMode', () => {
+  it('plays a non-MAP quiz in its stored mode', () => {
+    const now = new Date(Date.UTC(2026, 0, 5, 12));
+    expect(dailyMapMode('CLICKABLE', now)).toBe('CLICKABLE');
+    expect(dailyMapMode('SLIDESHOW', now)).toBe('SLIDESHOW');
+    expect(dailyMapMode(undefined, now)).toBeNull();
+  });
+
+  it('keeps the World finale as typed MAP', () => {
+    // day 0 (1970-01-01) and day 7 are finales.
+    expect(dailyMapMode('MAP', new Date(Date.UTC(1970, 0, 1, 12)))).toBe('MAP');
+    expect(dailyMapMode('MAP', new Date(Date.UTC(1970, 0, 8, 12)))).toBe('MAP');
+  });
+
+  it('alternates MAP and CLICKABLE on non-finale days', () => {
+    // day 1 (odd) → CLICKABLE; day 2 (even) → MAP.
+    expect(dailyMapMode('MAP', new Date(Date.UTC(1970, 0, 2, 12)))).toBe('CLICKABLE');
+    expect(dailyMapMode('MAP', new Date(Date.UTC(1970, 0, 3, 12)))).toBe('MAP');
+    // Over a fortnight it produces BOTH faces.
+    const modes = new Set<string>();
+    for (let i = 1; i < 14; i++) {
+      if (i % 7 === 0) continue;
+      modes.add(dailyMapMode('MAP', new Date(Date.UTC(1970, 0, 1 + i, 12))) ?? '');
+    }
+    expect(modes).toEqual(new Set(['MAP', 'CLICKABLE']));
   });
 });
 

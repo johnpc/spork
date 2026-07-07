@@ -39,6 +39,20 @@ export function dailyRegionLabel(mode: string | null | undefined, now: Date): st
   return CONTINENT_ROTATION[d % CONTINENT_ROTATION.length];
 }
 
+/** The renderer mode Worldle plays TODAY. Non-MAP quizzes always play their
+ * stored mode. The world map alternates day to day: the weekly World finale
+ * (every 7th day) stays typed MAP — naming all ~174 countries is the showcase —
+ * and other days flip MAP ⇄ CLICKABLE by parity, so some days you type the
+ * continent's countries and other days you're shown a name and click where it is.
+ * The stored Quiz.mode stays MAP; this is a play-time view choice keyed on the
+ * date, so it needs no backend change and one daily key. */
+export function dailyMapMode(mode: string | null | undefined, now: Date): string | null {
+  if (mode !== 'MAP') return mode ?? null;
+  const d = dayNumber(now);
+  if (d % 7 === 0) return 'MAP';
+  return d % 2 === 0 ? 'MAP' : 'CLICKABLE';
+}
+
 /** Narrow the world map (MAP) answer set to the day's continent (all on the
  * 'World' finale). Any non-MAP quiz passes through untouched. Generic so callers
  * get their exact answer type back; reads only via the loose RegionAnswer view. */

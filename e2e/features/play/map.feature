@@ -51,3 +51,14 @@ Feature: Play a map quiz (name the countries)
     Then a quiz score summary is shown
     When the player reopens the "World Countries" map quiz
     Then a saved best score of at least 2 is shown
+
+  # Worldle alternates typing vs. clicking day to day. On a "click" day the same
+  # daily map quiz is shown as CLICKABLE, cropped to the day's continent: the
+  # player is prompted for a country and clicks where it is on the real map.
+  Scenario: On a click day Worldle prompts for a country to click on the map
+    Given today is a Worldle click day for North America
+    And the player opens the "World Countries" map quiz on a click day
+    Then the player is prompted to find "Canada"
+    When the player clicks the region "124"
+    Then the score shows "1"
+    And the region "124" is marked found

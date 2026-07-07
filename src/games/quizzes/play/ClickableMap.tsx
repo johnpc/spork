@@ -1,5 +1,5 @@
 import { useMemo, useState, useCallback } from 'react';
-import { ComposableMap, Geographies, Geography, ZoomableGroup } from 'react-simple-maps';
+import { ComposableMap, Geographies, Geography } from 'react-simple-maps';
 import type { RendererProps } from './renderers';
 import { regionAnswerMap } from './geoFill';
 import { currentTarget, mapPrompt, resolveClick, isTargetHit } from './mapClickModel';
@@ -7,6 +7,8 @@ import { clickRegionClass } from './clickRegionClass';
 import { centroidsFor } from './mapClickCentroids';
 import { fitFrame } from './mapClickFit';
 import { mapTopologyFor } from './mapTopology';
+import { MapFrame } from './MapFrame';
+import { RegionDots } from './RegionDots';
 import './clickable.css';
 
 /**
@@ -68,26 +70,16 @@ export function ClickableMap({ answers, found, attempt, status, renderConfig }: 
                 ))
               }
             </Geographies>
+            <RegionDots
+              regionToAnswer={regionToAnswer}
+              found={found}
+              wrongAnswerId={wrong}
+              reveal={reveal}
+              onRegion={(id) => onRegion(id)}
+            />
           </MapFrame>
         </ComposableMap>
       </div>
     </div>
-  );
-}
-
-/** Wrap the map in a ZoomableGroup framed to the answers (world map), or render
- * children directly when the projection self-frames (geoAlbersUsa → frame null). */
-function MapFrame({
-  frame,
-  children,
-}: {
-  frame: { center: [number, number]; zoom: number } | null;
-  children: React.ReactNode;
-}) {
-  if (!frame) return <>{children}</>;
-  return (
-    <ZoomableGroup center={frame.center} zoom={frame.zoom}>
-      {children}
-    </ZoomableGroup>
   );
 }

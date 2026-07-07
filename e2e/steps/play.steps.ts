@@ -25,6 +25,30 @@ Given('the player opens the {string} map quiz', async ({ page }, topic: string) 
   await openQuiz(page, topic);
 });
 
+/** Pin the clock to a Worldle "click" day scoped to North America (2026-01-10 is
+ * day 20463: odd → CLICKABLE, day%6 → North America), so the seeded MAP quiz is
+ * shown as a find-it-on-the-map game cropped to that continent. */
+Given('today is a Worldle click day for North America', async ({ page }) => {
+  await page.clock.setFixedTime(new Date('2026-01-10T12:00:00Z'));
+});
+
+/** Open the daily map quiz on a click day — same quiz, but it renders as the
+ * CLICKABLE grid rather than the typed world map. */
+Given('the player opens the {string} map quiz on a click day', async ({ page }, topic: string) => {
+  await page.goto('/quizzes');
+  await page
+    .getByTestId('quiz-link')
+    .filter({ hasText: new RegExp(topic) })
+    .click();
+  await expect(page.getByTestId('clickable-grid')).toBeVisible({ timeout: 15_000 });
+});
+
+Then('the player is prompted to find {string}', async ({ page }, country: string) => {
+  await expect(page.getByTestId('clickable-prompt')).toHaveText(`Find ${country}`, {
+    timeout: 10_000,
+  });
+});
+
 When('the player reopens the {string} map quiz', async ({ page }, topic: string) => {
   await openQuiz(page, topic);
 });

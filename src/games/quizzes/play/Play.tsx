@@ -7,14 +7,12 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { Suspense } from 'react';
 import { Redirect, useParams } from 'react-router-dom';
 import { usePlay } from './usePlay';
 import { useBestScore } from './useBestScore';
 import { rendererFor, usesTypedInput } from './renderers';
 import { modeHint } from './modeHint';
-import { PlayHud } from './PlayHud';
-import { PlayControls } from './PlayControls';
+import { PlayBoard } from './PlayBoard';
 import { useRecordDailyOnDone } from '../../shared/daily/useRecordDailyOnDone';
 import { useDailyGuard } from '../../shared/daily/useDailyGuard';
 import { dailyKeyForMode } from './dailyKey';
@@ -27,9 +25,12 @@ export function Play() {
   const { id } = useParams<{ id: string }>();
   const p = usePlay(id);
   const { best } = useBestScore(id);
-  const Renderer = rendererFor(p.quiz?.mode);
-  const typed = usesTypedInput(p.quiz?.mode);
-  const hint = p.status !== 'done' ? modeHint(p.quiz?.mode) : '';
+  // effectiveMode is the mode Worldle plays TODAY (typed MAP vs. click CLICKABLE);
+  // for every other quiz it's just the stored mode. The daily key stays on the
+  // STORED mode so both faces of Worldle share one play-once-a-day record.
+  const Renderer = rendererFor(p.effectiveMode);
+  const typed = usesTypedInput(p.effectiveMode);
+  const hint = p.status !== 'done' ? modeHint(p.effectiveMode) : '';
   const dailyKey = dailyKeyForMode(p.quiz?.mode);
   useRecordDailyOnDone(dailyKey, p.status === 'done', {
     score: p.score.found,
@@ -59,38 +60,7 @@ export function Play() {
               This quiz can’t be played yet.
             </p>
           ) : (
-            <div className="play">
-              <PlayHud
-                remaining={p.remaining}
-                found={p.score.found}
-                total={p.score.total}
-                region={p.regionLabel}
-              />
-              {hint && (
-                <p className="sp-muted play__hint" data-testid="play-hint">
-                  {hint}
-                </p>
-              )}
-              <Suspense fallback={<p className="sp-muted">Loading…</p>}>
-                <Renderer
-                  answers={p.answers}
-                  found={p.found}
-                  attempt={p.attempt}
-                  status={p.status}
-                  renderConfig={p.renderConfig}
-                />
-              </Suspense>
-              <PlayControls
-                status={p.status}
-                typed={typed}
-                best={best}
-                score={p.score}
-                timeSeconds={p.timeSeconds}
-                submit={p.submit}
-                start={p.start}
-                giveUp={p.giveUp}
-              />
-            </div>
+            <PlayBoard p={p} Renderer={Renderer} typed={typed} hint={hint} best={best} />
           )}
         </LoadState>
       </IonContent>
