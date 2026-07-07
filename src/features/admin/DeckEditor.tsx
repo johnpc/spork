@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useAdminCards } from './useAdminCards';
 import { CardEditorRow } from './CardEditorRow';
 import { AddCardForm } from './AddCardForm';
+import { SkeletonRows } from '../shell/SkeletonRows';
 import './admin.css';
 
 /** Admin: edit one deck's cards — add, edit, delete, reorder. */
@@ -30,7 +31,7 @@ export function DeckEditor() {
       </IonHeader>
       <IonContent className="ion-padding">
         {isLoading ? (
-          <p className="sp-muted">Loading…</p>
+          <SkeletonRows />
         ) : (
           <>
             <AddCardForm onAdd={add} />

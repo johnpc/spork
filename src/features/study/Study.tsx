@@ -12,6 +12,7 @@ import { Link, useParams } from 'react-router-dom';
 import { useStudy } from './useStudy';
 import { StudyCard } from './StudyCard';
 import { EmptyState } from '../shell/EmptyState';
+import { SkeletonRows } from '../shell/SkeletonRows';
 import './study.css';
 
 /** Play screen: walk the deck's study queue, self-grading each card. */
@@ -31,7 +32,7 @@ export function Study() {
       </IonHeader>
       <IonContent className="ion-padding">
         {s.isLoading ? (
-          <p className="sp-muted">Loading…</p>
+          <SkeletonRows count={1} label="Loading study session" />
         ) : s.current && s.choices ? (
           <>
             <div className="study__bar">

@@ -26,6 +26,9 @@
   --sp-bg: #f4f6fb;
   --sp-surface: #ffffff;
   --sp-border: #e6e9f0;
+  /* Loading skeletons: a base fill + a brighter sheen that sweeps across it. */
+  --sp-skeleton-base: #e9edf4;
+  --sp-skeleton-sheen: #f5f7fb;
   /* Country outline on the quiz maps — darker than the card border so borders
      read clearly against the region fills at any zoom. */
   --sp-region-line: #9aa3b6;
@@ -64,6 +67,8 @@
     --sp-bg: #111319;
     --sp-surface: #1b1e26;
     --sp-border: #2a2f3a;
+    --sp-skeleton-base: #232833;
+    --sp-skeleton-sheen: #2f3542;
     --sp-region-line: #566178;
     --sp-text: #f2f4f8;
     --sp-text-muted: #9aa2b1;

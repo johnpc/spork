@@ -5,10 +5,22 @@ import { LoadState } from './LoadState';
 const child = <div data-testid="content">ready</div>;
 
 describe('LoadState', () => {
-  it('shows the spinner while loading (never the children)', () => {
+  it('shows skeleton placeholders while loading (never the children)', () => {
     render(<LoadState isLoading>{child}</LoadState>);
     expect(screen.getByTestId('load-loading')).toBeInTheDocument();
+    // Default placeholder is the card-row skeleton, not the real content.
+    expect(screen.getByTestId('skeleton-rows')).toBeInTheDocument();
     expect(screen.queryByTestId('content')).not.toBeInTheDocument();
+  });
+
+  it('renders a bespoke skeleton override when provided', () => {
+    render(
+      <LoadState isLoading skeleton={<div data-testid="board-skeleton" />}>
+        {child}
+      </LoadState>,
+    );
+    expect(screen.getByTestId('board-skeleton')).toBeInTheDocument();
+    expect(screen.queryByTestId('skeleton-rows')).not.toBeInTheDocument();
   });
 
   it('shows a retryable error state on failure', () => {

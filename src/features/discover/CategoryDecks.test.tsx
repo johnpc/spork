@@ -38,7 +38,7 @@ describe('CategoryDecks', () => {
   it('shows a loading state', () => {
     hook.value = { data: undefined, isLoading: true };
     renderAt();
-    expect(screen.getByText(/loading decks/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/loading decks/i)).toBeInTheDocument();
   });
 
   it('shows an empty state when the category has no decks', () => {

@@ -11,6 +11,7 @@ import { useShelves } from './useShelves';
 import { CategorySection } from './CategorySection';
 import { TabBar } from '../shell/TabBar';
 import { EditorLink } from '../admin/EditorLink';
+import { Skeleton } from '../shell/Skeleton';
 import './discover.css';
 
 /** Discover tab — collapsible category sections that preview their decks
@@ -32,9 +33,9 @@ export function Discover() {
         <p className="sp-muted discover__subtitle">Browse decks by category and start learning.</p>
         <EditorLink />
         {isLoading ? (
-          <div aria-hidden="true">
+          <div className="discover__skeletons" aria-busy="true" aria-label="Loading categories">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="discover__shelf discover__shelf--skeleton" />
+              <Skeleton key={i} height="60px" radius="var(--sp-radius)" />
             ))}
           </div>
         ) : (

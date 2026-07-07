@@ -46,7 +46,7 @@ describe('Discover', () => {
   it('shows skeleton placeholders while shelves load', () => {
     hook.value = { data: undefined as never, isLoading: true };
     const { container } = renderDiscover();
-    expect(container.querySelectorAll('.discover__shelf--skeleton').length).toBeGreaterThan(0);
+    expect(container.querySelectorAll('.sp-skeleton').length).toBeGreaterThan(0);
     expect(screen.queryAllByTestId('cat-section')).toHaveLength(0);
   });
 });

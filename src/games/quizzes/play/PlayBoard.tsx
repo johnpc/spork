@@ -2,6 +2,7 @@ import { Suspense, type ComponentType } from 'react';
 import type { RendererProps } from './renderers';
 import { PlayHud } from './PlayHud';
 import { PlayControls } from './PlayControls';
+import { Skeleton } from '../../../features/shell/Skeleton';
 
 interface PlayBoardProps {
   p: ReturnType<typeof import('./usePlay').usePlay>;
@@ -28,7 +29,7 @@ export function PlayBoard({ p, Renderer, typed, hint, best }: PlayBoardProps) {
           {hint}
         </p>
       )}
-      <Suspense fallback={<p className="sp-muted">Loading…</p>}>
+      <Suspense fallback={<Skeleton height="20rem" radius="var(--sp-radius)" />}>
         <Renderer
           answers={p.answers}
           found={p.found}

@@ -13,6 +13,7 @@ import { useGenerateDeck } from './useGenerateDeck';
 import { NewDeckForm } from './NewDeckForm';
 import { GenerateDeckForm } from './GenerateDeckForm';
 import { GenerationRuns } from './GenerationRuns';
+import { SkeletonRows } from '../shell/SkeletonRows';
 import './admin.css';
 
 /** Admin: list every deck (any status), create new ones, publish/delete. */
@@ -46,7 +47,7 @@ export function ManageDecks() {
 
         <h2 className="admin-panel__title admin-decks__heading">All decks</h2>
         {isLoading ? (
-          <p className="sp-muted">Loading…</p>
+          <SkeletonRows count={4} />
         ) : decks.length === 0 ? (
           <p className="sp-muted">No decks yet — generate or create one above.</p>
         ) : (
