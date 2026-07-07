@@ -25,9 +25,11 @@ export function Quizzle() {
   const q = useQuizzle(id, window.localStorage);
   const done = q.done && q.started;
   const elapsed = useElapsed(done);
-  useRecordDailyOnDone('quizzle', done, { score: q.bank, total: q.total, timeSeconds: elapsed });
-  // One-per-day: a fresh entry (not yet started) after today's is done → recap.
-  const recap = useDailyGuard('quizzle');
+  // Record + gate against the puzzle's OWN date (undefined → today).
+  const day = q.quizzle?.puzzleDate ?? undefined;
+  useRecordDailyOnDone('quizzle', done, { score: q.bank, total: q.total, timeSeconds: elapsed }, day); // prettier-ignore
+  // One-per-day: a fresh entry (not yet started) after that day's is done → recap.
+  const recap = useDailyGuard('quizzle', day);
   if (q.quizzle && recap && !q.started) return <Redirect to={recap} />;
 
   return (

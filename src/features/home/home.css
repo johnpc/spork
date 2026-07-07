@@ -130,3 +130,43 @@
   opacity: 0.92;
   line-height: 1.3;
 }
+
+/* Date switcher — browse past days from the hero. Tokens only. */
+.date-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.5rem auto 0;
+  padding: 0.2rem 0.4rem;
+  border: 1px solid var(--sp-border);
+  border-radius: 999px;
+  background: var(--sp-surface);
+}
+
+.date-switcher__nav {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--sp-accent);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.date-switcher__nav:disabled {
+  color: var(--sp-text-muted);
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.date-switcher__label {
+  min-width: 6rem;
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--sp-text);
+}

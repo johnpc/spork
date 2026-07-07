@@ -23,13 +23,17 @@ export function Wordle() {
   const { id } = useParams<{ id: string }>();
   const w = useWordle(id);
   const elapsed = useElapsed(w.gameOver);
-  useRecordDailyOnDone('wordle', w.gameOver, {
-    score: w.won ? w.guesses.length : 0,
-    total: w.puzzle?.maxGuesses ?? 6,
-    timeSeconds: elapsed,
-  });
-  // One-per-day: a fresh entry after today's is done → recap.
-  const recap = useDailyGuard('wordle');
+  // Record + gate against the PUZZLE's own date, so a past-day session writes its
+  // badge (and recaps) under that date, not today. Undefined → today.
+  const day = w.puzzle?.puzzleDate ?? undefined;
+  useRecordDailyOnDone(
+    'wordle',
+    w.gameOver,
+    { score: w.won ? w.guesses.length : 0, total: w.puzzle?.maxGuesses ?? 6, timeSeconds: elapsed },
+    day,
+  );
+  // One-per-day: a fresh entry after that day's is done → recap.
+  const recap = useDailyGuard('wordle', day);
   if (w.puzzle && recap && !w.gameOver && w.guesses.length === 0) return <Redirect to={recap} />;
 
   return (

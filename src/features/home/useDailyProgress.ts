@@ -22,10 +22,11 @@ function deviceStore(): Storage | null {
 
 export function useDailyProgress(
   dailyKeys: (string | undefined)[],
+  date?: string,
   now: Date = new Date(),
   store = deviceStore(),
 ): DailyProgress {
-  const date = dayStamp(now);
+  const day = date ?? dayStamp(now);
   // Join the keys to a stable primitive so the memo re-runs on content change,
   // not on the fresh array identity Home builds each render.
   const keyId = dailyKeys.filter(Boolean).join('|');
@@ -34,7 +35,7 @@ export function useDailyProgress(
     const results = new Map<string, DailyResult>();
     if (store) {
       for (const k of keys) {
-        const r = readDailyResult(store, k, date);
+        const r = readDailyResult(store, k, day);
         if (r) results.set(k, r);
       }
     }
@@ -43,5 +44,5 @@ export function useDailyProgress(
       total: keys.length,
       resultFor: (k?: string) => (k ? (results.get(k) ?? null) : null),
     };
-  }, [keyId, date, store]);
+  }, [keyId, day, store]);
 }

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { pickDaily } from './pickDaily';
+import { pickDaily, pickForDate } from './pickDaily';
 
 const T = '2026-07-02';
 
@@ -29,5 +29,17 @@ describe('pickDaily', () => {
   it('falls back to the first item when nothing is dated', () => {
     const items = [{ id: 'a' }, { id: 'b', puzzleDate: null }];
     expect(pickDaily(items, T)?.id).toBe('a');
+  });
+});
+
+describe('pickForDate', () => {
+  const items = [
+    { id: 'a', puzzleDate: '2026-07-01' },
+    { id: 'b', puzzleDate: '2026-07-02' },
+  ];
+  it('matches only the exact date, with no fallback', () => {
+    expect(pickForDate(items, '2026-07-02')?.id).toBe('b');
+    expect(pickForDate(items, '2026-06-15')).toBeNull(); // no fallback to past
+    expect(pickForDate([], '2026-07-02')).toBeNull();
   });
 });

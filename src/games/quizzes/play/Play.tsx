@@ -32,15 +32,19 @@ export function Play() {
   const typed = usesTypedInput(p.effectiveMode);
   const hint = p.status !== 'done' ? modeHint(p.effectiveMode) : '';
   const dailyKey = dailyKeyForMode(p.quiz?.mode);
-  useRecordDailyOnDone(dailyKey, p.status === 'done', {
-    score: p.score.found,
-    total: p.score.total,
-    timeSeconds: p.timeSeconds,
-  });
-  // One-per-day: if today's puzzle of this type is already finished AND the
+  // Record + gate against the quiz's OWN date so a past-day session scores that
+  // day (undefined → today).
+  const day = p.quiz?.puzzleDate ?? undefined;
+  useRecordDailyOnDone(
+    dailyKey,
+    p.status === 'done',
+    { score: p.score.found, total: p.score.total, timeSeconds: p.timeSeconds },
+    day,
+  );
+  // One-per-day: if that day's puzzle of this type is already finished AND the
   // player isn't mid-session here, send them to the recap. `status==='idle'`
   // means a fresh entry (a just-finished session is 'done', so it stays put).
-  const recap = useDailyGuard(dailyKey);
+  const recap = useDailyGuard(dailyKey, day);
   if (p.quiz && recap && p.status === 'idle') return <Redirect to={recap} />;
 
   return (

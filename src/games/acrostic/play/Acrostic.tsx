@@ -24,13 +24,17 @@ export function Acrostic() {
   const { id } = useParams<{ id: string }>();
   const a = useAcrostic(id);
   const elapsed = useElapsed(a.complete);
-  useRecordDailyOnDone('acrostic', a.complete, {
-    score: a.solvedCount,
-    total: a.total,
-    timeSeconds: elapsed,
-  });
-  // One-per-day: a fresh entry after today's is done → recap.
-  const recap = useDailyGuard('acrostic');
+  // Record + gate against the puzzle's OWN date (past-day sessions score that
+  // day). Undefined → today.
+  const day = a.acrostic?.puzzleDate ?? undefined;
+  useRecordDailyOnDone(
+    'acrostic',
+    a.complete,
+    { score: a.solvedCount, total: a.total, timeSeconds: elapsed },
+    day,
+  );
+  // One-per-day: a fresh entry after that day's is done → recap.
+  const recap = useDailyGuard('acrostic', day);
   if (a.acrostic && recap && !a.complete && a.solvedCount === 0) return <Redirect to={recap} />;
 
   return (

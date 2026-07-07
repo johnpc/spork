@@ -12,19 +12,21 @@ function deviceStore(): KeyValueStore | null {
 }
 
 /**
- * Record today's daily result for `game` exactly once when `done` flips true.
- * Mirrors useRecordBestScore: a ref guards StrictMode's double-invoke, the daily
- * store is play-once (first finish wins), and writes no-op on quota/private-mode.
- * `now`/`store` are injectable for tests.
+ * Record a daily result for `game` on `day` (defaults to today) exactly once when
+ * `done` flips true. Threading the puzzle's OWN date lets a past-day session write
+ * its badge under the correct date. Mirrors useRecordBestScore: a ref guards
+ * StrictMode's double-invoke, the daily store is play-once (first finish wins),
+ * writes no-op on quota/private-mode. `now`/`store` are injectable for tests.
  */
 export function useRecordDailyOnDone(
   game: string,
   done: boolean,
   result: DailyResult,
+  day?: string,
   now: Date = new Date(),
   store = deviceStore(),
 ): void {
-  const date = dayStamp(now);
+  const date = day ?? dayStamp(now);
   const recorded = useRef(false);
   useEffect(() => {
     if (done && !recorded.current && store) {

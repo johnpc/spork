@@ -11,7 +11,7 @@ const NOW = new Date(2026, 6, 2); // 2026-07-02
 
 describe('useDaily', () => {
   it('is not-played on a fresh device', () => {
-    const { result } = renderHook(() => useDaily('quizzes', NOW, memStore()));
+    const { result } = renderHook(() => useDaily('quizzes', undefined, NOW, memStore()));
     expect(result.current.playedToday).toBe(false);
     expect(result.current.date).toBe('2026-07-02');
   });
@@ -20,16 +20,25 @@ describe('useDaily', () => {
     const store = memStore({
       'spork.daily.quizzes.2026-07-02': JSON.stringify({ score: 3, total: 5 }),
     });
-    const { result } = renderHook(() => useDaily('quizzes', NOW, store));
+    const { result } = renderHook(() => useDaily('quizzes', undefined, NOW, store));
     expect(result.current.playedToday).toBe(true);
     expect(result.current.result).toEqual({ score: 3, total: 5 });
   });
 
   it('record persists today’s result and flips playedToday', () => {
     const store = memStore();
-    const { result } = renderHook(() => useDaily('steps', NOW, store));
+    const { result } = renderHook(() => useDaily('steps', undefined, NOW, store));
     act(() => result.current.record({ score: 4, total: 4, timeSeconds: 30 }));
     expect(result.current.playedToday).toBe(true);
     expect(readDailyResult(store, 'steps', '2026-07-02')).toMatchObject({ score: 4, total: 4 });
+  });
+
+  it('gates an explicit PAST day, not today', () => {
+    const store = memStore({
+      'spork.daily.quizzes.2026-06-20': JSON.stringify({ score: 2, total: 5 }),
+    });
+    const { result } = renderHook(() => useDaily('quizzes', '2026-06-20', NOW, store));
+    expect(result.current.date).toBe('2026-06-20');
+    expect(result.current.result).toEqual({ score: 2, total: 5 });
   });
 });
