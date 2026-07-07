@@ -2,6 +2,7 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { generateDeckStarter } from '../deckgen/start/resource';
 import { regenerateMedia } from '../deckgen/regenerate/resource';
 import { generateQuizStarter } from '../quizgen/start/resource';
+import { dailyGenerateStarter } from '../dailygenerate/resource';
 
 /**
  * SPORK data schema.
@@ -461,6 +462,19 @@ const schema = a.schema({
     .returns(a.customType({ runId: a.string().required(), quizId: a.string().required() }))
     .authorization((allow) => [allow.group('editors')])
     .handler(a.handler.function(generateQuizStarter)),
+
+  // Backfill a full day's puzzles for a PAST date (≤ today) on first visit —
+  // GUEST-callable so browsing to an ungenerated past day self-serves. The
+  // resolver validates the date, fires an async self-invoke, and returns
+  // { date, started } immediately; generation is idempotent (skips games already
+  // present for the date), so repeat/crawler hits are cheap no-ops. The client
+  // polls the puzzle tables by puzzleDate to detect completion.
+  generateDailyPuzzles: a
+    .mutation()
+    .arguments({ puzzleDate: a.string().required() })
+    .returns(a.customType({ date: a.string().required(), started: a.boolean().required() }))
+    .authorization((allow) => [allow.guest(), allow.authenticated()])
+    .handler(a.handler.function(dailyGenerateStarter)),
 
   // Regenerate one card's image or audio (admin edit action). Synchronous —
   // a single Bedrock/Polly call, well under the resolver timeout. Editors only.

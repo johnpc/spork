@@ -9,6 +9,8 @@ import { regenerateMedia } from './deckgen/regenerate/resource';
 import { generateQuizStarter } from './quizgen/start/resource';
 import { quizgenWorker } from './quizgen/worker/resource';
 import { dailyIngest } from './dailyingest/resource';
+import { dailyGenerateStarter } from './dailygenerate/resource';
+import { dailyGenerateWorker } from './dailygenerate/worker/resource';
 
 /**
  * SPORK backend.
@@ -36,6 +38,8 @@ const backend = defineBackend({
   generateQuizStarter,
   quizgenWorker,
   dailyIngest,
+  dailyGenerateStarter,
+  dailyGenerateWorker,
 });
 
 const tables = backend.data.resources.tables;
@@ -142,4 +146,18 @@ const ingestTables: Record<string, string> = {
 for (const [envName, model] of Object.entries(ingestTables)) {
   backend.dailyIngest.addEnvironment(envName, tables[model].tableName);
   tables[model].grantWriteData(ingest);
+}
+
+// --- On-demand day generation (guest-callable mutation). STARTER validates the
+// date + async-invokes the WORKER, which reuses the ingest logic (Bedrock + the
+// game tables) plus READ for the skip-if-exists guard. Split into two functions
+// so the starter→worker invoke grant doesn't self-reference (circular-dep fix). ---
+const dayStarter = backend.dailyGenerateStarter.resources.lambda;
+const dayWorker = backend.dailyGenerateWorker.resources.lambda;
+backend.dailyGenerateStarter.addEnvironment('WORKER_FUNCTION_NAME', dayWorker.functionName);
+dayWorker.grantInvoke(dayStarter);
+dayWorker.addToRolePolicy(bedrockGrant());
+for (const [envName, model] of Object.entries(ingestTables)) {
+  backend.dailyGenerateWorker.addEnvironment(envName, tables[model].tableName);
+  tables[model].grantReadWriteData(dayWorker);
 }

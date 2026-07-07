@@ -20,7 +20,8 @@ vi.mock('./shared/generators', () => ({
   genConnections: e.genConnections,
 }));
 
-import { handler, summarize } from './handler';
+import { handler } from './handler';
+import { summarize } from './shared/generateDay';
 
 describe('daily ingest handler', () => {
   beforeEach(() => {
