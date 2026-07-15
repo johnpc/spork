@@ -9,9 +9,8 @@ import { publishedConnections } from './composeConnections';
 
 /** One puzzle by id. */
 export async function fetchConnections(id: string): Promise<ConnectionsPuzzleRecord | null> {
-  const { data } = await dataClient.models.ConnectionsPuzzle.get(
-    { id },
-    { authMode: await readAuthMode() },
+  const data = unwrap(
+    await dataClient.models.ConnectionsPuzzle.get({ id }, { authMode: await readAuthMode() }),
   );
   return data;
 }

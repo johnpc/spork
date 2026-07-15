@@ -33,4 +33,9 @@ describe('connectionsApi', () => {
     expect(out.map((p) => p.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
   });
+
+  it('fetchConnections throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchConnections('x1')).rejects.toThrow('boom');
+  });
 });

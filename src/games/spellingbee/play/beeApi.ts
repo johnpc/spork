@@ -8,9 +8,8 @@ import {
 
 /** One puzzle by id. */
 export async function fetchBee(id: string): Promise<SpellingBeePuzzleRecord | null> {
-  const { data } = await dataClient.models.SpellingBeePuzzle.get(
-    { id },
-    { authMode: await readAuthMode() },
+  const data = unwrap(
+    await dataClient.models.SpellingBeePuzzle.get({ id }, { authMode: await readAuthMode() }),
   );
   return data;
 }

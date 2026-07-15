@@ -5,7 +5,9 @@ import { publishedAcrostics } from './composeAcrostics';
 
 /** One acrostic by id. */
 export async function fetchAcrostic(id: string): Promise<AcrosticRecord | null> {
-  const { data } = await dataClient.models.Acrostic.get({ id }, { authMode: await readAuthMode() });
+  const data = unwrap(
+    await dataClient.models.Acrostic.get({ id }, { authMode: await readAuthMode() }),
+  );
   return data;
 }
 

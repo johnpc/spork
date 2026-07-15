@@ -5,9 +5,8 @@ import { publishedPuzzles } from './composeChess';
 
 /** One puzzle by id. */
 export async function fetchPuzzle(id: string): Promise<ChessAttackRecord | null> {
-  const { data } = await dataClient.models.ChessAttack.get(
-    { id },
-    { authMode: await readAuthMode() },
+  const data = unwrap(
+    await dataClient.models.ChessAttack.get({ id }, { authMode: await readAuthMode() }),
   );
   return data;
 }

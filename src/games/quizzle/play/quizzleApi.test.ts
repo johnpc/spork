@@ -34,4 +34,9 @@ describe('quizzleApi', () => {
     expect(out.map((q) => q.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
   });
+
+  it('fetchQuizzle throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchQuizzle('x1')).rejects.toThrow('boom');
+  });
 });

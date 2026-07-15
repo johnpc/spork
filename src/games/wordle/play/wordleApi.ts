@@ -14,9 +14,8 @@ export interface WordlePuzzle {
 
 /** One Wordle puzzle by id. */
 export async function fetchWordle(id: string): Promise<WordlePuzzle | null> {
-  const { data } = await dataClient.models.WordlePuzzle.get(
-    { id },
-    { authMode: await readAuthMode() },
+  const data = unwrap(
+    await dataClient.models.WordlePuzzle.get({ id }, { authMode: await readAuthMode() }),
   );
   if (!data) return null;
   return {

@@ -116,4 +116,9 @@ describe('wordleApi', () => {
       puzzleDate: undefined,
     });
   });
+
+  it('fetchWordle throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchWordle('x1')).rejects.toThrow('boom');
+  });
 });

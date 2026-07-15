@@ -33,4 +33,9 @@ describe('ladderApi', () => {
     expect(out.map((l) => l.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
   });
+
+  it('fetchLadder throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchLadder('x1')).rejects.toThrow('boom');
+  });
 });

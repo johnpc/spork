@@ -5,9 +5,8 @@ import { publishedLadders } from './composeLadders';
 
 /** One ladder by id. */
 export async function fetchLadder(id: string): Promise<WordLadderRecord | null> {
-  const { data } = await dataClient.models.WordLadder.get(
-    { id },
-    { authMode: await readAuthMode() },
+  const data = unwrap(
+    await dataClient.models.WordLadder.get({ id }, { authMode: await readAuthMode() }),
   );
   return data;
 }

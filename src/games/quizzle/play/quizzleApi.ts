@@ -5,7 +5,9 @@ import { publishedQuizzles } from './composeQuizzles';
 
 /** One quizzle by id. */
 export async function fetchQuizzle(id: string): Promise<QuizzleRecord | null> {
-  const { data } = await dataClient.models.Quizzle.get({ id }, { authMode: await readAuthMode() });
+  const data = unwrap(
+    await dataClient.models.Quizzle.get({ id }, { authMode: await readAuthMode() }),
+  );
   return data;
 }
 

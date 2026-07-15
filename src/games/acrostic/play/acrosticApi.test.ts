@@ -34,4 +34,9 @@ describe('acrosticApi', () => {
     expect(out.map((a) => a.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
   });
+
+  it('fetchAcrostic throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchAcrostic('x1')).rejects.toThrow('boom');
+  });
 });
