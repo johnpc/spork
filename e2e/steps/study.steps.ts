@@ -49,6 +49,64 @@ Then('the study session shows progress {string}', async ({ page }, prefix: strin
   await expect(page.getByTestId('study-progress')).toContainText(prefix, { timeout: 15_000 });
 });
 
+// Fail ONLY the per-deck card query so the deck row / category shelf still load —
+// this proves the surface's own error path, not a whole-app outage.
+async function failCardRead(page: import('@playwright/test').Page): Promise<void> {
+  await page.route('**/graphql', async (route) => {
+    const body = route.request().postData() ?? '';
+    if (body.includes('listCardByDeckIdAndOrd')) {
+      return route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: '{"errors":[{"message":"boom"}]}',
+      });
+    }
+    return route.continue();
+  });
+}
+
+Given(
+  'a guest opens the {string} deck with its card read failing',
+  async ({ page }, topic: string) => {
+    await failCardRead(page);
+    await page.goto(`/discover/${DECK_CATEGORY[topic] ?? 'languages'}`);
+    await page
+      .getByTestId('deck-card')
+      .filter({ hasText: new RegExp(topic) })
+      .click();
+    await expect(page).toHaveURL(/\/decks\//);
+  },
+);
+
+Then('the deck shows a retry, not a not-found message', async ({ page }) => {
+  await expect(page.getByTestId('load-error')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('load-retry')).toBeVisible();
+  await expect(page.getByText(/deck not found/i)).toHaveCount(0);
+});
+
+Given(
+  'a guest opens the {string} study session with the card read failing',
+  async ({ page }, topic: string) => {
+    // Load the deck normally first to resolve its id, then fail cards and go
+    // straight to its study URL so the study read is the one that fails.
+    await page.goto(`/discover/${DECK_CATEGORY[topic] ?? 'languages'}`);
+    await page
+      .getByTestId('deck-card')
+      .filter({ hasText: new RegExp(topic) })
+      .click();
+    await expect(page.getByTestId('deck-title')).toContainText(topic);
+    const url = new URL(page.url());
+    await failCardRead(page);
+    await page.goto(`${url.pathname}/study`);
+  },
+);
+
+Then('the study session shows a retry, not an all-caught-up message', async ({ page }) => {
+  await expect(page.getByTestId('load-error')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('load-retry')).toBeVisible();
+  await expect(page.getByTestId('study-done')).toHaveCount(0);
+});
+
 Then('four answer options are shown', async ({ page }) => {
   // A 3-card deck yields its answer + 2 distractors = 3 options; assert ≥2.
   const count = await page.getByTestId('study-opt').count();

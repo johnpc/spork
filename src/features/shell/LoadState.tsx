@@ -8,9 +8,11 @@ interface LoadStateProps {
   isError?: boolean;
   /** True when loading finished but there's nothing to show. */
   isEmpty?: boolean;
-  /** Copy for the empty state (error copy is standard). */
+  /** Copy for the default empty state (error copy is standard). */
   emptyTitle?: string;
   emptyMessage?: string;
+  /** A bespoke empty state (e.g. one with a CTA) — overrides emptyTitle/Message. */
+  emptyState?: ReactNode;
   /** Retry the failed fetch (react-query refetch). */
   onRetry?: () => void;
   /** Content-shaped loading placeholder. Defaults to card-row skeletons; pass a
@@ -29,6 +31,7 @@ export function LoadState({
   isEmpty,
   emptyTitle = 'Nothing here yet',
   emptyMessage,
+  emptyState,
   onRetry,
   skeleton,
   children,
@@ -58,6 +61,7 @@ export function LoadState({
     );
   }
   if (isEmpty) {
+    if (emptyState) return <>{emptyState}</>;
     return (
       <EmptyState
         icon={fileTrayOutline}

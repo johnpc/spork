@@ -18,6 +18,10 @@ vi.mock('../../lib/dataClient', () => ({
     },
   },
   readAuthMode: () => Promise.resolve('userPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchStudyData, gradeCard } from './studyApi';
@@ -62,5 +66,16 @@ describe('studyApi', () => {
   it('gradeCard throws when the upsert errors', async () => {
     m.create.mockResolvedValue({ errors: [{ message: 'denied' }] });
     await expect(gradeCard('d1', 'c1', null, 3, NOW)).rejects.toThrow('denied');
+  });
+
+  it('fetchStudyData throws when the cards read returns GraphQL errors', async () => {
+    m.listCards.mockResolvedValue({ data: [], errors: [{ message: 'cards down' }] });
+    await expect(fetchStudyData('d1')).rejects.toThrow('cards down');
+  });
+
+  it('fetchStudyData throws when the reviews read returns GraphQL errors', async () => {
+    m.listCards.mockResolvedValue({ data: [{ id: 'c1', ord: 0 }] });
+    m.listReviews.mockResolvedValue({ data: [], errors: [{ message: 'reviews down' }] });
+    await expect(fetchStudyData('d1')).rejects.toThrow('reviews down');
   });
 });

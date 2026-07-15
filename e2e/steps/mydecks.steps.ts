@@ -48,6 +48,29 @@ When('the test user opens the My Decks tab', async ({ page }) => {
   await page.goto('/my-decks');
 });
 
+When('the test user opens My Decks with the library read failing', async ({ page }) => {
+  // Fail the owner-scoped UserDeck list (the library read) so the surface's own
+  // error path shows — a signed-in read that would otherwise fall back to empty.
+  await page.route('**/graphql', async (route) => {
+    const body = route.request().postData() ?? '';
+    if (body.includes('listUserDecks')) {
+      return route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: '{"errors":[{"message":"boom"}]}',
+      });
+    }
+    return route.continue();
+  });
+  await page.goto('/my-decks');
+});
+
+Then('My Decks shows a retry, not a "no saved decks" message', async ({ page }) => {
+  await expect(page.getByTestId('load-error')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('load-retry')).toBeVisible();
+  await expect(page.getByTestId('empty-my-decks')).toHaveCount(0);
+});
+
 Then('{string} is listed in My Decks', async ({ page }, topic: string) => {
   // Reads the owner-scoped UserDeck row back — the real authenticated read.
   await expect(page.getByTestId('my-deck').filter({ hasText: new RegExp(topic) })).toBeVisible({

@@ -4,6 +4,10 @@ const m = vi.hoisted(() => ({ get: vi.fn(), listCards: vi.fn() }));
 vi.mock('../../lib/dataClient', () => ({
   dataClient: { models: { Deck: { get: m.get }, Card: { listCardByDeckIdAndOrd: m.listCards } } },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchDeckDetail } from './deckDetailApi';
@@ -29,5 +33,16 @@ describe('fetchDeckDetail', () => {
       { deckId: 'd1' },
       expect.objectContaining({ authMode: 'identityPool' }),
     );
+  });
+
+  it('throws when the deck read returns GraphQL errors (no false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'network down' }] });
+    await expect(fetchDeckDetail('d1')).rejects.toThrow('network down');
+  });
+
+  it('throws when the cards read returns GraphQL errors', async () => {
+    m.get.mockResolvedValue({ data: { id: 'd1', topic: 'Spanish' } });
+    m.listCards.mockResolvedValue({ data: [], errors: [{ message: 'cards down' }] });
+    await expect(fetchDeckDetail('d1')).rejects.toThrow('cards down');
   });
 });

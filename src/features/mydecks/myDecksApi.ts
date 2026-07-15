@@ -4,7 +4,7 @@
  * user automatically. A wrong authMode here returns EMPTY, not an error
  * (stoop ADR 0004).
  */
-import { dataClient, type UserDeckRecord } from '../../lib/dataClient';
+import { dataClient, unwrap, type UserDeckRecord } from '../../lib/dataClient';
 
 const USER_POOL = { authMode: 'userPool' } as const;
 
@@ -22,7 +22,8 @@ export interface SaveDeckInput {
  * library shows each deck once — the newest row wins after the sort.
  */
 export async function fetchMyDecks(): Promise<UserDeckRecord[]> {
-  const { data } = await dataClient.models.UserDeck.list({ limit: 500, ...USER_POOL });
+  // unwrap so a failed read throws (→ retry) instead of a false "no saved decks".
+  const data = unwrap(await dataClient.models.UserDeck.list({ limit: 500, ...USER_POOL }));
   const newestFirst = [...data].sort((a, b) => (b.addedAt ?? '').localeCompare(a.addedAt ?? ''));
   const seen = new Set<string>();
   return newestFirst.filter((d) => !seen.has(d.deckId) && seen.add(d.deckId));

@@ -6,6 +6,7 @@
 import {
   dataClient,
   readAuthMode,
+  unwrap,
   type CardRecord,
   type UserCardReviewRecord,
 } from '../../lib/dataClient';
@@ -23,16 +24,17 @@ export interface StudyData {
  * a guest studies the whole deck once without a userPool call that would fail. */
 export async function fetchStudyData(deckId: string, withReviews = true): Promise<StudyData> {
   const authMode = await readAuthMode();
-  const { data: cards } = await dataClient.models.Card.listCardByDeckIdAndOrd(
-    { deckId },
-    { limit: 500, authMode },
+  // unwrap so a failed read throws (→ retry) instead of a false "all caught up".
+  const cards = unwrap(
+    await dataClient.models.Card.listCardByDeckIdAndOrd({ deckId }, { limit: 500, authMode }),
   );
   if (!withReviews) return { cards, reviews: [] };
-  const { data: reviews } =
+  const reviews = unwrap(
     await dataClient.models.UserCardReview.listUserCardReviewByDeckIdAndDueAt(
       { deckId },
       { limit: 500, ...USER_POOL },
-    );
+    ),
+  );
   return { cards, reviews };
 }
 

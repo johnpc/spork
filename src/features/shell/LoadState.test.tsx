@@ -63,4 +63,18 @@ describe('LoadState', () => {
     );
     expect(screen.getByTestId('content')).toBeInTheDocument();
   });
+
+  it('renders a bespoke empty override (e.g. with a CTA) over the default', () => {
+    render(
+      <LoadState
+        isLoading={false}
+        isEmpty
+        emptyState={<div data-testid="custom-empty">Browse Discover</div>}
+      >
+        {child}
+      </LoadState>,
+    );
+    expect(screen.getByTestId('custom-empty')).toBeInTheDocument();
+    expect(screen.queryByTestId('load-empty')).not.toBeInTheDocument();
+  });
 });

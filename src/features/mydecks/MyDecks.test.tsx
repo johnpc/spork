@@ -1,8 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-type MyDecksState = { decks: unknown[]; isLoading: boolean; isAuthenticated: boolean };
+type MyDecksState = {
+  decks: unknown[];
+  isLoading: boolean;
+  isAuthenticated: boolean;
+  isError?: boolean;
+  retry?: () => void;
+};
 const hook = vi.hoisted(() => ({ value: {} as MyDecksState }));
 vi.mock('./useMyDecks', () => ({ useMyDecks: () => hook.value }));
 // DueTodayPanel does its own cross-deck fetch — stub it out of this list test.
@@ -32,6 +38,16 @@ describe('MyDecks', () => {
   it('shows an empty state when authenticated with no decks', () => {
     renderMyDecks();
     expect(screen.getByTestId('empty-my-decks')).toBeInTheDocument();
+  });
+
+  it('surfaces a retry (not a false empty) when the decks read fails', () => {
+    const retry = vi.fn();
+    hook.value = { decks: [], isLoading: false, isAuthenticated: true, isError: true, retry };
+    renderMyDecks();
+    expect(screen.getByTestId('load-error')).toBeInTheDocument();
+    expect(screen.queryByTestId('empty-my-decks')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('load-retry'));
+    expect(retry).toHaveBeenCalledTimes(1);
   });
 
   it('lists saved decks linking to the deck detail', () => {

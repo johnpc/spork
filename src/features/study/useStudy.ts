@@ -1,10 +1,8 @@
-import { useCallback, useMemo, useState } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchStudyData } from './studyApi';
-import { sessionView } from './sessionView';
-import { buildChoices } from './buildChoices';
+import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { persistGrade } from './persistGrade';
 import { useRecordOnDone } from './useRecordOnDone';
+import { useStudyData } from './useStudyData';
 import { useAuth } from '../auth/useAuth';
 
 /** Drives a multiple-choice study session: load cards + reviews, walk the
@@ -14,7 +12,6 @@ import { useAuth } from '../auth/useAuth';
 export function useStudy(deckId: string | undefined) {
   const { status } = useAuth();
   const signedIn = status === 'authenticated';
-  const enabled = !!deckId;
   const queryClient = useQueryClient();
   const [index, setIndex] = useState(0);
   const [picked, setPicked] = useState<string | null>(null);
@@ -22,19 +19,13 @@ export function useStudy(deckId: string | undefined) {
   const [direction, setDirection] = useState<'front' | 'back'>('front'); // prompt face
   const [includeAll, setIncludeAll] = useState(false); // "Review all" round when nothing is due
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['study', deckId, signedIn],
-    queryFn: () => fetchStudyData(deckId as string, signedIn),
-    enabled,
-  });
-
-  const { queue, current, done, canReviewAll } = useMemo(
-    () => sessionView(data, index, includeAll, isLoading, new Date()),
-    [data, index, includeAll, isLoading],
+  const { queue, current, done, canReviewAll, choices, isLoading, isError, retry } = useStudyData(
+    deckId,
+    signedIn,
+    index,
+    includeAll,
+    direction,
   );
-
-  // Choices are derived per card+direction; memoized so picking doesn't reshuffle.
-  const choices = useMemo(() => (current && data ? buildChoices(current.card, data.cards, direction) : null), [current, data, direction]); // prettier-ignore
 
   // Record the pick + score it. Signed-in players also persist an SM-2 grade.
   const answer = useCallback(
@@ -80,7 +71,9 @@ export function useStudy(deckId: string | undefined) {
   }, [restart]);
   return {
     isAuthenticated: signedIn,
-    isLoading: enabled && isLoading,
+    isLoading,
+    isError,
+    retry,
     current,
     choices,
     picked,

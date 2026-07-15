@@ -7,11 +7,11 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import { checkmarkDoneCircleOutline } from 'ionicons/icons';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useStudy } from './useStudy';
 import { StudyCard } from './StudyCard';
-import { EmptyState } from '../shell/EmptyState';
+import { StudyDone } from './StudyDone';
+import { LoadState } from '../shell/LoadState';
 import { SkeletonRows } from '../shell/SkeletonRows';
 import './study.css';
 
@@ -31,63 +31,47 @@ export function Study() {
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {s.isLoading ? (
-          <SkeletonRows count={1} label="Loading study session" />
-        ) : s.current && s.choices ? (
-          <>
-            <div className="study__bar">
-              <span className="sp-muted study__progress" data-testid="study-progress">
-                {s.position.index + 1} / {s.position.total}
-              </span>
-              <button
-                type="button"
-                className="study__direction"
-                data-testid="study-direction"
-                onClick={s.toggleDirection}
-              >
-                {s.direction === 'front' ? 'Front → Back' : 'Back → Front'} ⇄
-              </button>
-            </div>
-            <StudyCard
-              card={s.current.card}
-              choices={s.choices}
-              direction={s.direction}
-              picked={s.picked}
-              onAnswer={s.answer}
-              onNext={s.next}
+        {/* Loading + a retryable error gate; the "session complete" state below
+            is a legitimate end state, not a failed load, so it stays as content. */}
+        <LoadState
+          isLoading={s.isLoading}
+          isError={s.isError}
+          onRetry={s.retry}
+          skeleton={<SkeletonRows count={1} label="Loading study session" />}
+        >
+          {s.current && s.choices ? (
+            <>
+              <div className="study__bar">
+                <span className="sp-muted study__progress" data-testid="study-progress">
+                  {s.position.index + 1} / {s.position.total}
+                </span>
+                <button
+                  type="button"
+                  className="study__direction"
+                  data-testid="study-direction"
+                  onClick={s.toggleDirection}
+                >
+                  {s.direction === 'front' ? 'Front → Back' : 'Back → Front'} ⇄
+                </button>
+              </div>
+              <StudyCard
+                card={s.current.card}
+                choices={s.choices}
+                direction={s.direction}
+                picked={s.picked}
+                onAnswer={s.answer}
+                onNext={s.next}
+              />
+            </>
+          ) : (
+            <StudyDone
+              deckId={id}
+              score={s.score}
+              canReviewAll={s.canReviewAll}
+              onReviewAll={s.reviewAll}
             />
-          </>
-        ) : (
-          <EmptyState
-            icon={checkmarkDoneCircleOutline}
-            title={s.score.total > 0 ? 'Session complete!' : 'All caught up!'}
-            message={
-              s.score.total > 0
-                ? `You got ${s.score.correct} of ${s.score.total} correct.`
-                : 'No cards are due right now. Come back later to keep your streak going.'
-            }
-            testId="study-done"
-          >
-            {s.score.total > 0 && (
-              <p className="study__score" data-testid="study-score">
-                {Math.round((s.score.correct / s.score.total) * 100)}%
-              </p>
-            )}
-            {s.canReviewAll && (
-              <button
-                type="button"
-                className="empty-state__cta"
-                data-testid="study-review-all"
-                onClick={s.reviewAll}
-              >
-                Review all cards
-              </button>
-            )}
-            <Link to={`/decks/${id}`} className="empty-state__cta study__back-link">
-              Back to deck
-            </Link>
-          </EmptyState>
-        )}
+          )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );
