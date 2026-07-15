@@ -5,9 +5,13 @@ const { Given, When, Then } = createBdd();
 
 Given('the player opens the {string} ladder', async ({ page }, pair: string) => {
   await page.goto('/steps');
+  // Accumulated daily-steps puzzles can share a start→target pair with the static
+  // seed but have a DIFFERENT par path — so target the static seed (a UUID href),
+  // not a daily one (`/steps/daily-steps-*`), whose solution the assertions expect.
   await page
-    .getByTestId('ladder-link')
+    .locator('[data-testid="ladder-link"]:not([href^="/steps/daily-"])')
     .filter({ hasText: new RegExp(pair) })
+    .first()
     .click();
   await expect(page.getByTestId('steps')).toBeVisible({ timeout: 15_000 });
 });

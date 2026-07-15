@@ -5,9 +5,12 @@ const { Given, When, Then } = createBdd();
 
 Given('the player opens the {string} acrostic', async ({ page }, title: string) => {
   await page.goto('/acrostic');
+  // Target the static seed (a UUID href), not an accumulated daily acrostic
+  // (`/acrostic/daily-*`) that may share a title but has different clues/answers.
   await page
-    .getByTestId('acrostic-link')
+    .locator('[data-testid="acrostic-link"]:not([href^="/acrostic/daily-"])')
     .filter({ hasText: new RegExp(title) })
+    .first()
     .click();
   await expect(page.getByTestId('acrostic')).toBeVisible({ timeout: 15_000 });
 });

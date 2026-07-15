@@ -5,9 +5,13 @@ const { Given, When, Then } = createBdd();
 
 Given('the player opens the {string} quizzle', async ({ page }, topic: string) => {
   await page.goto('/quizzle');
+  // Accumulated daily quizzles can share a topic with the static seed but have
+  // DIFFERENT questions/answers — so target the static seed (a UUID href), not a
+  // daily one (`/quizzle/daily-quizzle-*`), whose content the assertions expect.
   await page
-    .getByTestId('quizzle-link')
+    .locator('[data-testid="quizzle-link"]:not([href^="/quizzle/daily-"])')
     .filter({ hasText: new RegExp(topic) })
+    .first()
     .click();
   await expect(page.getByTestId('quizzle')).toBeVisible({ timeout: 15_000 });
 });
