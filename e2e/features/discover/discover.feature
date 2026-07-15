@@ -26,3 +26,9 @@ Feature: Discover sections
   Scenario: Discover surfaces a retry when categories fail to load
     Given a visitor opens Discover with a failing network
     Then Discover shows a retry, not a blank list
+
+  # A failed deck fetch inside a section must offer a retry, not a false "no decks".
+  Scenario: An expanded section surfaces a retry when its decks fail to load
+    Given a visitor opens Discover with deck reads failing
+    When they expand the "Languages" section
+    Then the section shows a retry, not a "no decks" message

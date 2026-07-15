@@ -42,7 +42,17 @@ describe('CategorySection', () => {
   it('starts open when defaultOpen and shows an empty hint with no decks', () => {
     decks.value = { data: [], isLoading: false };
     renderSection(true);
-    expect(screen.getByTestId('cat-section-empty')).toBeInTheDocument();
+    expect(screen.getByTestId('load-empty')).toBeInTheDocument();
+  });
+
+  it('surfaces a retry (not a false empty) when the deck read fails', () => {
+    const refetch = vi.fn();
+    decks.value = { data: undefined, isLoading: false, isError: true, refetch } as never;
+    renderSection(true);
+    expect(screen.getByTestId('load-error')).toBeInTheDocument();
+    expect(screen.queryByTestId('load-empty')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('load-retry'));
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 
   it('links to the full category when there are more than the preview count', () => {

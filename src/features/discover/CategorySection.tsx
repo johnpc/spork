@@ -1,15 +1,16 @@
 import { useState } from 'react';
 import { IonIcon } from '@ionic/react';
 import { chevronDown, chevronForward } from 'ionicons/icons';
-import { Link } from 'react-router-dom';
 import { useDecks } from './useDecks';
-import { DeckCard } from './DeckCard';
+import { DeckRail } from './DeckRail';
+import { LoadState } from '../shell/LoadState';
 import { Skeleton } from '../shell/Skeleton';
 import type { Shelf } from './composeShelves';
 
 /** A collapsible Discover section: a category header that, when open, previews
  * its published decks inline (horizontal scroll) so users don't have to drill
- * in to see what's inside. Decks load lazily the first time it's expanded. */
+ * in to see what's inside. Decks load lazily the first time it's expanded; a
+ * failed load surfaces a retry (via LoadState) instead of a false empty. */
 export function CategorySection({
   shelf,
   defaultOpen = false,
@@ -18,7 +19,16 @@ export function CategorySection({
   defaultOpen?: boolean;
 }) {
   const [open, setOpen] = useState(defaultOpen);
-  const { data: decks, isLoading } = useDecks(open ? shelf.slug : undefined);
+  const { data: decks, isLoading, isError, refetch } = useDecks(open ? shelf.slug : undefined);
+  const railSkeleton = (
+    <div className="cat-section__rail" aria-busy="true" aria-label="Loading decks">
+      {[0, 1, 2].map((i) => (
+        <div key={i} className="cat-section__item">
+          <Skeleton height="7.5rem" radius="var(--sp-radius)" />
+        </div>
+      ))}
+    </div>
+  );
 
   return (
     <section className="cat-section" data-testid="cat-section">
@@ -40,34 +50,16 @@ export function CategorySection({
       </button>
       {open && (
         <div className="cat-section__body">
-          {isLoading ? (
-            <div className="cat-section__rail" aria-busy="true" aria-label="Loading decks">
-              {[0, 1, 2].map((i) => (
-                <div key={i} className="cat-section__item">
-                  <Skeleton height="7.5rem" radius="var(--sp-radius)" />
-                </div>
-              ))}
-            </div>
-          ) : decks && decks.length > 0 ? (
-            <>
-              <div className="cat-section__rail">
-                {decks.slice(0, 6).map((deck) => (
-                  <div key={deck.id} className="cat-section__item">
-                    <DeckCard deck={deck} />
-                  </div>
-                ))}
-              </div>
-              {decks.length > 6 && (
-                <Link to={`/discover/${shelf.slug}`} className="cat-section__all">
-                  See all {decks.length} decks →
-                </Link>
-              )}
-            </>
-          ) : (
-            <p className="sp-muted cat-section__hint" data-testid="cat-section-empty">
-              No decks here yet.
-            </p>
-          )}
+          <LoadState
+            isLoading={isLoading}
+            isError={isError}
+            isEmpty={!isLoading && !isError && (decks ?? []).length === 0}
+            emptyTitle="No decks here yet"
+            onRetry={() => void refetch()}
+            skeleton={railSkeleton}
+          >
+            <DeckRail decks={decks ?? []} slug={shelf.slug} />
+          </LoadState>
         </div>
       )}
     </section>
