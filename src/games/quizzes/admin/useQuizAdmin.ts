@@ -53,6 +53,11 @@ export function useQuizAdmin() {
     runs: runs.data ?? [],
     drafts: drafts.data ?? [],
     isLoading: runs.isLoading,
+    isError: runs.isError || drafts.isError,
+    retry: () => {
+      void runs.refetch();
+      void drafts.refetch();
+    },
     generate: start.mutateAsync,
     isGenerating: start.isPending,
     publish: publish.mutateAsync,

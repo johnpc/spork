@@ -5,6 +5,10 @@ vi.mock('../../lib/dataClient', () => ({
   dataClient: {
     models: { Deck: { list: m.list, create: m.create, update: m.update, delete: m.del } },
   },
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchAllDecks, createDeck, setDeckPublished, deleteDeck } from './adminDeckApi';
@@ -64,5 +68,10 @@ describe('adminDeckApi', () => {
   it('deleteDeck throws on error', async () => {
     m.del.mockResolvedValue({ errors: [{ message: 'nope' }] });
     await expect(deleteDeck('d1')).rejects.toThrow('nope');
+  });
+
+  it('fetchAllDecks throws when the read returns GraphQL errors (no silent empty)', async () => {
+    m.list.mockResolvedValue({ data: [], errors: [{ message: 'network down' }] });
+    await expect(fetchAllDecks()).rejects.toThrow('network down');
   });
 });

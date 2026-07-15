@@ -11,6 +11,7 @@ import { useQuizAdmin } from './useQuizAdmin';
 import { GenerateQuizForm } from './GenerateQuizForm';
 import { QuizRuns } from './QuizRuns';
 import { DraftQuizzes } from './DraftQuizzes';
+import { LoadState } from '../../../features/shell/LoadState';
 import './quizAdmin.css';
 
 /** Quiz admin: generate a quiz with AI, watch the run, then publish the draft. */
@@ -32,15 +33,19 @@ export function QuizAdmin() {
           <GenerateQuizForm onGenerate={a.generate} />
         </section>
 
-        <section className="quiz-admin__section">
-          <h2 className="sp-heading">Recent runs</h2>
-          <QuizRuns runs={a.runs} />
-        </section>
+        {/* The generate form above stays usable; only the runs/drafts reads gate
+            here — a failed load shows a retry, not silently empty sections. */}
+        <LoadState isLoading={a.isLoading} isError={a.isError} onRetry={a.retry}>
+          <section className="quiz-admin__section">
+            <h2 className="sp-heading">Recent runs</h2>
+            <QuizRuns runs={a.runs} />
+          </section>
 
-        <section className="quiz-admin__section">
-          <h2 className="sp-heading">Drafts</h2>
-          <DraftQuizzes drafts={a.drafts} onPublish={a.publish} publishingId={a.publishingId} />
-        </section>
+          <section className="quiz-admin__section">
+            <h2 className="sp-heading">Drafts</h2>
+            <DraftQuizzes drafts={a.drafts} onPublish={a.publish} publishingId={a.publishingId} />
+          </section>
+        </LoadState>
       </IonContent>
     </IonPage>
   );

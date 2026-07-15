@@ -24,6 +24,8 @@ export function useAdminDecks() {
   return {
     decks: query.data ?? [],
     isLoading: query.isLoading,
+    isError: query.isError,
+    retry: () => void query.refetch(),
     create: create.mutateAsync,
     setPublished: publish.mutate,
     remove: remove.mutate,

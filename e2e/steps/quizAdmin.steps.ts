@@ -10,7 +10,7 @@ const PASSWORD = process.env.TEST_PASSWORD;
 // No Date.now() at import time (stable); computed on first use in the step.
 let topic = '';
 
-Given('the editor opens Quiz Studio', async ({ page }) => {
+async function signInEditor(page: import('@playwright/test').Page): Promise<void> {
   if (!USERNAME || !PASSWORD) test.skip(true, 'TEST_USERNAME / TEST_PASSWORD not set');
   await page.goto('/signin');
   await page.locator('input[type="email"]').fill(USERNAME as string);
@@ -24,8 +24,36 @@ Given('the editor opens Quiz Studio', async ({ page }) => {
     undefined,
     { timeout: 15_000 },
   );
+}
+
+Given('the editor opens Quiz Studio', async ({ page }) => {
+  await signInEditor(page);
   await page.goto('/admin/quizzes');
   await expect(page.getByTestId('quiz-gen-form')).toBeVisible({ timeout: 15_000 });
+});
+
+Given('the editor opens Quiz Studio with the runs and drafts reads failing', async ({ page }) => {
+  await signInEditor(page);
+  // Fail the runs + drafts reads so their sections gate to a retry; the
+  // generate form above still renders (it's not gated by these reads).
+  await page.route('**/graphql', async (route) => {
+    const body = route.request().postData() ?? '';
+    if (body.includes('listGenerationRuns') || body.includes('listQuizzes')) {
+      return route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: '{"errors":[{"message":"boom"}]}',
+      });
+    }
+    return route.continue();
+  });
+  await page.goto('/admin/quizzes');
+});
+
+Then('Quiz Studio shows a retry, and the generate form is still available', async ({ page }) => {
+  await expect(page.getByTestId('load-error')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('load-retry')).toBeVisible();
+  await expect(page.getByTestId('quiz-gen-form')).toBeVisible();
 });
 
 When(

@@ -2,7 +2,7 @@
  * Client wrappers for the deck-gen custom mutations + the GenerationRun read.
  * Editors only — these go through the userPool auth path (group claims in JWT).
  */
-import { dataClient, type GenerationRunRecord } from '../../lib/dataClient';
+import { dataClient, unwrap, type GenerationRunRecord } from '../../lib/dataClient';
 
 const EDITOR = { authMode: 'userPool' } as const;
 
@@ -34,6 +34,7 @@ export async function regenerateCardMedia(
 
 /** Recent generation runs for the admin dashboard, newest first. */
 export async function fetchGenerationRuns(): Promise<GenerationRunRecord[]> {
-  const { data } = await dataClient.models.GenerationRun.list({ limit: 100, ...EDITOR });
+  // unwrap so a failed read throws (→ retry) instead of a silently empty list.
+  const data = unwrap(await dataClient.models.GenerationRun.list({ limit: 100, ...EDITOR }));
   return [...data].sort((a, b) => (b.startedAt ?? '').localeCompare(a.startedAt ?? ''));
 }

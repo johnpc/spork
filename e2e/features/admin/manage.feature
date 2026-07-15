@@ -25,3 +25,10 @@ Feature: Admin deck management (editor)
     Given the editor signs in
     When the editor opens deck management
     Then the AI generate-deck form is available
+
+  # A failed deck-list read must offer a retry, not a false "no decks yet" — and
+  # the generate/create forms above must stay usable.
+  Scenario: A failed deck-list read shows a retry, not a false empty
+    Given the editor signs in
+    When the editor opens deck management with the deck list read failing
+    Then the deck list shows a retry, and the generate form is still available

@@ -9,6 +9,8 @@ const base = () => ({
     { id: 'd2', topic: 'Greek Gods', status: 'DRAFT' },
   ],
   isLoading: false,
+  isError: false,
+  retry: vi.fn(),
   create: vi.fn().mockResolvedValue('id'),
   setPublished: vi.fn(),
   remove: vi.fn(),
@@ -60,5 +62,16 @@ describe('ManageDecks', () => {
     renderPage();
     fireEvent.click(screen.getAllByRole('button', { name: 'Delete' })[0]);
     expect(hook.value.remove).toHaveBeenCalledWith('d1');
+  });
+
+  it('surfaces a retry (not a false empty) when the deck list fails to load', () => {
+    hook.value = { ...base(), decks: [], isError: true };
+    renderPage();
+    expect(screen.getByTestId('load-error')).toBeInTheDocument();
+    expect(screen.queryAllByTestId('admin-deck')).toHaveLength(0);
+    // The generate form above stays available even when the list read fails.
+    expect(screen.getByTestId('generate-form')).toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('load-retry'));
+    expect(hook.value.retry).toHaveBeenCalledTimes(1);
   });
 });
