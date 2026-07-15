@@ -21,3 +21,8 @@ Feature: Discover sections
     Given a visitor opens Discover
     When they expand the "Languages" section
     Then a deck titled "Top Spanish Phrases" is visible
+
+  # A failed category fetch must offer a retry, not a silently blank Discover.
+  Scenario: Discover surfaces a retry when categories fail to load
+    Given a visitor opens Discover with a failing network
+    Then Discover shows a retry, not a blank list

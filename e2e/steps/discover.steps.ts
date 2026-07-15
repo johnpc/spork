@@ -16,6 +16,23 @@ Given('a visitor opens Discover', async ({ page }) => {
   await expect(page).toHaveURL(/\/discover$/);
 });
 
+Given('a visitor opens Discover with a failing network', async ({ page }) => {
+  await page.route('**/graphql', (route) =>
+    route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: '{"errors":[{"message":"boom"}]}',
+    }),
+  );
+  await page.goto('/discover');
+  await expect(page).toHaveURL(/\/discover$/);
+});
+
+Then('Discover shows a retry, not a blank list', async ({ page }) => {
+  await expect(page.getByTestId('load-error')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('load-retry')).toBeVisible();
+});
+
 Then('a category section {string} is visible', async ({ page }, title: string) => {
   // Assert on a REAL seeded category rendered as a section header — the guest
   // read of the Category rows.
