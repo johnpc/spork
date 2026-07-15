@@ -15,3 +15,9 @@ Feature: Daily puzzles — one of each type per day
   Scenario: In Order opens today's Order Up puzzle
     Given a visitor opens the "in-order" daily game
     Then the order-up board is shown
+
+  # If the puzzle-list fetch fails (a flaky network — "I clicked play and nothing
+  # happened"), the entry screen must offer a retry, never hang on "Loading…".
+  Scenario: A failed puzzle-list fetch shows a retry, not an endless spinner
+    Given a visitor opens the "worldle" daily game with a failing network
+    Then a retry prompt is shown, not an endless spinner

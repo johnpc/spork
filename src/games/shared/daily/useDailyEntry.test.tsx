@@ -58,4 +58,20 @@ describe('useDailyEntry', () => {
     expect(result.current.game).toBeUndefined();
     expect(result.current.playPath).toBeNull();
   });
+
+  it('surfaces loadError (not a silent hang) when the list fetch fails', async () => {
+    vi.spyOn(daily, 'useDaily').mockReturnValue({
+      date: '2026-07-02',
+      playedToday: false,
+      result: null,
+      record: vi.fn(),
+    });
+    vi.spyOn(DAILY_GAMES.worldle, 'fetchList').mockRejectedValue(new Error('network'));
+    const { result } = renderHook(() => useDailyEntry('worldle'), { wrapper: wrapper() });
+    await waitFor(() => expect(result.current.loadError).toBe(true));
+    // Not stuck "loading", and retry is callable (re-runs the query).
+    expect(result.current.isLoading).toBe(false);
+    expect(result.current.playPath).toBeNull();
+    expect(typeof result.current.retry).toBe('function');
+  });
 });

@@ -4,7 +4,7 @@ const fetchAuthSession = vi.hoisted(() => vi.fn());
 vi.mock('aws-amplify/data', () => ({ generateClient: () => ({ models: {} }) }));
 vi.mock('aws-amplify/auth', () => ({ fetchAuthSession }));
 
-import { readAuthMode } from './dataClient';
+import { readAuthMode, unwrap } from './dataClient';
 
 describe('readAuthMode', () => {
   beforeEach(() => {
@@ -24,5 +24,19 @@ describe('readAuthMode', () => {
   it('falls back to identityPool when the session lookup throws', async () => {
     fetchAuthSession.mockRejectedValue(new Error('no session'));
     expect(await readAuthMode()).toBe('identityPool');
+  });
+});
+
+describe('unwrap', () => {
+  it('returns the data when there are no errors', () => {
+    expect(unwrap({ data: [1, 2, 3] })).toEqual([1, 2, 3]);
+    expect(unwrap({ data: [], errors: [] })).toEqual([]); // empty errors = success
+  });
+
+  it('throws (joining messages) when the call returned GraphQL errors', () => {
+    expect(() => unwrap({ data: [], errors: [{ message: 'boom' }] })).toThrow('boom');
+    expect(() => unwrap({ data: null, errors: [{ message: 'a' }, { message: 'b' }] })).toThrow(
+      'a; b',
+    );
   });
 });

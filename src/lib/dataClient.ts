@@ -23,6 +23,18 @@ export async function readAuthMode(): Promise<'userPool' | 'identityPool'> {
   }
 }
 
+/**
+ * Unwrap an Amplify list/get result, THROWING when the call returned GraphQL
+ * errors. Amplify resolves (never rejects) on a failed request — it hands back
+ * `{ data: [] , errors: [...] }` — so a transient network/auth failure otherwise
+ * looks identical to "genuinely empty", silently degrading a read to an empty
+ * list. Throwing lets react-query treat it as an error (retry + surfaced state)
+ * instead of a false empty. Pure over its input. */
+export function unwrap<T>(result: { data: T; errors?: readonly { message: string }[] }): T {
+  if (result.errors?.length) throw new Error(result.errors.map((e) => e.message).join('; '));
+  return result.data;
+}
+
 export type CategoryRecord = Schema['Category']['type'];
 export type DeckRecord = Schema['Deck']['type'];
 export type CardRecord = Schema['Card']['type'];

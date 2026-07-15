@@ -1,6 +1,6 @@
 /** Wordle puzzle read paths. Guest-readable (per-call authMode). Wordle is
  * guest-only; best results live on the device (localStorage). */
-import { dataClient, readAuthMode } from '../../../lib/dataClient';
+import { dataClient, readAuthMode, unwrap } from '../../../lib/dataClient';
 
 export interface WordlePuzzle {
   id: string;
@@ -32,10 +32,12 @@ export async function fetchWordle(id: string): Promise<WordlePuzzle | null> {
 
 /** All PUBLISHED Wordle puzzles for the home list. */
 export async function fetchWordles(): Promise<WordlePuzzle[]> {
-  const { data } = await dataClient.models.WordlePuzzle.list({
-    limit: 200,
-    authMode: await readAuthMode(),
-  });
+  const data = unwrap(
+    await dataClient.models.WordlePuzzle.list({
+      limit: 200,
+      authMode: await readAuthMode(),
+    }),
+  );
   return data
     .filter((p) => p.status === 'PUBLISHED')
     .sort((a, b) => (b.puzzleDate ?? '').localeCompare(a.puzzleDate ?? ''))

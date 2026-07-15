@@ -12,12 +12,15 @@ interface DailyEntryBodyProps {
   generating: boolean;
   genError: boolean;
   empty: boolean;
+  loadError: boolean;
+  onRetry: () => void;
   next: { slug: string; name: string } | null;
 }
 
-/** The state body of the daily-entry screen: recap (already finished),
- * generating (backfilling a past day), a graceful empty state, or the loading
- * skeleton. The redirect-into-play case is handled by the parent. */
+/** The state body of the daily-entry screen: recap (already finished), a
+ * failed list fetch (retryable), generating (backfilling a past day), a graceful
+ * empty state, or the loading skeleton. The redirect-into-play case is handled
+ * by the parent. */
 export function DailyEntryBody(p: DailyEntryBodyProps) {
   if (p.playedToday && p.result) {
     return (
@@ -30,6 +33,17 @@ export function DailyEntryBody(p: DailyEntryBodyProps) {
         nextTo={p.next ? `/daily/${p.next.slug}` : undefined}
         nextName={p.next?.name}
       />
+    );
+  }
+  if (p.loadError) {
+    return (
+      <div className="daily-empty" data-testid="daily-load-error">
+        <p className="sp-heading">Couldn’t load the puzzle</p>
+        <p className="sp-muted">Check your connection and try again.</p>
+        <button className="empty-state__cta" onClick={p.onRetry} data-testid="daily-load-retry">
+          Retry
+        </button>
+      </div>
     );
   }
   if (p.genError) {

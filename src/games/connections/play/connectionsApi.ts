@@ -1,5 +1,10 @@
 /** Connections read paths. Guest-readable (per-call authMode). */
-import { dataClient, readAuthMode, type ConnectionsPuzzleRecord } from '../../../lib/dataClient';
+import {
+  dataClient,
+  readAuthMode,
+  unwrap,
+  type ConnectionsPuzzleRecord,
+} from '../../../lib/dataClient';
 import { publishedConnections } from './composeConnections';
 
 /** One puzzle by id. */
@@ -13,9 +18,11 @@ export async function fetchConnections(id: string): Promise<ConnectionsPuzzleRec
 
 /** All PUBLISHED puzzles for the Connections home. */
 export async function fetchConnectionsList(): Promise<ConnectionsPuzzleRecord[]> {
-  const { data } = await dataClient.models.ConnectionsPuzzle.list({
-    limit: 200,
-    authMode: await readAuthMode(),
-  });
+  const data = unwrap(
+    await dataClient.models.ConnectionsPuzzle.list({
+      limit: 200,
+      authMode: await readAuthMode(),
+    }),
+  );
   return publishedConnections(data);
 }

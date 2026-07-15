@@ -49,6 +49,8 @@ export function DailyEntry() {
           generating={entry.generating}
           genError={entry.genError}
           empty={entry.empty}
+          loadError={entry.loadError}
+          onRetry={entry.retry}
           next={next}
         />
       </IonContent>
