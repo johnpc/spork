@@ -11,7 +11,7 @@ export function DeckCard({ deck }: { deck: DeckCardData }) {
     <Link to={`/decks/${deck.id}`} className="deck-card" data-testid="deck-card">
       <div className="deck-card__cover">
         {coverUrl ? (
-          <img className="deck-card__img" src={coverUrl} alt="" />
+          <img className="deck-card__img" src={coverUrl} alt="" loading="lazy" decoding="async" />
         ) : (
           <div className="deck-card__placeholder">
             {/* Decorative placeholder icon — aria-hidden on the icon itself so

@@ -27,6 +27,7 @@ export function PictureBoxTile({ tile }: { tile: PictureTile }) {
           className="picture-box__image"
           src={src}
           alt={tile.found ? tile.label : 'Mystery image'}
+          decoding="async"
         />
       ) : (
         <span

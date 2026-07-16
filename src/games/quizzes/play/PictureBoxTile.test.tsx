@@ -17,11 +17,15 @@ const tile = (over: Partial<PictureTile>): PictureTile => ({
 });
 
 describe('PictureBoxTile', () => {
-  it('renders a full URL directly (no media resolution)', () => {
+  it('renders a full URL directly (no media resolution), decoding off the main thread', () => {
     useMediaUrl.mockReturnValue(null);
     const { container } = render(<PictureBoxTile tile={tile({ image: 'https://x/e.webp' })} />);
-    expect(container.querySelector('img')?.getAttribute('src')).toBe('https://x/e.webp');
+    const img = container.querySelector('img');
+    expect(img?.getAttribute('src')).toBe('https://x/e.webp');
     expect(useMediaUrl).toHaveBeenCalledWith(null); // URL path bypasses the resolver
+    // Async decode keeps a revealed tile from janking the board (not lazy — tiles
+    // are the active game surface and may be revealed at any moment).
+    expect(img?.getAttribute('decoding')).toBe('async');
   });
 
   it('resolves an S3 media key to a presigned URL', () => {

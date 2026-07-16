@@ -26,14 +26,15 @@ describe('DeckCard', () => {
     expect(screen.getByTestId('deck-card')).toHaveAttribute('href', '/decks/d1');
   });
 
-  it('shows the cover image once its URL resolves', () => {
+  it('shows the cover image once its URL resolves, lazily (off-screen covers defer)', () => {
     media.url = 'https://s3/cover.png';
     const { container } = renderCard();
     // alt="" is decorative (no img role), so query the element directly.
-    expect(container.querySelector('.deck-card__img')).toHaveAttribute(
-      'src',
-      'https://s3/cover.png',
-    );
+    const img = container.querySelector('.deck-card__img');
+    expect(img).toHaveAttribute('src', 'https://s3/cover.png');
+    // Grid covers lazy-load so a shelf of decks doesn't fetch every off-screen image.
+    expect(img).toHaveAttribute('loading', 'lazy');
+    expect(img).toHaveAttribute('decoding', 'async');
   });
 
   it('shows a placeholder when there is no cover', () => {
