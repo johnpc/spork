@@ -23,4 +23,12 @@ describe('publishedQuizzes', () => {
     ]);
     expect(out.map((q) => q.id)).toEqual(['created', 'new', 'old']);
   });
+
+  it('excludes daily-generated quizzes (they live on /daily/quiz-*)', () => {
+    const out = publishedQuizzes([
+      quiz({ id: 'evergreen' }),
+      quiz({ id: 'daily-classic-2026-07-15' }),
+    ]);
+    expect(out.map((q) => q.id)).toEqual(['evergreen']);
+  });
 });

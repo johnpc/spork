@@ -17,4 +17,11 @@ describe('publishedQuizzles', () => {
   it('returns empty when none are published', () => {
     expect(publishedQuizzles([rec({ id: 'x', status: 'DRAFT' })])).toEqual([]);
   });
+  it('excludes daily-generated quizzles (they live on /daily/quizzle)', () => {
+    const out = publishedQuizzles([
+      rec({ id: 'evergreen', status: 'PUBLISHED' }),
+      rec({ id: 'daily-quizzle-2026-07-15', status: 'PUBLISHED' }),
+    ]);
+    expect(out.map((q) => q.id)).toEqual(['evergreen']);
+  });
 });

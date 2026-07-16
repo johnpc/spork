@@ -121,4 +121,21 @@ describe('wordleApi', () => {
     m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
     await expect(fetchWordle('x1')).rejects.toThrow('boom');
   });
+
+  it('fetchWordles excludes daily-generated puzzles (they live on /daily/wordle)', async () => {
+    m.list.mockResolvedValue({
+      data: [
+        { id: 'evergreen', status: 'PUBLISHED', answer: 'crane', wordLength: 5, maxGuesses: 6 },
+        {
+          id: 'daily-wordle-2026-07-15',
+          status: 'PUBLISHED',
+          answer: 'plumb',
+          wordLength: 5,
+          maxGuesses: 6,
+        },
+      ],
+    });
+    const out = await fetchWordles();
+    expect(out.map((p) => p.id)).toEqual(['evergreen']);
+  });
 });
