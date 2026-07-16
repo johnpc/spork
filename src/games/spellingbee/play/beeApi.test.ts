@@ -38,4 +38,15 @@ describe('beeApi', () => {
     m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
     await expect(fetchBee('x1')).rejects.toThrow('boom');
   });
+
+  it('fetchBees excludes daily-generated puzzles (they live on /daily/spellingbee)', async () => {
+    m.list.mockResolvedValue({
+      data: [
+        { id: 'evergreen', status: 'PUBLISHED', puzzleDate: '2026-01-01' },
+        { id: 'daily-spellingbee-2026-07-15', status: 'PUBLISHED', puzzleDate: '2026-07-15' },
+      ],
+    });
+    const out = await fetchBees();
+    expect(out.map((b) => b.id)).toEqual(['evergreen']);
+  });
 });
