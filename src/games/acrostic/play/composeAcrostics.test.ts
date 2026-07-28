@@ -19,4 +19,12 @@ describe('publishedAcrostics', () => {
   it('returns empty when nothing is published', () => {
     expect(publishedAcrostics([rec({ id: 'x', status: 'DRAFT' })])).toEqual([]);
   });
+
+  it('excludes daily-generated acrostics (they live on /daily/acrostic)', () => {
+    const out = publishedAcrostics([
+      rec({ id: 'evergreen', status: 'PUBLISHED' }),
+      rec({ id: 'daily-acrostic-2026-07-15', status: 'PUBLISHED' }),
+    ]);
+    expect(out.map((a) => a.id)).toEqual(['evergreen']);
+  });
 });

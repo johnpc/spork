@@ -59,4 +59,16 @@ describe('publishedConnections', () => {
     // Same publishedAt (a seed batch) — puzzleDate decides: newest first.
     expect(publishedConnections(puzzles).map((p) => p.id)).toEqual(['new', 'old']);
   });
+
+  it('excludes daily-generated puzzles (they live on /daily/connections)', () => {
+    const puzzles: ConnectionsPuzzleRecord[] = [
+      { ...base, id: 'evergreen', status: 'PUBLISHED' } as ConnectionsPuzzleRecord,
+      {
+        ...base,
+        id: 'daily-connections-2026-07-15',
+        status: 'PUBLISHED',
+      } as ConnectionsPuzzleRecord,
+    ];
+    expect(publishedConnections(puzzles).map((p) => p.id)).toEqual(['evergreen']);
+  });
 });

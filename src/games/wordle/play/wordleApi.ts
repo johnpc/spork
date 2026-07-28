@@ -1,6 +1,7 @@
 /** Wordle puzzle read paths. Guest-readable (per-call authMode). Wordle is
  * guest-only; best results live on the device (localStorage). */
 import { dataClient, readAuthMode, unwrap } from '../../../lib/dataClient';
+import { isDailyPuzzle } from '../../shared/daily/isDailyPuzzle';
 
 export interface WordlePuzzle {
   id: string;
@@ -29,7 +30,9 @@ export async function fetchWordle(id: string): Promise<WordlePuzzle | null> {
   };
 }
 
-/** All PUBLISHED Wordle puzzles for the home list. */
+/** Evergreen PUBLISHED Wordle puzzles for the home list. Daily-generated puzzles
+ * are excluded — they live on /daily/wordle, so this list stays a curated set
+ * rather than an ever-growing wall of past days. */
 export async function fetchWordles(): Promise<WordlePuzzle[]> {
   const data = unwrap(
     await dataClient.models.WordlePuzzle.list({
@@ -38,7 +41,7 @@ export async function fetchWordles(): Promise<WordlePuzzle[]> {
     }),
   );
   return data
-    .filter((p) => p.status === 'PUBLISHED')
+    .filter((p) => p.status === 'PUBLISHED' && !isDailyPuzzle(p.id))
     .sort((a, b) => (b.puzzleDate ?? '').localeCompare(a.puzzleDate ?? ''))
     .map((p) => ({
       id: p.id,

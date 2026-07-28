@@ -20,4 +20,11 @@ describe('publishedLadders', () => {
     ]);
     expect(out.map((l) => l.id)).toEqual(['new', 'old']);
   });
+  it('excludes daily-generated ladders (they live on /daily/steps)', () => {
+    const out = publishedLadders([
+      ladder({ id: 'evergreen' }),
+      ladder({ id: 'daily-steps-2026-07-15' }),
+    ]);
+    expect(out.map((l) => l.id)).toEqual(['evergreen']);
+  });
 });
