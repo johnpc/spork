@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Switch } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DailyEntry } from './DailyEntry';
@@ -89,5 +90,16 @@ describe('DailyEntry', () => {
     mockEntry({ browsing: true, generating: true });
     renderAt('/daily/worldle/2026-06-20');
     expect(screen.getByTestId('daily-generating')).toBeInTheDocument();
+  });
+
+  it('shows a retry (not an infinite spinner) when the puzzle list fails to load', async () => {
+    const retry = vi.fn();
+    mockEntry({ loadError: true, retry });
+    renderAt('/daily/worldle');
+    // Error surfaces instead of the fall-through "Loading…" hang.
+    expect(screen.getByTestId('daily-load-error')).toBeInTheDocument();
+    expect(screen.queryByTestId('daily-loading')).not.toBeInTheDocument();
+    await userEvent.click(screen.getByTestId('daily-load-retry'));
+    expect(retry).toHaveBeenCalledTimes(1);
   });
 });

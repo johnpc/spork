@@ -17,7 +17,7 @@ export function useDailyEntry(gameKey: string, date?: string) {
   const browsing = !!date && day !== dayStamp(now); // a specific past day, not today
   const { playedToday, result } = useDaily(game?.dailyKey ?? gameKey, day);
 
-  const { data, isLoading, isSuccess } = useQuery({
+  const { data, isLoading, isSuccess, isError, refetch } = useQuery({
     queryKey: ['daily-list', gameKey, day],
     queryFn: () => (game ? game.fetchList() : Promise.resolve([])),
     enabled: !!game && !playedToday,
@@ -46,5 +46,9 @@ export function useDailyEntry(gameKey: string, date?: string) {
     generating: gen.isGenerating,
     genError: gen.isError,
     empty: emptyBase && !gen.isGenerating,
+    // The list fetch itself failed (e.g. a flaky network) — surface a retry
+    // instead of the fall-through "Loading…" hang.
+    loadError: !!game && !playedToday && isError,
+    retry: () => void refetch(),
   };
 }

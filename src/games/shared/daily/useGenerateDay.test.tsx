@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const m = vi.hoisted(() => ({ generateDailyPuzzles: vi.fn() }));
@@ -44,5 +44,39 @@ describe('useGenerateDay', () => {
     m.generateDailyPuzzles.mockResolvedValue({ errors: [{ message: 'boom' }] });
     const { result } = renderHook(() => useGenerateDay('2026-06-20', true, false));
     await waitFor(() => expect(result.current.isError).toBe(true));
+  });
+
+  it('gives up (→ error) if the puzzle never appears within the timeout', async () => {
+    vi.useFakeTimers();
+    try {
+      // Mutation resolves fine, but `found` stays false — the puzzle never lands.
+      const { result } = renderHook(() => useGenerateDay('2026-06-20', true, false, 5000));
+      // Let the fired mutation's microtask settle, then trip the timeout.
+      await act(() => vi.advanceTimersByTimeAsync(0));
+      expect(result.current.isGenerating).toBe(true);
+      await act(() => vi.advanceTimersByTimeAsync(5000));
+      expect(result.current.isError).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('does NOT error out if the puzzle is found before the timeout', async () => {
+    vi.useFakeTimers();
+    try {
+      const { result, rerender } = renderHook(
+        ({ f }) => useGenerateDay('2026-06-20', true, f, 5000),
+        {
+          initialProps: { f: false },
+        },
+      );
+      await act(() => vi.advanceTimersByTimeAsync(0));
+      rerender({ f: true }); // puzzle lands
+      await act(() => vi.advanceTimersByTimeAsync(10_000)); // well past the timeout
+      expect(result.current.status).toBe('ready');
+      expect(result.current.isError).toBe(false);
+    } finally {
+      vi.useRealTimers();
+    }
   });
 });

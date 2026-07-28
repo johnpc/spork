@@ -4,6 +4,10 @@ const m = vi.hoisted(() => ({ get: vi.fn(), list: vi.fn() }));
 vi.mock('../../../lib/dataClient', () => ({
   dataClient: { models: { Acrostic: { get: m.get, list: m.list } } },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchAcrostic, fetchAcrostics } from './acrosticApi';
@@ -29,5 +33,10 @@ describe('acrosticApi', () => {
     const out = await fetchAcrostics();
     expect(out.map((a) => a.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
+  });
+
+  it('fetchAcrostic throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchAcrostic('x1')).rejects.toThrow('boom');
   });
 });

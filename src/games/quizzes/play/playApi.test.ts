@@ -9,6 +9,10 @@ vi.mock('../../../lib/dataClient', () => ({
     },
   },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchQuizData } from './playApi';
@@ -28,5 +32,11 @@ describe('fetchQuizData', () => {
       { quizId: 'q1' },
       { limit: 1000, authMode: 'identityPool' },
     );
+  });
+
+  it('throws on a GraphQL error (so usePlay shows a retry, not a false "not found")', async () => {
+    m.getQuiz.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    m.listAnswers.mockResolvedValue({ data: [] });
+    await expect(fetchQuizData('q1')).rejects.toThrow('boom');
   });
 });

@@ -4,6 +4,10 @@ const m = vi.hoisted(() => ({ list: vi.fn() }));
 vi.mock('../../../lib/dataClient', () => ({
   dataClient: { models: { Quiz: { list: m.list } } },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchPublishedQuizzes } from './quizListApi';

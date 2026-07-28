@@ -4,6 +4,10 @@ const m = vi.hoisted(() => ({ get: vi.fn(), list: vi.fn() }));
 vi.mock('../../../lib/dataClient', () => ({
   dataClient: { models: { WordLadder: { get: m.get, list: m.list } } },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchLadder, fetchLadders } from './ladderApi';
@@ -28,5 +32,10 @@ describe('ladderApi', () => {
     const out = await fetchLadders();
     expect(out.map((l) => l.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
+  });
+
+  it('fetchLadder throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchLadder('x1')).rejects.toThrow('boom');
   });
 });

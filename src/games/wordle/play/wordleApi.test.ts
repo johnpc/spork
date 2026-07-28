@@ -4,6 +4,10 @@ const m = vi.hoisted(() => ({ get: vi.fn(), list: vi.fn() }));
 vi.mock('../../../lib/dataClient', () => ({
   dataClient: { models: { WordlePuzzle: { get: m.get, list: m.list } } },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchWordle, fetchWordles } from './wordleApi';
@@ -111,5 +115,10 @@ describe('wordleApi', () => {
       publishedAt: undefined,
       puzzleDate: undefined,
     });
+  });
+
+  it('fetchWordle throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchWordle('x1')).rejects.toThrow('boom');
   });
 });

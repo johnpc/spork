@@ -4,6 +4,10 @@ const m = vi.hoisted(() => ({ get: vi.fn(), list: vi.fn() }));
 vi.mock('../../../lib/dataClient', () => ({
   dataClient: { models: { ConnectionsPuzzle: { get: m.get, list: m.list } } },
   readAuthMode: () => Promise.resolve('identityPool'),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchConnections, fetchConnectionsList } from './connectionsApi';
@@ -28,5 +32,10 @@ describe('connectionsApi', () => {
     const out = await fetchConnectionsList();
     expect(out.map((p) => p.id)).toEqual(['a']);
     expect(m.list).toHaveBeenCalledWith({ limit: 200, authMode: 'identityPool' });
+  });
+
+  it('fetchConnections throws on a GraphQL error (retryable, not a false not-found)', async () => {
+    m.get.mockResolvedValue({ data: null, errors: [{ message: 'boom' }] });
+    await expect(fetchConnections('x1')).rejects.toThrow('boom');
   });
 });
