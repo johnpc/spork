@@ -5,6 +5,10 @@ const auth = vi.hoisted(() => ({ mode: 'identityPool' as string }));
 vi.mock('../../lib/dataClient', () => ({
   dataClient: { models: { Deck: { listDeckByCategorySlug: m.byCategory } } },
   readAuthMode: () => Promise.resolve(auth.mode),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchDecksByCategory } from './deckApi';
@@ -28,5 +32,10 @@ describe('fetchDecksByCategory', () => {
       expect.objectContaining({ authMode: 'identityPool' }),
     );
     expect(decks.map((d) => d.id)).toEqual(['a']);
+  });
+
+  it('throws when the deck read returns GraphQL errors (no false "no decks")', async () => {
+    m.byCategory.mockResolvedValue({ data: [], errors: [{ message: 'network down' }] });
+    await expect(fetchDecksByCategory('languages')).rejects.toThrow('network down');
   });
 });

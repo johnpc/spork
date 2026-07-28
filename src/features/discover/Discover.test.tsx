@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -48,5 +48,15 @@ describe('Discover', () => {
     const { container } = renderDiscover();
     expect(container.querySelectorAll('.sp-skeleton').length).toBeGreaterThan(0);
     expect(screen.queryAllByTestId('cat-section')).toHaveLength(0);
+  });
+
+  it('surfaces a retry (not a blank shelf) when shelves fail to load', () => {
+    const refetch = vi.fn();
+    hook.value = { data: undefined as never, isLoading: false, isError: true, refetch } as never;
+    renderDiscover();
+    expect(screen.getByTestId('load-error')).toBeInTheDocument();
+    expect(screen.queryAllByTestId('cat-section')).toHaveLength(0);
+    fireEvent.click(screen.getByTestId('load-retry'));
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });

@@ -5,6 +5,10 @@ const auth = vi.hoisted(() => ({ mode: 'identityPool' as string }));
 vi.mock('../../lib/dataClient', () => ({
   dataClient: { models: { Category: { list: m.list } } },
   readAuthMode: () => Promise.resolve(auth.mode),
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchShelves } from './discoverApi';
@@ -30,5 +34,10 @@ describe('fetchShelves', () => {
     auth.mode = 'userPool';
     await fetchShelves();
     expect(m.list).toHaveBeenCalledWith(expect.objectContaining({ authMode: 'userPool' }));
+  });
+
+  it('throws when the categories read returns GraphQL errors (no silent empty)', async () => {
+    m.list.mockResolvedValue({ data: [], errors: [{ message: 'network down' }] });
+    await expect(fetchShelves()).rejects.toThrow('network down');
   });
 });

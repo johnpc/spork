@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -44,6 +44,16 @@ describe('CategoryDecks', () => {
   it('shows an empty state when the category has no decks', () => {
     hook.value = { data: [], isLoading: false };
     renderAt();
-    expect(screen.getByTestId('empty-decks')).toBeInTheDocument();
+    expect(screen.getByTestId('load-empty')).toBeInTheDocument();
+  });
+
+  it('surfaces a retry (not a false empty) when the deck read fails', () => {
+    const refetch = vi.fn();
+    hook.value = { data: undefined, isLoading: false, isError: true, refetch } as never;
+    renderAt();
+    expect(screen.getByTestId('load-error')).toBeInTheDocument();
+    expect(screen.queryByTestId('load-empty')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('load-retry'));
+    expect(refetch).toHaveBeenCalledTimes(1);
   });
 });
