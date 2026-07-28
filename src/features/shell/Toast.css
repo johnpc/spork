@@ -1,0 +1,46 @@
+/* App-level transient toast, bottom-center above the tab bar. Tokens only. */
+.sp-toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(72px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: min(92vw, 460px);
+  padding: 10px 12px 10px 16px;
+  background: var(--sp-surface);
+  color: var(--sp-text);
+  border: 1px solid var(--sp-border);
+  border-radius: var(--sp-radius-sm);
+  box-shadow: var(--sp-shadow-hover);
+  font-size: 14px;
+}
+.sp-toast__msg {
+  flex: 1;
+  min-width: 0;
+}
+.sp-toast__action {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--sp-accent-strong);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 2px 4px;
+}
+.sp-toast__close {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--sp-text-muted);
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+  padding: 0 2px;
+}
+.sp-toast__close:hover {
+  color: var(--sp-text);
+}
