@@ -6,6 +6,10 @@ vi.mock('../../../lib/dataClient', () => ({
     mutations: { generateQuiz: m.generateQuiz },
     models: { Quiz: { list: m.list, update: m.update }, GenerationRun: { list: m.list } },
   },
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { generateQuiz, fetchQuizRuns, fetchDraftQuizzes, publishQuiz } from './quizGenApi';
@@ -48,6 +52,10 @@ describe('fetchQuizRuns', () => {
     const out = await fetchQuizRuns();
     expect(out.map((r) => r.id)).toEqual(['c', 'a']);
   });
+  it('throws when the runs read returns GraphQL errors', async () => {
+    m.list.mockResolvedValue({ data: [], errors: [{ message: 'runs down' }] });
+    await expect(fetchQuizRuns()).rejects.toThrow('runs down');
+  });
 });
 
 describe('fetchDraftQuizzes', () => {
@@ -64,6 +72,10 @@ describe('fetchDraftQuizzes', () => {
     });
     const out = await fetchDraftQuizzes();
     expect(out.map((q) => q.id)).toEqual(['c', 'b']);
+  });
+  it('throws when the drafts read returns GraphQL errors', async () => {
+    m.list.mockResolvedValue({ data: [], errors: [{ message: 'drafts down' }] });
+    await expect(fetchDraftQuizzes()).rejects.toThrow('drafts down');
   });
 });
 

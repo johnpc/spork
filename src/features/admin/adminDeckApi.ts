@@ -2,7 +2,7 @@
  * Admin deck writes. Decks are written by the 'editors' Cognito group, which is
  * userPool-based — so every call uses authMode 'userPool' (stoop ADR 0004/0005).
  */
-import { dataClient, type DeckRecord } from '../../lib/dataClient';
+import { dataClient, unwrap, type DeckRecord } from '../../lib/dataClient';
 
 const EDITOR = { authMode: 'userPool' } as const;
 
@@ -15,7 +15,8 @@ export interface NewDeck {
 
 /** All decks (any status) for the admin manage list, newest first. */
 export async function fetchAllDecks(): Promise<DeckRecord[]> {
-  const { data } = await dataClient.models.Deck.list({ limit: 500, ...EDITOR });
+  // unwrap so a failed read throws (→ retry) instead of a false "no decks yet".
+  const data = unwrap(await dataClient.models.Deck.list({ limit: 500, ...EDITOR }));
   return [...data].sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));
 }
 

@@ -16,3 +16,9 @@ Feature: Quiz Studio — generate a quiz with AI and publish it
     And the generated quiz appears as a draft
     When the editor publishes the generated draft
     Then the published quiz appears in the Quizzes list
+
+  # A failed runs/drafts read must offer a retry, not silently-empty sections —
+  # and the generate form above must stay usable.
+  Scenario: A failed Quiz Studio read shows a retry, not empty sections
+    Given the editor opens Quiz Studio with the runs and drafts reads failing
+    Then Quiz Studio shows a retry, and the generate form is still available

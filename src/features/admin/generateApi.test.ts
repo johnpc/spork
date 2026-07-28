@@ -6,6 +6,10 @@ vi.mock('../../lib/dataClient', () => ({
     mutations: { generateDeck: m.generateDeck, regenerateCardMedia: m.regen },
     models: { GenerationRun: { list: m.list } },
   },
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { generateDeck, regenerateCardMedia, fetchGenerationRuns } from './generateApi';
@@ -49,5 +53,10 @@ describe('generateApi', () => {
       ],
     });
     expect((await fetchGenerationRuns()).map((r) => r.id)).toEqual(['2', '1']);
+  });
+
+  it('fetchGenerationRuns throws when the read returns GraphQL errors', async () => {
+    m.list.mockResolvedValue({ data: [], errors: [{ message: 'runs down' }] });
+    await expect(fetchGenerationRuns()).rejects.toThrow('runs down');
   });
 });

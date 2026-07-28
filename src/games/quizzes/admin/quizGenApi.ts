@@ -4,7 +4,12 @@
  * AI (or template) generation and returns ids immediately; the worker fills the
  * DRAFT quiz async, which the admin then publishes.
  */
-import { dataClient, type GenerationRunRecord, type QuizRecord } from '../../../lib/dataClient';
+import {
+  dataClient,
+  unwrap,
+  type GenerationRunRecord,
+  type QuizRecord,
+} from '../../../lib/dataClient';
 
 const EDITOR = { authMode: 'userPool' } as const;
 
@@ -27,7 +32,8 @@ export async function generateQuiz(
 
 /** Recent QUIZ generation runs for the admin dashboard, newest first. */
 export async function fetchQuizRuns(): Promise<GenerationRunRecord[]> {
-  const { data } = await dataClient.models.GenerationRun.list({ limit: 100, ...EDITOR });
+  // unwrap so a failed read throws (→ retry) instead of a silently empty list.
+  const data = unwrap(await dataClient.models.GenerationRun.list({ limit: 100, ...EDITOR }));
   return data
     .filter((r) => r.game === 'QUIZZES')
     .sort((a, b) => (b.startedAt ?? '').localeCompare(a.startedAt ?? ''));
@@ -35,7 +41,7 @@ export async function fetchQuizRuns(): Promise<GenerationRunRecord[]> {
 
 /** All DRAFT quizzes awaiting review/publish, newest first. */
 export async function fetchDraftQuizzes(): Promise<QuizRecord[]> {
-  const { data } = await dataClient.models.Quiz.list({ limit: 200, ...EDITOR });
+  const data = unwrap(await dataClient.models.Quiz.list({ limit: 200, ...EDITOR }));
   return data
     .filter((q) => q.status === 'DRAFT')
     .sort((a, b) => (b.createdAt ?? '').localeCompare(a.createdAt ?? ''));

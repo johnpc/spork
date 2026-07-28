@@ -37,6 +37,29 @@ When('the editor opens deck management', async ({ page }) => {
   await expect(page.getByTestId('new-deck-form')).toBeVisible({ timeout: 15_000 });
 });
 
+When('the editor opens deck management with the deck list read failing', async ({ page }) => {
+  // Fail ONLY the admin deck list (listDecks) so the generate/create forms above
+  // still render — proves the list section's own error path, not a full outage.
+  await page.route('**/graphql', async (route) => {
+    const body = route.request().postData() ?? '';
+    if (body.includes('listDecks')) {
+      return route.fulfill({
+        status: 500,
+        contentType: 'application/json',
+        body: '{"errors":[{"message":"boom"}]}',
+      });
+    }
+    return route.continue();
+  });
+  await page.goto('/admin/decks');
+});
+
+Then('the deck list shows a retry, and the generate form is still available', async ({ page }) => {
+  await expect(page.getByTestId('load-error')).toBeVisible({ timeout: 15_000 });
+  await expect(page.getByTestId('load-retry')).toBeVisible();
+  await expect(page.getByTestId('new-deck-form')).toBeVisible();
+});
+
 When('the editor creates a deck named {string}', async ({ page }, topic: string) => {
   const unique = `${topic} ${Date.now()}`;
   actualName.set(topic, unique);

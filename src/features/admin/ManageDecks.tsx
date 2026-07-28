@@ -13,12 +13,13 @@ import { useGenerateDeck } from './useGenerateDeck';
 import { NewDeckForm } from './NewDeckForm';
 import { GenerateDeckForm } from './GenerateDeckForm';
 import { GenerationRuns } from './GenerationRuns';
+import { LoadState } from '../shell/LoadState';
 import { SkeletonRows } from '../shell/SkeletonRows';
 import './admin.css';
 
 /** Admin: list every deck (any status), create new ones, publish/delete. */
 export function ManageDecks() {
-  const { decks, isLoading, create, setPublished, remove } = useAdminDecks();
+  const { decks, isLoading, isError, retry, create, setPublished, remove } = useAdminDecks();
   const gen = useGenerateDeck();
   return (
     <IonPage>
@@ -46,11 +47,15 @@ export function ManageDecks() {
         </section>
 
         <h2 className="admin-panel__title admin-decks__heading">All decks</h2>
-        {isLoading ? (
-          <SkeletonRows count={4} />
-        ) : decks.length === 0 ? (
-          <p className="sp-muted">No decks yet — generate or create one above.</p>
-        ) : (
+        <LoadState
+          isLoading={isLoading}
+          isError={isError}
+          isEmpty={!isLoading && !isError && decks.length === 0}
+          emptyTitle="No decks yet"
+          emptyMessage="Generate or create one above."
+          onRetry={retry}
+          skeleton={<SkeletonRows count={4} />}
+        >
           <ul className="admin-decks" aria-label="All decks">
             {decks.map((d) => (
               <li key={d.id} className="admin-decks__row" data-testid="admin-deck">
@@ -79,7 +84,7 @@ export function ManageDecks() {
               </li>
             ))}
           </ul>
-        )}
+        </LoadState>
       </IonContent>
     </IonPage>
   );
