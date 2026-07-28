@@ -1,5 +1,11 @@
 /** Deck-detail read: one deck + its cards (ordered). Guest-readable. */
-import { dataClient, readAuthMode, type DeckRecord, type CardRecord } from '../../lib/dataClient';
+import {
+  dataClient,
+  readAuthMode,
+  unwrap,
+  type DeckRecord,
+  type CardRecord,
+} from '../../lib/dataClient';
 
 export interface DeckDetail {
   deck: DeckRecord;
@@ -8,12 +14,12 @@ export interface DeckDetail {
 
 export async function fetchDeckDetail(deckId: string): Promise<DeckDetail | null> {
   const authMode = await readAuthMode();
-  const { data: deck } = await dataClient.models.Deck.get({ id: deckId }, { authMode });
+  // unwrap so a failed read throws (→ retry) instead of a false "Deck not found".
+  const deck = unwrap(await dataClient.models.Deck.get({ id: deckId }, { authMode }));
   if (!deck) return null;
   // Query cards by the deckId(ord) GSI — ordered, single-partition (no Scan).
-  const { data: cards } = await dataClient.models.Card.listCardByDeckIdAndOrd(
-    { deckId },
-    { limit: 500, authMode },
+  const cards = unwrap(
+    await dataClient.models.Card.listCardByDeckIdAndOrd({ deckId }, { limit: 500, authMode }),
   );
   return { deck, cards };
 }

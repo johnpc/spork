@@ -16,3 +16,9 @@ Feature: My Decks (authenticated)
     When the test user opens the My Decks tab
     Then "Top Spanish Phrases" is listed in My Decks
     And the Due Today panel reflects the saved deck's due cards
+
+  # A failed library read must offer a retry, not a false "No saved decks yet".
+  Scenario: A failed My Decks read shows a retry, not a false empty
+    Given the test user signs in
+    When the test user opens My Decks with the library read failing
+    Then My Decks shows a retry, not a "no saved decks" message

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
@@ -6,6 +6,8 @@ type StudyState = ReturnType<typeof base>;
 const base = () => ({
   isAuthenticated: true,
   isLoading: false,
+  isError: false,
+  retry: vi.fn(),
   current: null as null | { card: { id: string; front: string; back: string } },
   choices: null as null | { answer: string; options: string[] },
   picked: null as string | null,
@@ -93,5 +95,15 @@ describe('Study', () => {
     hook.value = { ...base(), current: null, canReviewAll: false };
     renderAt();
     expect(screen.queryByTestId('study-review-all')).not.toBeInTheDocument();
+  });
+
+  it('surfaces a retry (not a false "all caught up") when the load fails', () => {
+    const retry = vi.fn();
+    hook.value = { ...base(), isError: true, retry };
+    renderAt();
+    expect(screen.getByTestId('load-error')).toBeInTheDocument();
+    expect(screen.queryByTestId('study-done')).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('load-retry'));
+    expect(retry).toHaveBeenCalledTimes(1);
   });
 });

@@ -15,6 +15,8 @@ export function useMyDecks() {
   return {
     decks: query.data ?? [],
     isLoading: enabled && query.isLoading,
+    isError: enabled && query.isError,
+    retry: () => void query.refetch(),
     isAuthenticated: enabled,
   };
 }

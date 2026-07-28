@@ -3,6 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 const m = vi.hoisted(() => ({ list: vi.fn(), create: vi.fn(), del: vi.fn() }));
 vi.mock('../../lib/dataClient', () => ({
   dataClient: { models: { UserDeck: { list: m.list, create: m.create, delete: m.del } } },
+  unwrap: (r: { data: unknown; errors?: { message: string }[] }) => {
+    if (r.errors?.length) throw new Error(r.errors.map((e) => e.message).join('; '));
+    return r.data;
+  },
 }));
 
 import { fetchMyDecks, findMyDeck, addMyDeck, removeMyDeck } from './myDecksApi';
@@ -38,6 +42,11 @@ describe('myDecksApi', () => {
     const decks = await fetchMyDecks();
     expect(decks).toHaveLength(1);
     expect(decks[0].topic).toBe('Spanish (new)');
+  });
+
+  it('fetchMyDecks throws when the read returns GraphQL errors (no false empty)', async () => {
+    m.list.mockResolvedValue({ data: [], errors: [{ message: 'network down' }] });
+    await expect(fetchMyDecks()).rejects.toThrow('network down');
   });
 
   it('findMyDeck filters by deckId and returns the first match', async () => {

@@ -40,3 +40,14 @@ Feature: Study a deck (authenticated, multiple choice)
     Then the study session shows progress "1 /"
     When the user answers every card in the session
     Then a session score summary is shown
+
+  # A failed deck read must offer a retry, not a false "Deck not found" — the
+  # gateway to Study. Fails only the deck's card query so the deck row still loads.
+  Scenario: A failed deck read shows a retry, not a false not-found
+    Given a guest opens the "Top Spanish Phrases" deck with its card read failing
+    Then the deck shows a retry, not a not-found message
+
+  # A failed study load must offer a retry, not a false "All caught up!".
+  Scenario: A failed study load shows a retry, not a false all-caught-up
+    Given a guest opens the "Top Spanish Phrases" study session with the card read failing
+    Then the study session shows a retry, not an all-caught-up message
