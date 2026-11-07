@@ -8,7 +8,6 @@ import { deckgenWorker } from './deckgen/worker/resource';
 import { regenerateMedia } from './deckgen/regenerate/resource';
 import { generateQuizStarter } from './quizgen/start/resource';
 import { quizgenWorker } from './quizgen/worker/resource';
-import { dailyIngest } from './dailyingest/resource';
 import { dailyGenerateStarter } from './dailygenerate/resource';
 import { dailyGenerateWorker } from './dailygenerate/worker/resource';
 
@@ -37,7 +36,6 @@ const backend = defineBackend({
   regenerateMedia,
   generateQuizStarter,
   quizgenWorker,
-  dailyIngest,
   dailyGenerateStarter,
   dailyGenerateWorker,
 });
@@ -128,11 +126,9 @@ tables['Quiz'].grantWriteData(quizWorker);
 tables['Answer'].grantWriteData(quizWorker);
 tables['GenerationRun'].grantWriteData(quizWorker);
 
-// --- Daily ingest (scheduled): Bedrock (Claude) + writes one fresh PUBLISHED
-// puzzle per generative game type each day, straight to the game tables. ---
-const ingest = backend.dailyIngest.resources.lambda;
-ingest.addToRolePolicy(bedrockGrant());
-const ingestTables: Record<string, string> = {
+// Game tables the on-demand day generator writes (env name -> model).
+// Chess is not generated (curated Lichess set) — no write grant needed.
+const gameTables: Record<string, string> = {
   QUIZ_TABLE: 'Quiz',
   ANSWER_TABLE: 'Answer',
   WORD_LADDER_TABLE: 'WordLadder',
@@ -141,23 +137,19 @@ const ingestTables: Record<string, string> = {
   WORDLE_TABLE: 'WordlePuzzle',
   CONNECTIONS_TABLE: 'ConnectionsPuzzle',
   SPELLING_BEE_TABLE: 'SpellingBeePuzzle',
-  // Chess is not daily-generated (curated Lichess set) — no write grant needed.
 };
-for (const [envName, model] of Object.entries(ingestTables)) {
-  backend.dailyIngest.addEnvironment(envName, tables[model].tableName);
-  tables[model].grantWriteData(ingest);
-}
 
-// --- On-demand day generation (guest-callable mutation). STARTER validates the
-// date + async-invokes the WORKER, which reuses the ingest logic (Bedrock + the
-// game tables) plus READ for the skip-if-exists guard. Split into two functions
+// --- On-demand day generation (guest-callable mutation). The ONLY generation
+// path for daily puzzles: there is deliberately no scheduled job, so Bedrock is
+// paid for only when someone actually opens a day. STARTER validates the date +
+// async-invokes the WORKER (Bedrock + the game tables, READ for skip-if-exists). Split into two functions
 // so the starter→worker invoke grant doesn't self-reference (circular-dep fix). ---
 const dayStarter = backend.dailyGenerateStarter.resources.lambda;
 const dayWorker = backend.dailyGenerateWorker.resources.lambda;
 backend.dailyGenerateStarter.addEnvironment('WORKER_FUNCTION_NAME', dayWorker.functionName);
 dayWorker.grantInvoke(dayStarter);
 dayWorker.addToRolePolicy(bedrockGrant());
-for (const [envName, model] of Object.entries(ingestTables)) {
+for (const [envName, model] of Object.entries(gameTables)) {
   backend.dailyGenerateWorker.addEnvironment(envName, tables[model].tableName);
   tables[model].grantReadWriteData(dayWorker);
 }

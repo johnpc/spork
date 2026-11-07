@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const e = vi.hoisted(() => ({ generateDayFor: vi.fn(), getItem: vi.fn() }));
-vi.mock('../../dailyingest/shared/generateDay', async (orig) => ({
-  ...(await orig<typeof import('../../dailyingest/shared/generateDay')>()),
+vi.mock('../shared/generateDay', async (orig) => ({
+  ...(await orig<typeof import('../shared/generateDay')>()),
   generateDayFor: e.generateDayFor,
 }));
 vi.mock('../../deckgen/shared/ddb', () => ({ getItem: e.getItem }));
