@@ -63,7 +63,7 @@ export default defineConfig({
         // Fixture DATA (records, not logic): seed fixtures + generated game
         // templates like the reconciled world-countries map answer set.
         'amplify/quizgen/fixtures/**',
-        'amplify/dailyingest/fixtures/**',
+        'amplify/dailygenerate/fixtures/**',
         // GENERATED continent→ISO grouping (scripts/genContinents.ts) — DATA.
         'src/games/quizzes/play/continents.ts',
         // Seed/maintenance runner entrypoints: side-effecting main() scripts

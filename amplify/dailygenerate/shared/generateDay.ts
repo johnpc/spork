@@ -1,6 +1,6 @@
 /**
- * The date-parameterized core of daily generation, shared by the scheduled
- * ingest (today) and the on-demand generator (a requested past date). Generates
+ * The date-parameterized core of daily generation, driven by the on-demand
+ * generator (the day a visitor opens — today or a past date). Generates
  * one PUBLISHED puzzle per generative quiz type + each island, stamped with the
  * given puzzleDate, tolerating a single type's failure. Ids are DETERMINISTIC
  * (`daily-<game>-<date>`) so a re-run overwrites rather than duplicates; an

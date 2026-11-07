@@ -140,11 +140,12 @@ Three sources, all feeding the same `Quiz` + `Answer` load path:
 2. **AI generation** — `generateQuiz(mode, topic)` has Claude author a quiz on demand (tool-forced
    structured output); PICTURE_BOX quizzes also get one Bedrock-drawn image per answer. This is the
    primary way the library grows: type a topic, get a playable quiz.
-3. **Automatic daily puzzles** — a scheduled Lambda (`amplify/dailyingest`, EventBridge "every day")
-   generates one fresh, **PUBLISHED** puzzle per generative game type each day — the five text quiz
-   types plus Steps, Acrostic, Quizzle, and Chess — with zero manual effort. It reuses each game's
-   own prompt → parse → **validate** trio (never trusting the LLM; it retries on a bad candidate) and
-   rotates topics deterministically by day. So the home shelf is never stale.
+3. **On-demand daily puzzles** — the first visitor to open a day fires the guest-callable
+   `generateDailyPuzzles` mutation (`amplify/dailygenerate`), which generates one fresh, **PUBLISHED**
+   puzzle per generative game type for that date — the five text quiz types plus Steps, Acrostic,
+   Quizzle, and Chess. There is deliberately **no scheduled job**: Bedrock is only paid for when
+   someone actually plays. It reuses each game's own prompt → parse → **validate** trio (never
+   trusting the LLM; it retries on a bad candidate) and rotates topics deterministically by day.
 
 Every AI path is **independently validated** before anything is stored: the generator proposes, a
 pure validator (the same one its build-time fixtures use) verifies the puzzle is well-formed and

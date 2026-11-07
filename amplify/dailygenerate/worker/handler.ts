@@ -7,7 +7,7 @@
  * tables for the date — not this function's result.
  */
 import { getItem } from '../../deckgen/shared/ddb';
-import { generateDayFor, summarize } from '../../dailyingest/shared/generateDay';
+import { generateDayFor, summarize } from '../shared/generateDay';
 
 const env = (n: string): string => {
   const v = process.env[n];

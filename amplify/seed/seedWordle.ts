@@ -1,6 +1,6 @@
 /** Seed published Wordle puzzles as a browse history. Only the most recent
  * BROWSE_DAYS answers are inserted (one per day, today back) — the full
- * seedWordleAnswers pool stays the daily-ingest rotation source, independent of
+ * seedWordleAnswers pool stays the daily-generation rotation source, independent of
  * this. Capping keeps the list well under fetchWordles' 200-row page so it's
  * fully ordered + deterministic (a 500-row scan page returns rows in hash order,
  * which breaks both list ordering and today's-puzzle lookup). */
