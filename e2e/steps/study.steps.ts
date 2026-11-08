@@ -1,10 +1,10 @@
-import { expect, test, type Page, type Response } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 import { createBdd } from 'playwright-bdd';
 
 const { Given, When, Then } = createBdd();
 
-/** The UserStat write a finished study session triggers, per page (see below). */
-const statWrites = new WeakMap<Page, Promise<Response | null>>();
+const OUTBOX = 'spork.pendingStudySessions';
+const STAT_WRITE = /(create|update)UserStat/;
 
 const USERNAME = process.env.TEST_USERNAME;
 const PASSWORD = process.env.TEST_PASSWORD;
@@ -157,20 +157,6 @@ When('the user answers every card in the session', async ({ page }) => {
     await reviewAll.click();
     await expect(page.getByTestId('study-opt').first()).toBeVisible({ timeout: 15_000 });
   }
-  // Finishing a SIGNED-IN session records the streak with a fire-and-forget
-  // UserStat write; remember it so the You-tab step can wait for it (guests
-  // make no such write, so the promise just resolves null for them).
-  statWrites.set(
-    page,
-    page
-      .waitForResponse(
-        (res) =>
-          res.request().method() === 'POST' &&
-          /(create|update)UserStat/.test(res.request().postData() ?? ''),
-        { timeout: 45_000 },
-      )
-      .catch(() => null),
-  );
   // Answer-then-Next until the done screen appears (bounded loop).
   for (let i = 0; i < 50; i++) {
     if (await page.getByTestId('study-done').isVisible()) break;
@@ -185,12 +171,40 @@ Then('a session score summary is shown', async ({ page }) => {
 });
 
 When('the user opens the You tab', async ({ page }) => {
-  // `page.goto` is a full page load, which aborts any request still in flight.
-  // Let the session's UserStat write land first; otherwise a fresh backend (CI's
-  // per-run sandbox) never gets a UserStat row and the streak stays 0.
-  const written = await statWrites.get(page);
-  expect(written?.ok(), 'the finished session should record the streak').toBe(true);
   await page.goto('/you');
+});
+
+// Deterministically reproduce "the app closed mid-save": abort the streak's
+// UserStat mutation, exactly as an unload kills the in-flight request.
+When('the streak save will be cut off', async ({ page }) => {
+  await page.route('**/graphql', async (route) =>
+    STAT_WRITE.test(route.request().postData() ?? '') ? route.abort() : route.fallback(),
+  );
+});
+
+// Reload the moment the score shows — no waiting for any save to finish. The
+// relaunched app talks to the backend normally again.
+When('the app reloads immediately', async ({ page }) => {
+  await page.reload();
+  await page.unrouteAll({ behavior: 'ignoreErrors' });
+});
+
+// Prove the relaunch REPLAYED the session to the server, not just that the UI
+// read the local outbox: wait for the outbox to drain, then reload and read the
+// streak again with nothing left locally to fall back on.
+Then('the streak is saved on the server', async ({ page }) => {
+  await expect
+    .poll(
+      async () => {
+        const raw = await page.evaluate((key) => localStorage.getItem(key), OUTBOX);
+        if (raw && raw !== '[]') await page.reload();
+        return raw ?? '[]';
+      },
+      { timeout: 30_000, intervals: [1000, 2000, 3000, 4000, 5000] },
+    )
+    .toBe('[]');
+  await page.reload();
+  await expect(page.getByTestId('streak-current')).not.toHaveText('0', { timeout: 15_000 });
 });
 
 Then('a study streak of at least 1 day is shown', async ({ page }) => {

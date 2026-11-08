@@ -142,6 +142,9 @@ const schema = a.schema({
       longestStreak: a.integer().default(0),
       lastStudiedDate: a.string(),
       totalReviews: a.integer().default(0),
+      // Ids of the most recent sessions already counted, so replaying a session
+      // whose save landed before a reload can't count it twice (statApi).
+      recentSessionIds: a.string().array(),
     })
     .authorization((allow) => [allow.owner()]),
 
