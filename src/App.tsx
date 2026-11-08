@@ -3,6 +3,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from './lib/queryClient';
 import { AuthProvider } from './features/auth/AuthProvider';
+import { PendingStatReplay } from './features/stats/usePendingStatReplay';
 import { ErrorBoundary } from './features/shell/ErrorBoundary';
 import { Toast } from './features/shell/Toast';
 import { AppRoutes } from './AppRoutes';
@@ -26,6 +27,7 @@ const App: React.FC = () => (
   <IonApp>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
+        <PendingStatReplay />
         <IonReactRouter>
           <ErrorBoundary>
             <AppRoutes />

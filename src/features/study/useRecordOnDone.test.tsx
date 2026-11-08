@@ -5,6 +5,7 @@ import type { ReactNode } from 'react';
 
 const api = vi.hoisted(() => ({ recordSession: vi.fn() }));
 vi.mock('../stats/statApi', () => api);
+vi.mock('../auth/useAuth', () => ({ useAuth: () => ({ email: 'me@x.com' }) }));
 
 import { useRecordOnDone } from './useRecordOnDone';
 
@@ -30,9 +31,15 @@ describe('useRecordOnDone', () => {
       initialProps: { done: false },
     });
     rerender({ done: true });
-    await waitFor(() => expect(api.recordSession).toHaveBeenCalledWith(5));
+    await waitFor(() => expect(api.recordSession).toHaveBeenCalledWith('me@x.com', 5));
     rerender({ done: true }); // re-render while still done → no second record
     expect(api.recordSession).toHaveBeenCalledTimes(1);
+  });
+
+  it('a failed save does not throw (the session stays queued for replay)', async () => {
+    api.recordSession.mockRejectedValue(new Error('offline'));
+    renderHook(() => useRecordOnDone(true, 2), { wrapper });
+    await waitFor(() => expect(api.recordSession).toHaveBeenCalledWith('me@x.com', 2));
   });
 
   it('re-arms after the session resets (done → false → true again)', async () => {
