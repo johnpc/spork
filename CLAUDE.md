@@ -255,7 +255,12 @@ npx ampx sandbox       # personal cloud backend sandbox
 
 - **Repo:** `johnpc/spork`.
 - **iOS/Android bundle id:** `com.johncorser.spork`. Region `us-west-2`, AWS profile `personal`.
-- **Sandbox stack:** set on first `npx ampx sandbox`, then wire into `package.json` `e2e-config`.
+- **Sandboxes:** `npm run e2e-config` targets your personal sandbox (`ampx`'s default identifier,
+  your system user — `amplify-spork-xss-sandbox-08f8a387ed` for `xss`); `SANDBOX_IDENTIFIER=<id>`
+  picks another (`scripts/sandbox.mjs`). **CI never uses it:** every run deploys its own `ci-<run id>`
+  sandbox, creates the editor (`npm run ensure-editor`), seeds, tests, and deletes it in an
+  `if: always()` `teardown` job; `sandbox-cleanup.yml` sweeps leaked `ci<digits>` sandboxes older
+  than 6h.
 - **SPA rewrite (Amplify Hosting custom rule) — required for SEO.** Prod app id
   `d1s1t7ajahnjkc`. Client routes (`/daily/*`, `/discover`, `/you`, …) must serve `index.html` with a
   **200**, not a 404. Amplify's default `{"source":"/<*>","target":"/index.html","status":"404-200"}`
