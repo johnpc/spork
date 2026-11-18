@@ -145,5 +145,12 @@
     "vite": "^5.0.0",
     "vitest": "^0.34.6"
   },
-  "description": "Spork — a stack of little brain games (quizzes, flashcards, and more)"
+  "description": "Spork — a stack of little brain games (quizzes, flashcards, and more)",
+  "allowScripts": {
+    "sharp": true,
+    "esbuild": true,
+    "fsevents": true,
+    "@parcel/watcher": true,
+    "core-js": false
+  }
 }
