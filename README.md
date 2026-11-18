@@ -4,6 +4,11 @@
 
 # Spork
 
+> **Platform status: web only (for now).** The web app at [spork.jpc.io](https://spork.jpc.io) is the
+> supported platform. The iOS and Android projects stay in the repo but are not published or deployed,
+> and the mobile deploy workflows (iOS Deploy, Android Deploy) are to be kept disabled
+> (`gh workflow disable` / `gh workflow enable` to resume).
+
 **A stack of little brain games.** Spork is one app — one home screen — that hosts a growing shelf of
 **distinct games**, the way Sporcle offers Quizzes _and_ Acrostic, Chess Attack, Quizzle, and Steps as
 separate games with their own rules. Not one engine wearing hats: genuinely different games, unified
@@ -20,8 +25,7 @@ generation pipeline, admin dashboard, quality/CI rig) is shared; each game is a 
 under `src/games/<game>/` that plugs into it. **Adding a whole new game is a new island, not a
 rewrite** — and _within_ a game like Quizzes, adding a new format is just new data or a new renderer.
 
-**Play:** open **[spork.jpc.io](https://spork.jpc.io)** in any browser (installable as a PWA), or get
-the iOS app via **[TestFlight](https://testflight.apple.com/join/b25fhqgK)**.
+**Play:** open **[spork.jpc.io](https://spork.jpc.io)** in any browser (installable as a PWA).
 
 > Architecture, quality bar, and toolchain descend from the **stoop** app via **flashstack** — the
 > same Ionic + Amplify Gen2 stack, strict CI gates, and Gherkin-first → full-e2e workflow.
