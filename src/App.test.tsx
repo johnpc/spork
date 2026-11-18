@@ -30,6 +30,15 @@ describe('App', () => {
     // Let the async auth probe + initial render settle inside the test (so no
     // state update fires after teardown), then unmount to stop pending work.
     await waitFor(() => expect(screen.getByTestId('home-games')).toBeInTheDocument());
+    // ion-router-outlet's connectedCallback lazily `await import()`s its
+    // swipe-back gesture module and then reads `document` (RTL check). Under a
+    // loaded full-suite run that import can resolve after jsdom is torn down
+    // ("document is not defined" unhandled rejection). Wait until the gesture
+    // exists, i.e. the outlet's async connect finished, before tearing down.
+    await waitFor(() => {
+      const outlet = document.querySelector('ion-router-outlet') as { gesture?: unknown } | null;
+      expect(outlet?.gesture).toBeDefined();
+    });
     unmount();
   });
 });

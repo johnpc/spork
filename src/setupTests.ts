@@ -10,6 +10,18 @@ import { beforeEach } from 'vitest';
 // CPU contention of the pre-commit hook / CI (build + tests running together).
 configure({ asyncUtilTimeout: 5000 });
 
+// Node 26 defines `globalThis.localStorage` as an own property whose value is
+// `undefined` (Web Storage without --localstorage-file), and Vitest's jsdom
+// environment never overwrites an existing global, so tests would see no
+// storage at all. The package.json vitest scripts therefore run with
+// NODE_OPTIONS=--no-experimental-webstorage, which removes Node's property and
+// lets jsdom's storage through. Fail loudly if a run bypassed those scripts.
+if (typeof window !== 'undefined' && window.localStorage === undefined) {
+  throw new Error(
+    'localStorage is undefined: run Vitest via the npm scripts (NODE_OPTIONS=--no-experimental-webstorage)',
+  );
+}
+
 // Isolate localStorage between tests: several play screens read/write the daily
 // play-once store, so a "solved" case in one test would otherwise leak into the
 // next (e.g. tripping the daily guard). Clear it before every test.
