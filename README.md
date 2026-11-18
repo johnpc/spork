@@ -6,8 +6,8 @@
 
 > **Platform status: web only (for now).** The web app at [spork.jpc.io](https://spork.jpc.io) is the
 > supported platform. The iOS and Android projects stay in the repo but are not published or deployed,
-> and the mobile deploy workflows (iOS Deploy, Android Deploy) are to be kept disabled
-> (`gh workflow disable` / `gh workflow enable` to resume).
+> and the mobile deploy workflows (iOS Deploy, Android Deploy) are disabled
+> (`gh workflow enable` to resume).
 
 **A stack of little brain games.** Spork is one app — one home screen — that hosts a growing shelf of
 **distinct games**, the way Sporcle offers Quizzes _and_ Acrostic, Chess Attack, Quizzle, and Steps as
